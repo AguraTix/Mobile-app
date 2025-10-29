@@ -182,6 +182,177 @@ The AGURA Ticketing Mobile App is now production-ready with:
 
 ---
 
+## 🚢 Deploying to GitHub
+
+### Quick Deploy (Recommended)
+
+Execute these commands in your terminal:
+
+```bash
+# Navigate to project directory
+cd "c:\Users\Shema Leandre\Desktop\agura-new-release"
+
+# Initialize git if not already done
+git init
+
+# Add remote
+git remote add origin https://github.com/AguraTix/Mobile-app.git
+# Or update existing remote
+git remote set-url origin https://github.com/AguraTix/Mobile-app.git
+
+# Stage all files
+git add .
+
+# Create comprehensive commit
+git commit -m "feat: AGURA Ticketing Mobile App v1.0.0 - Production Ready
+
+Complete mobile ticketing application with:
+✅ Authentication (Email, Phone, Google OAuth)
+✅ Event discovery and browsing
+✅ Interactive seat selection
+✅ Multi-payment gateway (Mobile Money, Cards, Bank)
+✅ Food and beverage ordering
+✅ Ticket management with QR codes
+✅ Profile and settings
+✅ Notifications system
+✅ Maps integration
+✅ Comprehensive error handling
+✅ Production API integration
+✅ Cross-platform (iOS/Android)
+
+Tech Stack:
+- React Native 0.81 + Expo SDK 54
+- TypeScript
+- Zustand state management
+- Expo Router navigation
+- React Native Maps
+- QR code generation
+
+Backend: https://agura-ticketing-backend.onrender.com"
+
+# Push to main branch
+git branch -M main
+git push -u origin main --force
+```
+
+### Multiple Commits Approach
+
+For better commit history, you can break it down:
+
+```bash
+# Commit 1: Core Setup
+git add package.json tsconfig.json babel.config.js metro.config.js app.json
+git commit -m "feat: initialize Expo React Native project with TypeScript"
+
+# Commit 2: Configuration
+git add constants/ config/
+git commit -m "feat: add core constants and API configuration"
+
+# Commit 3: Authentication
+git add app/auth/ lib/api/auth.ts lib/authToken.ts components/AuthGuard.tsx
+git commit -m "feat: implement complete authentication system"
+
+# Commit 4: State Management
+git add store/
+git commit -m "feat: implement Zustand state management stores"
+
+# Commit 5: UI Components
+git add components/
+git commit -m "feat: add reusable UI components and error handling"
+
+# Commit 6: Home Screen
+git add app/(tabs)/index.tsx
+git commit -m "feat: create home screen with event discovery"
+
+# Commit 7: Event Details
+git add app/event/[id].tsx app/event/[id]/seat-selection.tsx
+git commit -m "feat: implement event detail and seat selection"
+
+# Commit 8: Ticket Purchase
+git add app/event/[id]/ticket-names.tsx app/event/[id]/payment*.tsx app/event/[id]/confirmation.tsx
+git commit -m "feat: implement complete ticket purchase flow"
+
+# Commit 9: Tickets Management
+git add app/(tabs)/tickets.tsx
+git commit -m "feat: create tickets management screen"
+
+# Commit 10: Events Browser
+git add app/(tabs)/events-user.tsx app/events/
+git commit -m "feat: add comprehensive events browser"
+
+# Commit 11: Food & Beverage
+git add app/(tabs)/menu.tsx app/event/[id]/menu.tsx app/event/[id]/food*.tsx app/event/[id]/cart.tsx
+git commit -m "feat: implement food and beverage ordering"
+
+# Commit 12: Orders
+git add app/event/[id]/orders.tsx app/event/[id]/order*.tsx
+git commit -m "feat: add food order tracking"
+
+# Commit 13: Profile
+git add app/(tabs)/profile.tsx app/profile/
+git commit -m "feat: create comprehensive profile management"
+
+# Commit 14: Onboarding
+git add app/index.tsx app/welcome.tsx app/onboarding.tsx
+git commit -m "feat: add onboarding and welcome screens"
+
+# Commit 15: Maps
+git add app/event/[id]/map.tsx
+git commit -m "feat: implement venue map integration"
+
+# Commit 16: Notifications
+git add app/notifications.tsx
+git commit -m "feat: implement notifications center"
+
+# Commit 17: Utilities
+git add utils/ lib/ hooks/
+git commit -m "feat: add utility functions and custom hooks"
+
+# Commit 18: Types
+git add types/
+git commit -m "feat: add TypeScript type definitions"
+
+# Commit 19: Assets
+git add assets/
+git commit -m "feat: add app assets and resources"
+
+# Commit 20: Android Config
+git add android/
+git commit -m "feat: configure Android native build"
+
+# Commit 21: Documentation
+git add *.md
+git commit -m "docs: add comprehensive documentation"
+
+# Commit 22: Scripts and Tools
+git add scripts/ mocks/
+git commit -m "feat: add development scripts and mock data"
+
+# Commit 23: Editor Config
+git add .vscode/ .gitignore LICENSE
+git commit -m "chore: add editor configuration and license"
+
+# Push all commits
+git push -u origin main --force
+```
+
+### Verify Deployment
+
+```bash
+# Check commit history
+git log --oneline
+
+# Verify remote
+git remote -v
+
+# Check status
+git status
+```
+
+Your app should now be live at: **https://github.com/AguraTix/Mobile-app**
+
+---
+
 *Built with ❤️ for the African continent*
 
 **Version**: 1.0.0  
