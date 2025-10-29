@@ -1,5 +1,5 @@
 export const PRODUCTION_CONFIG = {
-  API_BASE_URL: 'https://agura-ticketing-backend.onrender.com',
+  API_BASE_URL: 'https://agurabackend.onrender.com',
   API_TIMEOUT: 30000,
   ENVIRONMENT: 'production',
   FEATURES: {
