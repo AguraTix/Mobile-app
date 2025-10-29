@@ -1,0 +1,40 @@
+{
+  "expo": {
+    "name": "agura",
+    "slug": "agura",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "agura",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.agura.ticketing"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#e6007e"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.agura.ticketing"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "apiUrl": "https://agura-ticketing-backend.onrender.com",
+      "EXPO_PUBLIC_API_URL": "https://agura-ticketing-backend.onrender.com",
+      "EXPO_PUBLIC_GOOGLE_CLIENT_ID": "547461485128-k5brbqjl0klrkn331plsjb5rjmuvqja0.apps.googleusercontent.com"
+    }
+  }
+}
