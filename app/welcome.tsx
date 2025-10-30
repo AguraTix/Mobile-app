@@ -3,7 +3,7 @@ import Button from '@/components/Button';
 import Carousel from '@/components/Carousel';
 import Images from '@/constants/images';
 import { Image } from 'expo-image';
-import { useRouter } from 'expo-router';
+import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
@@ -11,7 +11,6 @@ import { Dimensions, StyleSheet, Text, View } from 'react-native';
 const { height } = Dimensions.get('window');
 
 export default function WelcomeScreen() {
-    const router = useRouter();
 
     const handleLogin = () => {
         router.push('/auth/login');
