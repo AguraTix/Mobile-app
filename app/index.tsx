@@ -1,6 +1,6 @@
 import { useAuthStore } from '@/store/auth-store';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
+import { router } from 'expo-router';
 import { useEffect } from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import 'react-native-gesture-handler';
@@ -8,7 +8,6 @@ import 'react-native-gesture-handler';
 const { height, width } = Dimensions.get('window');
 
 export default function SplashScreen() {
-    const router = useRouter();
     const { isAuthenticated } = useAuthStore();
 
     useEffect(() => {

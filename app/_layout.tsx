@@ -76,7 +76,6 @@ export default function RootLayout() {
         <Stack.Screen name="events/user" />
         <Stack.Screen name="event" />
         <Stack.Screen name="notifications" />
-        <Stack.Screen name="modal" />
         </Stack>
       </ToastProvider>
     </>

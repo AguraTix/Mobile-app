@@ -261,22 +261,9 @@ export interface SectionAvailability {
 }
 
 // API Response Types
-export interface ApiResponse<T> {
-  success: boolean;
-  data: T;
-  message?: string;
-  errors?: string[];
-}
 
-export interface PaginatedResponse<T> {
-  data: T[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    total_pages: number;
-  };
-}
+
+
 
 // Admin Types
 export interface Admin extends BaseEntity {
