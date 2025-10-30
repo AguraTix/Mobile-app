@@ -3,7 +3,7 @@ import Button from '@/components/Button';
 import Carousel from '@/components/Carousel';
 import Images from '@/constants/images';
 import { Image } from 'expo-image';
-import { useRouter } from 'expo-router';
+import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
@@ -11,7 +11,6 @@ import { Dimensions, StyleSheet, Text, View } from 'react-native';
 const { height } = Dimensions.get('window');
 
 export default function WelcomeScreen() {
-    const router = useRouter();
 
     const handleLogin = () => {
         router.push('/auth/login');
@@ -23,7 +22,7 @@ export default function WelcomeScreen() {
 
     return (
         <AuthGuard requireGuest={true} redirectTo="/(tabs)">
-            <View style={styles.container}>
+            <View style={styles.container} >
                 <StatusBar style="light" />
                 <View style={styles.innerContent}>
                     <View style={styles.carouselContainer}>
