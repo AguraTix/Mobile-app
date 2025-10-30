@@ -7,6 +7,7 @@ import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import '../global.css'
 
 export default function RootLayout() {
   const [isSplashVisible, setIsSplashVisible] = React.useState(true);

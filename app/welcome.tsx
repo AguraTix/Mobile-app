@@ -22,7 +22,7 @@ export default function WelcomeScreen() {
 
     return (
         <AuthGuard requireGuest={true} redirectTo="/(tabs)">
-            <View style={styles.container}>
+            <View style={styles.container} >
                 <StatusBar style="light" />
                 <View style={styles.innerContent}>
                     <View style={styles.carouselContainer}>
