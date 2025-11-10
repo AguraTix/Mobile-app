@@ -63,8 +63,9 @@ export const useAuthStore = create<AuthStore>()(
                 const mappedUser: User = {
                   id: user.user_id,
                   email: user.email,
-                  username: user.name,
-                  phone: user.phone_number,
+                  name: user.name,
+                  phone_number: user.phone_number,
+                  role: user.role,
                 };
                 set({ user: mappedUser, isAuthenticated: true, isLoading: false });
               } else {

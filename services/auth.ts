@@ -9,7 +9,7 @@ export class AuthService {
 
     async signup(data: SignupRequest): Promise<ApiResponse<AuthResponse>> {
         return await client.post<AuthResponse>(API_ENDPOINTS.AUTH.SIGNUP, data)
-    }
+    }    
 
     async googleRegister(data: GoogleAuthRequest): Promise<ApiResponse<AuthResponse>> {
         return await client.post<AuthResponse>(API_ENDPOINTS.AUTH.GOOGLE_REGISTER, data)

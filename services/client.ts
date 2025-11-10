@@ -113,18 +113,18 @@ class ApiClient {
         }
     }
 
-    async get<T>(endpoint: string, params?: Record<string, unknown>): Promise<ApiResponse<T>> {
+    async get<T>(endpoint: string, params?: Record<string, unknown>): Promise<T> {
         try {
-            const response = await this.axiosInstance.get<ApiResponse<T>>(endpoint, { params })
+            const response = await this.axiosInstance.get<T>(endpoint, { params })
             return response.data;
         } catch (error) {
             throw error;
         }
     }
 
-    async post<T>(endpoint: string, data?: unknown): Promise<ApiResponse<T>> {
+    async post<T>(endpoint: string, data?: unknown): Promise<T> {
         try {
-            const response = await this.axiosInstance.post<ApiResponse<T>>(endpoint, data);
+            const response = await this.axiosInstance.post<T>(endpoint, data);
             return response.data;
         } catch (error) {
 
@@ -132,9 +132,9 @@ class ApiClient {
         }
     }
 
-    async put<T>(endpoint: string, data?: unknown): Promise<ApiResponse<T>> {
+    async put<T>(endpoint: string, data?: unknown): Promise<T> {
         try {
-            const response = await this.axiosInstance.put<ApiResponse<T>>(endpoint, data);
+            const response = await this.axiosInstance.put<T>(endpoint, data);
             return response.data;
         } catch (error) {
 

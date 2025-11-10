@@ -66,6 +66,48 @@ export const API_ENDPOINTS = {
   },
   UPLOAD: {
     BASE: '/upload/image'
+  },
+  
+  USERS: {
+    REGISTER: '/users/register',
+    REGISTER_ADMIN: '/users/register-admin',
+    LOGIN: '/users/login',
+    UPDATE_ROLE: (id: string) => `/users/${id}/role`
+  },
+  
+  EVENTS: {
+    ALL: '/events',
+    RECENT: '/events/recent',
+    BY_ID: (id: string) => `/events/${id}`,
+    BY_VENUE: (venueId: string) => `/events/venue/${venueId}`,
+    IMAGES: (id: string) => `/events/${id}/images`
+  },
+  
+  FOODS: {
+    ALL: '/foods',
+    BY_ID: (id: string) => `/foods/${id}`,
+    BY_EVENT: (eventId: string) => `/foods/event/${eventId}`
+  },
+  
+  TICKETS: {
+    AVAILABLE: (eventId: string) => `/tickets/event/${eventId}/available`,
+    BOOK: (ticketId: string) => `/tickets/${ticketId}/book`,
+    MY_TICKETS: '/tickets/my-tickets',
+    CANCEL: (ticketId: string) => `/tickets/${ticketId}/cancel`,
+    ADMIN_BOOKED: '/tickets/admin/booked'
+  },
+  
+  VENUES: {
+    ALL: '/venues',
+    BY_ID: (id: string) => `/venues/${id}`
+  },
+  
+  ORDERS: {
+    ALL: '/orders',
+    MY_ORDERS: '/orders/my-orders',
+    HISTORY: '/orders/history',
+    BY_EVENT: (eventId: string) => `/orders/event/${eventId}`,
+    BY_ID: (id: string) => `/orders/${id}`
   }
 }
 

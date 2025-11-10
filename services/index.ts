@@ -1,4 +1,10 @@
 export * from './auth'
 export * from './client'
 export * from './constants'
+export * from './user'
+export * from './event'
+export * from './food'
+export * from './ticket'
+export * from './venue'
+export * from './order'
 
