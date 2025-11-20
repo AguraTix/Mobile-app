@@ -1,5 +1,6 @@
 import { EventImage } from "./events";
 import { Ticket } from "./ticket";
+import { Event } from "./backend";
 
 export interface EventServiceResponse {
   message: string;

@@ -1,6 +1,7 @@
 import Button from "@/components/Button";
 import Header from "@/components/Header";
 import Colors from "@/constants/Colors";
+import { useAuth } from "@/contexts";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import {
@@ -35,23 +36,9 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const { width } = Dimensions.get("window");
-
-// Mock user data
-const mockUser = {
-  username: 'John Doe',
-  email: 'john@example.com',
-  phone: '+1 (555) 123-4567',
-  profileImage: 'https://via.placeholder.com/150?text=Profile',
-  bio: 'Event enthusiast and music lover',
-  ticketsBooked: 12,
-  eventsAttended: 8,
-};
-
 export default function ProfileScreen() {
   const router = useRouter();
-  const user = mockUser;
-
+  const { user } = useAuth()
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -247,7 +234,7 @@ export default function ProfileScreen() {
         <View style={styles.statItem}>
           <View style={[styles.statIcon, { backgroundColor: "#8b5cf615" }]}>
             <Star size={20} color="#8b5cf6" />
-      </View>
+          </View>
           <Text style={styles.statNumber}>{userStats.averageRating}</Text>
           <Text style={styles.statLabel}>Rating</Text>
         </View>
@@ -339,7 +326,7 @@ export default function ProfileScreen() {
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       <Header title="Profile" showBack />
-      
+
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -349,16 +336,16 @@ export default function ProfileScreen() {
         <Animated.View style={[styles.profileHeader, { opacity: fadeAnim }]}>
           <View style={styles.avatarContainer}>
             <Image
-              source={user?.profileImage ? { uri: user.profileImage } : require("@/assets/images/profile.jpg")}
+              source={require("@/assets/images/profile.jpg")}
               style={styles.avatar}
             />
             <TouchableOpacity style={styles.editAvatarButton} onPress={handleEditAvatar}>
               <Edit3 size={16} color="#ffffff" />
             </TouchableOpacity>
           </View>
-          
+
           <View style={styles.userNameContainer}>
-            <Text style={styles.userName}>{user?.username || "User Name"}</Text>
+            <Text style={styles.userName}>{user?.name || "User Name"}</Text>
             <TouchableOpacity
               style={styles.editProfileButton}
               onPress={() => router.push("/profile/setup")}
@@ -368,7 +355,7 @@ export default function ProfileScreen() {
             </TouchableOpacity>
           </View>
           <Text style={styles.userEmail}>{user?.email || "user@example.com"}</Text>
-          
+
           <View style={styles.userMeta}>
             <View style={styles.metaItem}>
               <MapPin size={16} color="rgba(255, 255, 255, 0.8)" />
@@ -378,7 +365,7 @@ export default function ProfileScreen() {
               <Star size={16} color="rgba(255, 255, 255, 0.8)" />
               <Text style={styles.metaText}>{userStats.averageRating} average rating</Text>
             </View>
-      </View>
+          </View>
 
           <Button
             title="Edit Profile"
@@ -426,7 +413,7 @@ export default function ProfileScreen() {
                 )}
                 <ChevronRight size={20} color={Colors.textSecondary} />
               </View>
-      </TouchableOpacity>
+            </TouchableOpacity>
           ))}
         </View>
 

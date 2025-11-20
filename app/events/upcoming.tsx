@@ -2,6 +2,7 @@ import DatabaseError from "@/components/DatabaseError";
 import EventCard from "@/components/EventCard";
 import Header from "@/components/Header";
 import Colors from "@/constants/Colors";
+import { useEvent } from "@/contexts";
 import { useRouter } from "expo-router";
 import React from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -9,15 +10,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function UpcomingEventsScreen() {
   const router = useRouter();
-  const { allEvents, fetchAll, loading, error } = useEventsStore();
+  const { events, fetchEvents, isLoading, error } = useEvent();
 
   React.useEffect(() => {
     // Load events on mount
-    fetchAll().catch(() => void 0);
-  }, [fetchAll]);
+    fetchEvents().catch(() => void 0);
+  }, [fetchEvents]);
 
   const handleRetry = () => {
-    fetchAll().catch(() => void 0);
+    fetchEvents().catch(() => void 0);
   };
 
   // Show database error if there's a database-related error
@@ -25,7 +26,7 @@ export default function UpcomingEventsScreen() {
     return (
       <SafeAreaView style={styles.container} edges={["top"]}>
         <Header title="Upcoming Events" showBack />
-        <DatabaseError 
+        <DatabaseError
           error={error}
           onRetry={handleRetry}
           showRetry={true}
@@ -59,31 +60,16 @@ export default function UpcomingEventsScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {loading
+        {isLoading
           ? null
-          : allEvents.map((event) => {
-              const cardEvent = {
-                id: event.id,
-                title: event.title,
-                location: event.location,
-                image:
-                  event.image ??
-                  (event.imageUrl ? { uri: event.imageUrl } : undefined),
-                price: event.price ?? 0,
-                booked: event.booked ?? false,
-                category: event.category,
-                date: event.date,
-              } as any;
-
-              return (
-                <TouchableOpacity
-                  key={event.id}
-                  onPress={() => router.push(`/event/${event.id}`)}
-                >
-                  <EventCard event={cardEvent} />
-                </TouchableOpacity>
-              );
-            })}
+          : events.map((event) => (
+            <TouchableOpacity
+              key={event.event_id}
+              onPress={() => router.push(`/event/${event.event_id}`)}
+            >
+              <EventCard event={event} />
+            </TouchableOpacity>
+          ))}
       </ScrollView>
     </SafeAreaView>
   );

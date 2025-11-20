@@ -1,25 +1,28 @@
+import Colors from "@/constants/Colors";
+import { useOrder } from "@/contexts/OrderContext";
+import { usePayment } from "@/contexts/PaymentContext";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { ArrowRight, CheckCircle, Download, Home, Share2, Ticket } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
   ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { StatusBar } from "expo-status-bar";
-import { CheckCircle, Download, Share2, Home, Ticket, ArrowRight } from "lucide-react-native";
-import Colors from "@/constants/Colors";
-import { useRouter, useLocalSearchParams } from "expo-router";
 
 export default function PaymentSuccessScreen() {
   const router = useRouter();
   const { orderId } = useLocalSearchParams<{ orderId?: string }>();
-  
-  const { getOrder, currentOrder, orderProcessing } = useOrdersStore();
-  const { currentPayment, paymentLoading } = usePaymentStore();
+  const { getOrder, currentOrder, isLoading: orderLoading } = useOrder();
+  const { currentPayment, isLoading: paymentLoading } = usePayment();
   const [isLoading, setIsLoading] = useState(true);
+
+  const orderProcessing = orderLoading || paymentLoading;
 
   useEffect(() => {
     if (orderId) {
@@ -121,21 +124,14 @@ export default function PaymentSuccessScreen() {
           <View style={styles.orderRow}>
             <Text style={styles.orderLabel}>Date:</Text>
             <Text style={styles.orderValue}>
-              {new Date(order.created_at).toLocaleDateString()}
+              {order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}
             </Text>
           </View>
           
           <View style={styles.orderRow}>
             <Text style={styles.orderLabel}>Status:</Text>
             <Text style={[styles.orderValue, styles.statusText]}>
-              {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-            </Text>
-          </View>
-          
-          <View style={styles.orderRow}>
-            <Text style={styles.orderLabel}>Total Amount:</Text>
-            <Text style={[styles.orderValue, styles.amountText]}>
-              {order.total.toLocaleString()} {order.currency}
+              {order.order_status.charAt(0).toUpperCase() + order.order_status.slice(1)}
             </Text>
           </View>
         </View>
@@ -153,14 +149,14 @@ export default function PaymentSuccessScreen() {
             <View style={styles.orderRow}>
               <Text style={styles.orderLabel}>Method:</Text>
               <Text style={styles.orderValue}>
-                {payment.payment_method.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                {payment.payment_method.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
               </Text>
             </View>
             
             <View style={styles.orderRow}>
               <Text style={styles.orderLabel}>Status:</Text>
               <Text style={[styles.orderValue, styles.statusText]}>
-                {payment.status.charAt(0).toUpperCase() + payment.status.slice(1)}
+                {payment.payment_status.charAt(0).toUpperCase() + payment.payment_status.slice(1)}
               </Text>
             </View>
           </View>
@@ -170,35 +166,25 @@ export default function PaymentSuccessScreen() {
         <View style={styles.ticketsContainer}>
           <Text style={styles.sectionTitle}>Tickets</Text>
           
-          {order.items.map((item, index) => (
-            <View key={index} style={styles.ticketItem}>
+          {order.quantity && (
+            <View style={styles.ticketItem}>
               <View style={styles.ticketHeader}>
                 <Ticket size={20} color={Colors.primary} />
-                <Text style={styles.ticketTitle}>
-                  {item.type === 'ticket' ? 'Event Ticket' : item.name}
-                </Text>
+                <Text style={styles.ticketTitle}>Food Order</Text>
               </View>
               
               <View style={styles.ticketDetails}>
                 <Text style={styles.ticketDetail}>
-                  Quantity: {item.quantity}
+                  Quantity: {order.quantity}
                 </Text>
-                <Text style={styles.ticketDetail}>
-                  Price: {item.price.toLocaleString()} {order.currency}
-                </Text>
-                {item.metadata?.holder_names && (
+                {order.special_instructions && (
                   <Text style={styles.ticketDetail}>
-                    Names: {item.metadata.holder_names.join(', ')}
-                  </Text>
-                )}
-                {item.metadata?.seats && (
-                  <Text style={styles.ticketDetail}>
-                    Seats: {item.metadata.seats.join(', ')}
+                    Instructions: {order.special_instructions}
                   </Text>
                 )}
               </View>
             </View>
-          ))}
+          )}
         </View>
 
         {/* Next Steps */}

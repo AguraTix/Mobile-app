@@ -1,4 +1,4 @@
-import { Event, EventImage, TicketType } from '@/types/events';
+import { Event, EventCreateInput, EventImage, EventUpdateInput, TicketType } from '@/types/backend';
 import { EventServiceResponse } from '@/types/response';
 import { client } from './client';
 import { API_ENDPOINTS } from './constants';
@@ -23,7 +23,7 @@ type PaginationParams = {
 };
 
 export const EventService = {
-  create: (data: EventData) => 
+  create: (data: EventCreateInput) => 
     client.post<EventServiceResponse>(API_ENDPOINTS.EVENTS.ALL, data),
   
   getAll: () => 
@@ -35,7 +35,7 @@ export const EventService = {
   getById: (eventId: string) => 
     client.get<EventServiceResponse>(API_ENDPOINTS.EVENTS.BY_ID(eventId)),
   
-  update: (eventId: string, data: EventUpdateData) => 
+  update: (eventId: string, data: EventUpdateInput) => 
     client.put<EventServiceResponse>(API_ENDPOINTS.EVENTS.BY_ID(eventId), data),
   
   delete: (eventId: string) => 

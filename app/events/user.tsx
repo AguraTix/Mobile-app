@@ -1,5 +1,6 @@
 import Header from '@/components/Header';
 import Colors from '@/constants/Colors';
+import { useEvent } from '@/contexts';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
@@ -8,8 +9,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function AllEventsScreen() {
   const router = useRouter();
-  const { userEvents } = useEventsStore();
-  
+  const { events } = useEvent();
+
   // Filter state
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'booked'>('all');
 
@@ -25,9 +26,9 @@ export default function AllEventsScreen() {
       booked: false,
     },
     {
-      id: '2', 
+      id: '2',
       title: 'Baba Experience',
-      category: 'Vvip Tickets', 
+      category: 'Vvip Tickets',
       price: '8,000 RWF',
       quantity: 2,
       image: require('@/assets/images/m2.png'),
@@ -35,9 +36,9 @@ export default function AllEventsScreen() {
     },
     {
       id: '3',
-      title: 'Baba Experience', 
+      title: 'Baba Experience',
       category: 'Vvip Tickets',
-      price: '8,000 RWF', 
+      price: '8,000 RWF',
       quantity: 2,
       image: require('@/assets/images/m1.png'),
       booked: false,
@@ -47,7 +48,7 @@ export default function AllEventsScreen() {
       title: 'Baba Experience',
       category: 'Vvip Tickets',
       price: '8,000 RWF',
-      quantity: 2, 
+      quantity: 2,
       image: require('@/assets/images/m2.png'),
       booked: false,
     },
@@ -63,11 +64,11 @@ export default function AllEventsScreen() {
   ];
 
   // Use mock data or backend data
-  const eventsData = userEvents.length > 0 ? userEvents : mockEvents;
-  
+  const eventsData = events.length > 0 ? events : mockEvents;
+
   // Filter logic
   const allEvents = eventsData;
-  const bookedEvents = eventsData.filter(e => e.booked);
+  const bookedEvents = eventsData.filter((e: any) => e.booked);
   const eventsToShow = selectedFilter === 'all' ? allEvents : bookedEvents;
 
   // Empty state component
@@ -80,15 +81,15 @@ export default function AllEventsScreen() {
   // Event card component matching the design
   const EventCard = ({ event }: { event: any }) => (
     <View style={styles.eventCard}>
-      <Image 
-        source={typeof event.image === 'string' ? { uri: event.image } : event.image} 
-        style={styles.eventImage} 
+      <Image
+        source={typeof event.image === 'string' ? { uri: event.image } : event.image}
+        style={styles.eventImage}
       />
       <View style={styles.eventOverlay}>
         <Text style={styles.eventTitle}>{event.title}</Text>
         <Text style={styles.eventCategory}>{event.category || 'Vvip Tickets'}</Text>
         <Text style={styles.eventPrice}>{event.price || '8,000 RWF'}</Text>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.viewTicketButton}
           onPress={() => router.push(`/event/${event.id}`)}
         >
@@ -110,7 +111,7 @@ export default function AllEventsScreen() {
         showSearch
         onSearchPress={() => router.push("/(tabs)")}
       />
-      
+
       <View style={styles.content}>
         <View style={styles.titleRow}>
           <Text style={styles.screenTitle}>Available Events</Text>
@@ -137,22 +138,22 @@ export default function AllEventsScreen() {
             </Text>
           </TouchableOpacity>
         </View>
-        
-        <ScrollView 
-          style={styles.scrollView} 
-          contentContainerStyle={styles.scrollContent} 
+
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
           {eventsToShow.length === 0 ? (
-            <EmptyState 
-              message={selectedFilter === 'all' 
-                ? "No events available at the moment" 
+            <EmptyState
+              message={selectedFilter === 'all'
+                ? "No events available at the moment"
                 : "You haven't booked any events yet"
-              } 
+              }
             />
           ) : (
-            eventsToShow.map((event) => (
-              <EventCard key={event.id} event={event} />
+            eventsToShow.map((event: any) => (
+              <EventCard key={event.id || event.event_id} event={event} />
             ))
           )}
         </ScrollView>

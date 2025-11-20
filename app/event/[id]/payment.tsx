@@ -29,7 +29,6 @@ export default function PaymentScreen() {
     price?: string;
   }>();
 
-  const mockUser = { id: '1', email: 'user@example.com' };
   const availableMethods: PaymentMethod[] = ['mobile_money', 'card'];
 
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethod>('mobile_money');

@@ -1,5 +1,5 @@
 import Colors from "@/constants/Colors";
-import { Event } from "@/store/events-store";
+import { Event } from "@/types/backend";
 import { useRouter } from "expo-router";
 import { Calendar, MapPin } from "lucide-react-native";
 import React, { memo } from "react";
@@ -13,18 +13,22 @@ type Props = {
 const ListEventCardBase = ({ event, isBooked }: Props) => {
   const router = useRouter();
 
+  const getImageSource = () => {
+    if (event.image_url) {
+      return { uri: event.image_url };
+    }
+    if (event.event_images && event.event_images.length > 0) {
+      return { uri: event.event_images[0].path };
+    }
+    return require('../../assets/images/m1.png');
+  };
+
   return (
     <View style={styles.listEventCard}>
-      {!!event.image && (
-        <Image
-          source={
-            typeof event.image === "string"
-              ? { uri: event.image }
-              : (event.image as any)
-          }
-          style={styles.listEventImage}
-        />
-      )}
+      <Image
+        source={getImageSource()}
+        style={styles.listEventImage}
+      />
       <View style={styles.listEventInfo}>
         <View>
           <Text style={styles.listEventTitle} numberOfLines={1}>
@@ -34,16 +38,18 @@ const ListEventCardBase = ({ event, isBooked }: Props) => {
             <Calendar size={14} color={Colors.textSecondary} />
             <Text style={styles.listEventMetaText}>{event.date}</Text>
           </View>
-          <View style={styles.listEventMeta}>
-            <MapPin size={14} color={Colors.textSecondary} />
-            <Text style={styles.listEventMetaText}>{event.location}</Text>
-          </View>
+          {event.Venue && (
+            <View style={styles.listEventMeta}>
+              <MapPin size={14} color={Colors.textSecondary} />
+              <Text style={styles.listEventMetaText}>{event.Venue.location}</Text>
+            </View>
+          )}
         </View>
         <TouchableOpacity
           style={styles.listDetailsButton}
           onPress={() =>
             router.push({
-              pathname: `/event/${event.id}` as any,
+              pathname: `/event/${event.event_id}` as any,
               params: { booked: isBooked ? "1" : undefined },
             })
           }

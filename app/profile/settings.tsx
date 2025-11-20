@@ -1,4 +1,5 @@
 import Colors from '@/constants/Colors';
+import { useAuth } from '@/contexts';
 import { useRouter } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
 import React from 'react';
@@ -12,12 +13,12 @@ interface SettingsOptionProps {
   destructive?: boolean;
 }
 
-const SettingsOption: React.FC<SettingsOptionProps> = ({ 
-  title, 
-  subtitle, 
-  onPress, 
+const SettingsOption: React.FC<SettingsOptionProps> = ({
+  title,
+  subtitle,
+  onPress,
   showChevron = true,
-  destructive = false 
+  destructive = false
 }) => (
   <TouchableOpacity style={styles.optionItem} onPress={onPress}>
     <View style={styles.optionContent}>
@@ -32,7 +33,7 @@ const SettingsOption: React.FC<SettingsOptionProps> = ({
 
 export default function SettingsScreen() {
   const router = useRouter();
-  const { logout } = useAuthStore();
+  const { logout } = useAuth();
 
   const handleLogout = () => {
     logout();
@@ -53,7 +54,7 @@ export default function SettingsScreen() {
       <View style={styles.content}>
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>General</Text>
-          
+
           <SettingsOption
             title="Notifications"
             onPress={() => router.push('/profile/notifications')}
@@ -62,7 +63,7 @@ export default function SettingsScreen() {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Security</Text>
-          
+
           <SettingsOption
             title="Privacy Policy"
             subtitle="Choose what data you share with us"

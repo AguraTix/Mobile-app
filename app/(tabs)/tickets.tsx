@@ -2,6 +2,8 @@ import Button from "@/components/Button";
 import Header from "@/components/Header";
 import Skeleton from "@/components/Skeleton";
 import Colors from "@/constants/Colors";
+import { useTicket } from "@/contexts";
+import { TicketStatus } from "@/types/backend";
 import { useRouter } from "expo-router";
 import {
     ArrowRight,
@@ -22,20 +24,13 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-// Mock tickets data
-const mockTickets = [
-  { id: '1', eventTitle: 'Summer Music Festival', eventDate: new Date(Date.now() + 7*24*60*60*1000).toISOString(), location: 'Central Park', status: 'active', ticketNumber: 'TKT-001-2024', seatNumber: 'A-12' },
-  { id: '2', eventTitle: 'Tech Conference 2024', eventDate: new Date(Date.now() + 14*24*60*60*1000).toISOString(), location: 'Convention Center', status: 'active', ticketNumber: 'TKT-002-2024', seatNumber: 'B-05' },
-  { id: '3', eventTitle: 'Past Concert', eventDate: new Date(Date.now() - 30*24*60*60*1000).toISOString(), location: 'Arena', status: 'expired', ticketNumber: 'TKT-003-2024', seatNumber: 'C-10' },
-];
-
 export default function TicketsScreen() {
   const router = useRouter();
-  const userTickets = mockTickets;
+  const {myTickets:userTickets}=useTicket()
   const loading = false;
 
-  const activeTickets = userTickets.filter(ticket => ticket.status === "active");
-  const expiredTickets = userTickets.filter(ticket => ticket.status === "expired");
+  const activeTickets = userTickets.filter(ticket => ticket.status === TicketStatus.AVAILABLE);
+  const expiredTickets = userTickets.filter(ticket => ticket.status === TicketStatus.CANCELLED);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);

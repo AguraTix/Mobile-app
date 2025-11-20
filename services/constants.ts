@@ -100,6 +100,17 @@ export const API_ENDPOINTS = {
   },
 
   // ============================================================================
+  // PAYMENT ENDPOINTS
+  // ============================================================================
+  PAYMENTS: {
+    ALL: '/payments',
+    CREATE: '/payments',
+    VERIFY: (paymentId: string) => `/payments/${paymentId}/verify`,
+    BY_ID: (paymentId: string) => `/payments/${paymentId}`,
+    HISTORY: '/payments/history',
+  },
+
+  // ============================================================================
   // UPLOAD ENDPOINTS
   // ============================================================================
   UPLOAD: {

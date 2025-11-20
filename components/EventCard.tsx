@@ -1,10 +1,10 @@
 import Colors from "@/constants/Colors";
+import { Event } from "@/types/backend";
 import { Bookmark, Calendar, Clock, Heart, MapPin, Share2, Star, Users } from "lucide-react-native";
 import React, { useRef, useState } from "react";
 import {
   ActivityIndicator,
   Animated,
-  Dimensions,
   Image,
   StyleSheet,
   Text,
@@ -13,21 +13,7 @@ import {
 } from "react-native";
 
 interface EventCardProps {
-  event: {
-    id: string;
-    title: string;
-    location?: string;
-    image?: any;
-    price?: number;
-    booked?: boolean;
-    category?: string;
-    date?: string;
-    time?: string;
-    attendees?: number;
-    rating?: number;
-    description?: string;
-    organizer?: string;
-  };
+  event: Event
   onPress?: () => void;
   onFavorite?: () => void;
   onShare?: () => void;
@@ -38,11 +24,11 @@ interface EventCardProps {
   isBookmarked?: boolean;
 }
 
-const { width } = Dimensions.get('window');
 
-export default function EventCard({ 
-  event, 
-  onPress, 
+
+export default function EventCard({
+  event,
+  onPress,
   onFavorite,
   onShare,
   onBookmark,
@@ -64,7 +50,7 @@ export default function EventCard({
         useNativeDriver: true,
       }).start();
     }
-  }, [loading]);
+  }, [loading, opacityAnim]);
 
   const handlePressIn = () => {
     Animated.spring(scaleAnim, {
@@ -100,33 +86,23 @@ export default function EventCard({
     });
   };
 
-  const getCategoryColor = (category: string) => {
-    const colors: { [key: string]: string } = {
-      music: "#e6007e",
-      sports: "#3b82f6",
-      food: "#f59e0b",
-      tech: "#10b981",
-      art: "#8b5cf6",
-      business: "#6b7280",
-      entertainment: "#ec4899",
-      education: "#06b6d4",
-    };
-    return colors[category?.toLowerCase()] || Colors.primary;
+  const getImageSource = () => {
+    if (event.image_url) {
+      return { uri: event.image_url };
+    }
+    if (event.event_images && event.event_images.length > 0) {
+      return { uri: event.event_images[0].path };
+    }
+    return require('../assets/images/m1.png');
   };
 
-  const getCategoryIcon = (category: string) => {
-    const icons: { [key: string]: string } = {
-      music: "🎵",
-      sports: "⚽",
-      food: "🍕",
-      tech: "💻",
-      art: "🎨",
-      business: "💼",
-      entertainment: "🎭",
-      education: "📚",
-    };
-    return icons[category?.toLowerCase()] || "🎪";
+  const getMinPrice = () => {
+    if (!event.tickets || event.tickets.length === 0) return null;
+    const prices = event.tickets.map(t => t.price);
+    return Math.min(...prices);
   };
+
+
 
   if (loading) {
     return <EventCardSkeleton variant={variant} />;
@@ -135,15 +111,15 @@ export default function EventCard({
   if (variant === "compact") {
     return (
       <Animated.View style={{ opacity: opacityAnim }}>
-        <TouchableOpacity 
-          style={styles.compactCard} 
-          onPress={onPress} 
+        <TouchableOpacity
+          style={styles.compactCard}
+          onPress={onPress}
           activeOpacity={0.8}
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}
         >
           <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-            <Image source={event.image} style={styles.compactImage} />
+            <Image source={getImageSource()} style={styles.compactImage} />
             <View style={styles.compactContent}>
               <Text style={styles.compactTitle} numberOfLines={1}>
                 {event.title}
@@ -155,11 +131,11 @@ export default function EventCard({
                     {formatDate(event.date || "")}
                   </Text>
                 </View>
-                {event.location && (
+                {event.Venue && (
                   <View style={styles.compactMetaItem}>
                     <MapPin size={14} color={Colors.textSecondary} />
                     <Text style={styles.compactMetaText} numberOfLines={1}>
-                      {event.location}
+                      {event.Venue.location}
                     </Text>
                   </View>
                 )}
@@ -172,19 +148,20 @@ export default function EventCard({
   }
 
   if (variant === "detailed") {
+    const minPrice = getMinPrice();
     return (
       <Animated.View style={[styles.detailedCard, { opacity: opacityAnim }]}>
-        <TouchableOpacity 
-          style={styles.detailedCardTouchable} 
-          onPress={onPress} 
+        <TouchableOpacity
+          style={styles.detailedCardTouchable}
+          onPress={onPress}
           activeOpacity={0.8}
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}
         >
           <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
             <View style={styles.detailedImageContainer}>
-              <Image 
-                source={event.image} 
+              <Image
+                source={getImageSource()}
                 style={styles.detailedImage}
                 onLoad={() => setImageLoaded(true)}
                 onError={() => setImageError(true)}
@@ -199,27 +176,20 @@ export default function EventCard({
                   <Text style={styles.imageErrorText}>Image unavailable</Text>
                 </View>
               )}
-              
-              {/* Category Badge */}
-              {event.category && (
-                <View style={[styles.categoryBadge, { backgroundColor: getCategoryColor(event.category) }]}>
-                  <Text style={styles.categoryBadgeText}>
-                    {getCategoryIcon(event.category)} {event.category}
-                  </Text>
-                </View>
-              )}
+
+
 
               {/* Action Buttons */}
               <View style={styles.actionButtonsContainer}>
                 {onFavorite && (
-                  <TouchableOpacity 
-                    style={[styles.actionButton, isFavorite && styles.actionButtonActive]} 
+                  <TouchableOpacity
+                    style={[styles.actionButton, isFavorite && styles.actionButtonActive]}
                     onPress={onFavorite}
                   >
-                    <Heart 
-                      size={20} 
-                      color={isFavorite ? '#ffffff' : Colors.text} 
-                      fill={isFavorite ? '#ffffff' : 'transparent'} 
+                    <Heart
+                      size={20}
+                      color={isFavorite ? '#ffffff' : Colors.text}
+                      fill={isFavorite ? '#ffffff' : 'transparent'}
                     />
                   </TouchableOpacity>
                 )}
@@ -229,24 +199,24 @@ export default function EventCard({
                   </TouchableOpacity>
                 )}
                 {onBookmark && (
-                  <TouchableOpacity 
-                    style={[styles.actionButton, isBookmarked && styles.actionButtonActive]} 
+                  <TouchableOpacity
+                    style={[styles.actionButton, isBookmarked && styles.actionButtonActive]}
                     onPress={onBookmark}
                   >
-                    <Bookmark 
-                      size={20} 
-                      color={isBookmarked ? '#ffffff' : Colors.text} 
-                      fill={isBookmarked ? '#ffffff' : 'transparent'} 
+                    <Bookmark
+                      size={20}
+                      color={isBookmarked ? '#ffffff' : Colors.text}
+                      fill={isBookmarked ? '#ffffff' : 'transparent'}
                     />
                   </TouchableOpacity>
                 )}
               </View>
 
               {/* Price Badge */}
-              {event.price !== undefined && (
+              {minPrice !== null && (
                 <View style={styles.priceBadge}>
                   <Text style={styles.priceBadgeText}>
-                    {event.price === 0 ? 'Free' : `$${event.price}`}
+                    {minPrice === 0 ? 'Free' : `$${minPrice}`}
                   </Text>
                 </View>
               )}
@@ -281,43 +251,23 @@ export default function EventCard({
                   </View>
                 </View>
 
-                {event.location && (
+                {event.Venue && (
                   <View style={styles.metaItem}>
                     <MapPin size={16} color={Colors.textSecondary} />
                     <Text style={styles.metaText} numberOfLines={1}>
-                      {event.location}
+                      {event.Venue.location}
                     </Text>
                   </View>
                 )}
 
-                {event.organizer && (
+                {event.artist_lineup && event.artist_lineup.length > 0 && (
                   <View style={styles.metaItem}>
                     <Users size={16} color={Colors.textSecondary} />
                     <Text style={styles.metaText} numberOfLines={1}>
-                      {event.organizer}
+                      {event.artist_lineup.join(', ')}
                     </Text>
                   </View>
                 )}
-
-                <View style={styles.bottomMeta}>
-                  {event.attendees && (
-                    <View style={styles.attendeesContainer}>
-                      <Users size={14} color={Colors.textSecondary} />
-                      <Text style={styles.attendeesText}>
-                        {event.attendees} attending
-                      </Text>
-                    </View>
-                  )}
-                  
-                  {event.rating && (
-                    <View style={styles.ratingContainer}>
-                      <Star size={14} color="#FFD700" fill="#FFD700" />
-                      <Text style={styles.ratingText}>
-                        {event.rating}
-                      </Text>
-                    </View>
-                  )}
-                </View>
               </View>
             </View>
           </Animated.View>
@@ -326,13 +276,14 @@ export default function EventCard({
     );
   }
 
+  const minPrice = getMinPrice();
   return (
     <Animated.View style={[styles.card, { opacity: opacityAnim }]}>
-      <TouchableOpacity 
+      <TouchableOpacity
         style={[
-          styles.cardTouchable, 
+          styles.cardTouchable,
           variant === "featured" && styles.featuredCard
-        ]} 
+        ]}
         onPress={onPress}
         activeOpacity={0.8}
         onPressIn={handlePressIn}
@@ -340,8 +291,8 @@ export default function EventCard({
       >
         <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
           <View style={styles.imageContainer}>
-            <Image 
-              source={event.image} 
+            <Image
+              source={getImageSource()}
               style={styles.image}
               onLoad={() => setImageLoaded(true)}
               onError={() => setImageError(true)}
@@ -356,42 +307,25 @@ export default function EventCard({
                 <Text style={styles.imageErrorText}>Image unavailable</Text>
               </View>
             )}
-            
+
             {variant === "featured" && (
               <View style={styles.featuredBadge}>
                 <Star size={16} color="#ffffff" fill="#ffffff" />
                 <Text style={styles.featuredText}>Featured</Text>
               </View>
             )}
-            
-            {event.category && (
-              <View style={[
-                styles.categoryBadge, 
-                { backgroundColor: getCategoryColor(event.category) }
-              ]}>
-                <Text style={styles.categoryText}>
-                  {getCategoryIcon(event.category)} {event.category}
-                </Text>
-              </View>
-            )}
-            
-            {event.booked && (
-              <View style={styles.bookedBadge}>
-                <Text style={styles.bookedText}>Booked</Text>
-              </View>
-            )}
 
             {/* Action Buttons for default variant */}
             <View style={styles.defaultActionButtons}>
               {onFavorite && (
-                <TouchableOpacity 
-                  style={[styles.defaultActionButton, isFavorite && styles.defaultActionButtonActive]} 
+                <TouchableOpacity
+                  style={[styles.defaultActionButton, isFavorite && styles.defaultActionButtonActive]}
                   onPress={onFavorite}
                 >
-                  <Heart 
-                    size={16} 
-                    color={isFavorite ? Colors.primary : Colors.text} 
-                    fill={isFavorite ? Colors.primary : 'transparent'} 
+                  <Heart
+                    size={16}
+                    color={isFavorite ? Colors.primary : Colors.text}
+                    fill={isFavorite ? Colors.primary : 'transparent'}
                   />
                 </TouchableOpacity>
               )}
@@ -402,7 +336,7 @@ export default function EventCard({
             <Text style={styles.title} numberOfLines={2}>
               {event.title}
             </Text>
-            
+
             <View style={styles.metaContainer}>
               <View style={styles.metaItem}>
                 <Calendar size={18} color={Colors.textSecondary} />
@@ -410,49 +344,31 @@ export default function EventCard({
                   {formatDate(event.date || "")}
                 </Text>
               </View>
-              
-              {event.time && (
-                <View style={styles.metaItem}>
-                  <Clock size={18} color={Colors.textSecondary} />
-                  <Text style={styles.metaText}>
-                    {formatTime(event.date || "")}
-                  </Text>
-                </View>
-              )}
-              
-              {event.location && (
+
+              <View style={styles.metaItem}>
+                <Clock size={18} color={Colors.textSecondary} />
+                <Text style={styles.metaText}>
+                  {formatTime(event.date || "")}
+                </Text>
+              </View>
+
+              {event.Venue && (
                 <View style={styles.metaItem}>
                   <MapPin size={18} color={Colors.textSecondary} />
                   <Text style={styles.metaText} numberOfLines={1}>
-                    {event.location}
-                  </Text>
-                </View>
-              )}
-              
-              {event.attendees && (
-                <View style={styles.metaItem}>
-                  <Users size={18} color={Colors.textSecondary} />
-                  <Text style={styles.metaText}>
-                    {event.attendees} attending
+                    {event.Venue.location}
                   </Text>
                 </View>
               )}
             </View>
 
             <View style={styles.footer}>
-              {event.price !== undefined && (
+              {minPrice !== null && (
                 <View style={styles.priceContainer}>
-                  <Text style={styles.priceLabel}>Price:</Text>
+                  <Text style={styles.priceLabel}>From:</Text>
                   <Text style={styles.price}>
-                    ${event.price === 0 ? "Free" : event.price}
+                    {minPrice === 0 ? "Free" : `$${minPrice}`}
                   </Text>
-                </View>
-              )}
-              
-              {event.rating && (
-                <View style={styles.ratingContainer}>
-                  <Star size={16} color="#fbbf24" fill="#fbbf24" />
-                  <Text style={styles.rating}>{event.rating}</Text>
                 </View>
               )}
             </View>
@@ -780,7 +696,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   priceBadgeText: {
-    color: Colors.text,
+    color: '#ffffff',
     fontSize: 14,
     fontWeight: '600',
   },

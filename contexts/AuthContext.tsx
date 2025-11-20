@@ -1,7 +1,8 @@
 import { authService } from "@/services/auth";
 import { User, UserLoginInput, UserRegisterInput } from "@/types/backend";
+import { router } from "expo-router";
 import * as SecureStore from 'expo-secure-store';
-import { createContext, ReactNode, useCallback, useContext, useState } from "react";
+import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
 
 interface AuthContextType {
   user: User | null;
@@ -75,6 +76,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const clearError = useCallback(() => {
     setError(null);
+  }, []);
+
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const storedToken = await SecureStore.getItemAsync('auth_token');
+        const storedUser = await SecureStore.getItemAsync('user');
+        
+        if (storedToken && storedUser) {
+          setToken(storedToken);
+          setUser(JSON.parse(storedUser));
+          router.replace('/(tabs)');
+        }
+      } catch (err) {
+        console.error('Failed to load user data:', err);
+      }
+    };
+    
+    loadUserData();
   }, []);
 
   const value: AuthContextType = {

@@ -5,6 +5,7 @@ import Skeleton from "@/components/Skeleton";
 import Colors from "@/constants/Colors";
 import { radius, spacing } from "@/constants/spacing";
 import { typeScale } from "@/constants/typography";
+import { useAuth } from "@/contexts";
 import { useRouter } from "expo-router";
 import {
   Bell
@@ -24,25 +25,24 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get("window");
 
-// Mock data for UI-only mode
-const mockUser = { username: 'Guest' };
-const mockFeaturedEvents = [
-  { id: '1', title: 'Summer Music Festival', date: new Date(Date.now() + 7*24*60*60*1000).toISOString(), location: 'Central Park', category: 'music', isFeatured: true, imageUrl: 'https://via.placeholder.com/300x200?text=Music+Festival' },
-  { id: '2', title: 'Tech Conference 2024', date: new Date(Date.now() + 14*24*60*60*1000).toISOString(), location: 'Convention Center', category: 'tech', isFeatured: true, imageUrl: 'https://via.placeholder.com/300x200?text=Tech+Conference' },
+
+const mockFeaturedEvents: any[] = [
+  { id: '1', event_id: '1', title: 'Summer Music Festival', date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), venue_id: 'v1', admin_id: 'a1', description: 'Amazing summer music festival', artist_lineup: ['Artist 1', 'Artist 2'], image_url: 'https://via.placeholder.com/300x200?text=Music+Festival' },
+  { id: '2', event_id: '2', title: 'Tech Conference 2024', date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(), venue_id: 'v2', admin_id: 'a1', description: 'Tech conference', artist_lineup: [], image_url: 'https://via.placeholder.com/300x200?text=Tech+Conference' },
 ];
-const mockAllEvents = [
+const mockAllEvents: any[] = [
   ...mockFeaturedEvents,
-  { id: '3', title: 'Sports Championship', date: new Date(Date.now() + 3*24*60*60*1000).toISOString(), location: 'Stadium', category: 'sports', imageUrl: 'https://via.placeholder.com/300x200?text=Sports' },
-  { id: '4', title: 'Food Expo', date: new Date(Date.now() + 21*24*60*60*1000).toISOString(), location: 'Exhibition Hall', category: 'business', imageUrl: 'https://via.placeholder.com/300x200?text=Food+Expo' },
+  { id: '3', event_id: '3', title: 'Sports Championship', date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(), venue_id: 'v3', admin_id: 'a1', description: 'Sports event', artist_lineup: [], image_url: 'https://via.placeholder.com/300x200?text=Sports' },
+  { id: '4', event_id: '4', title: 'Food Expo', date: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString(), venue_id: 'v4', admin_id: 'a1', description: 'Food expo', artist_lineup: [], image_url: 'https://via.placeholder.com/300x200?text=Food+Expo' },
 ];
 
 export default function HomeScreen() {
   const router = useRouter();
-  const user = mockUser;
+  const { user } = useAuth()
   const featuredEvents = mockFeaturedEvents;
   const allEvents = mockAllEvents;
   const loading = false;
-  
+
   // Compute upcoming events from all events
   const upcomingEvents = useMemo(() => {
     const now = new Date();
@@ -84,7 +84,7 @@ export default function HomeScreen() {
     {
       id: "2",
       title: "Book Event",
-      icon: "📅", 
+      icon: "📅",
       color: "#3b82f6",
       onPress: () => router.push("/(tabs)/events-user")
     },
@@ -118,7 +118,7 @@ export default function HomeScreen() {
       // Add to recent searches
       const newRecentSearches = [query.trim(), ...recentSearches.filter(s => s !== query.trim())].slice(0, 5);
       setRecentSearches(newRecentSearches);
-      
+
       // For now, just update local state since we don't have a dedicated search screen
       console.log('Searching for:', query.trim());
     }
@@ -153,7 +153,7 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
-      <ScrollView 
+      <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
         refreshControl={
@@ -163,11 +163,11 @@ export default function HomeScreen() {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
-            <Text style={styles.greeting}>Hello, {user?.username || 'Guest'}! 👋</Text>
+            <Text style={styles.greeting}>Hello, {user?.name || 'Guest'}! 👋</Text>
             <Text style={styles.subtitle}>Discover amazing events today</Text>
           </View>
-          <TouchableOpacity 
-            style={styles.notificationButton} 
+          <TouchableOpacity
+            style={styles.notificationButton}
             onPress={handleNotificationPress}
             activeOpacity={0.8}
           >
@@ -191,8 +191,8 @@ export default function HomeScreen() {
         {/* Quick Actions */}
         <View style={styles.quickActionsContainer}>
           <Text style={styles.sectionTitle}>Quick Actions</Text>
-          <ScrollView 
-            horizontal 
+          <ScrollView
+            horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.quickActionsScroll}
           >
@@ -219,13 +219,13 @@ export default function HomeScreen() {
             onSeeAllPress={handleViewAllEvents}
           />
           {loading ? (
-            <View style={[styles.horizontalScroll, { flexDirection: 'row' }]}> 
+            <View style={[styles.horizontalScroll, { flexDirection: 'row' }]}>
               <View style={styles.featuredEventContainer}><Skeleton height={200} radius={16} /></View>
               <View style={styles.featuredEventContainer}><Skeleton height={200} radius={16} /></View>
             </View>
           ) : (
-            <ScrollView 
-              horizontal 
+            <ScrollView
+              horizontal
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={styles.horizontalScroll}
             >

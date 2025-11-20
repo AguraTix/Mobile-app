@@ -1,5 +1,6 @@
 import Header from '@/components/Header';
 import Colors from '@/constants/Colors';
+import { useAuth } from '@/contexts';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -16,12 +17,12 @@ interface ProfileOptionProps {
   destructive?: boolean;
 }
 
-const ProfileOption: React.FC<ProfileOptionProps> = ({ 
-  icon, 
-  title, 
-  onPress, 
+const ProfileOption: React.FC<ProfileOptionProps> = ({
+  icon,
+  title,
+  onPress,
   showChevron = true,
-  destructive = false 
+  destructive = false
 }) => (
   <TouchableOpacity style={styles.optionContainer} onPress={onPress} activeOpacity={0.7}>
     <View style={[styles.optionIconContainer, destructive && styles.destructiveIconContainer]}>
@@ -34,13 +35,12 @@ const ProfileOption: React.FC<ProfileOptionProps> = ({
 
 export default function ProfileWithLogoutScreen() {
   const router = useRouter();
-  const { user, logout } = useAuthStore();
+  const { user, logout } = useAuth();
 
   // Mock user data (would come from backend)
   const userData = {
-    name: user?.username || 'Donye Collins',
+    name: user?.name || 'Donye Collins',
     email: user?.email || 'iamcollinsdonye@gmail.com',
-    profileImage: user?.profileImage || require('@/assets/images/profile.jpg'),
   };
 
   const handleLogout = () => {
@@ -91,7 +91,7 @@ export default function ProfileWithLogoutScreen() {
 
         <View style={styles.profileCard}>
           <Image
-            source={userData.profileImage}
+            source={require('@/assets/images/profile.jpg')}
             style={styles.profileImage}
           />
           <View style={styles.profileInfo}>

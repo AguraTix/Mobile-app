@@ -415,6 +415,49 @@ export interface FoodGeneralOutput {
 }
 
 // ============================================================================
+// PAYMENT INTERFACES
+// ============================================================================
+
+export enum PaymentStatus {
+  PENDING = 'Pending',
+  COMPLETED = 'Completed',
+  FAILED = 'Failed',
+  CANCELLED = 'Cancelled'
+}
+
+export interface PaymentCreateInput {
+  order_id: string;
+  amount: number;
+  payment_method: string;
+  transaction_id?: string;
+}
+
+export interface Payment {
+  payment_id: string;
+  order_id: string;
+  user_id: string;
+  amount: number;
+  payment_method: string;
+  payment_status: PaymentStatus;
+  transaction_id?: string;
+  Order?: FoodOrder;
+  User?: User;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface PaymentCreateOutput {
+  message: string;
+  payment: Payment;
+}
+
+export interface PaymentVerifyOutput {
+  message: string;
+  payment: Payment;
+  verified: boolean;
+}
+
+// ============================================================================
 // FOOD ORDER INTERFACES
 // ============================================================================
 

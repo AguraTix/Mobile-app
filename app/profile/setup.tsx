@@ -1,5 +1,6 @@
 import Header from "@/components/Header";
 import Colors from "@/constants/Colors";
+import { useAuth } from "@/contexts";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
@@ -7,25 +8,24 @@ import { StatusBar } from "expo-status-bar";
 import { ChevronLeft } from "lucide-react-native";
 import React, { useState } from "react";
 import {
-    SafeAreaView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
-const mockUser = { username: 'John Doe', email: 'john@example.com', phone: '+1234567890', profileImage: null };
 
 export default function MyAccountScreen() {
   const router = useRouter();
-  const user = mockUser;
+  const { user } = useAuth()
 
-  const [name, setName] = useState(user?.username || "Donye Collins");
+  const [name, setName] = useState(user?.name || "Donye Collins");
   const [email, setEmail] = useState(user?.email || "Louis04real@gmail.com");
-  const [phoneNumber, setPhoneNumber] = useState(user?.phone || "+23408146186693");
+  const [phoneNumber, setPhoneNumber] = useState(user?.phone_number || "+23408146186693");
   const [profileImage, setProfileImage] = useState<string | null>(
-    user?.profileImage || null
+    null
   );
 
   const pickImage = async () => {
@@ -43,12 +43,13 @@ export default function MyAccountScreen() {
 
   const handleSave = async () => {
     try {
-      await updateUser({
-        username: name,
-        email: email,
-        phone: phoneNumber,
-        profileImage: profileImage || undefined,
-      });
+      // TODO: Implement user update when backend service is ready
+      // await updateUser({
+      //   username: name,
+      //   email: email,
+      //   phone: phoneNumber,
+      //   profileImage: profileImage || undefined,
+      // });
       router.back();
     } catch (error) {
       console.error('Failed to update profile:', error);
@@ -59,7 +60,7 @@ export default function MyAccountScreen() {
     <SafeAreaView style={styles.container}>
       <StatusBar style="light" />
       <Header showLogo showProfile showSearch />
-      
+
       <View style={styles.content}>
         <View style={styles.titleRow}>
           <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>

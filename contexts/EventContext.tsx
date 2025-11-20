@@ -30,7 +30,7 @@ export function EventProvider({ children }: { children: ReactNode }) {
     setError(null);
     try {
       const response = await EventService.getAll();
-      setEvents(response.events);
+      setEvents(response.events!);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to fetch events';
       setError(message);
@@ -44,7 +44,7 @@ export function EventProvider({ children }: { children: ReactNode }) {
     setError(null);
     try {
       const response = await EventService.getRecent({ limit, offset });
-      setEvents(response.events);
+      setEvents(response.events!);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to fetch recent events';
       setError(message);
@@ -58,7 +58,7 @@ export function EventProvider({ children }: { children: ReactNode }) {
     setError(null);
     try {
       const response = await EventService.getById(eventId);
-      setCurrentEvent(response.event);
+      setCurrentEvent(response.event!);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to fetch event';
       setError(message);
@@ -72,7 +72,7 @@ export function EventProvider({ children }: { children: ReactNode }) {
     setError(null);
     try {
       const response = await EventService.getByVenue(venueId);
-      setEvents(response.events);
+      setEvents(response.events!);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to fetch venue events';
       setError(message);
@@ -86,8 +86,11 @@ export function EventProvider({ children }: { children: ReactNode }) {
     setError(null);
     try {
       const response = await EventService.create(data);
-      setEvents((prev) => [...prev, response.event]);
-      return response.event;
+      if (response.event) {
+        setEvents((prev) => [...prev, response.event!]);
+        return response.event!;
+      }
+      throw new Error('Failed to create event: event is undefined');
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to create event';
       setError(message);
@@ -102,13 +105,16 @@ export function EventProvider({ children }: { children: ReactNode }) {
     setError(null);
     try {
       const response = await EventService.update(eventId, data);
-      setEvents((prev) =>
-        prev.map((e) => (e.event_id === eventId ? response.event : e))
-      );
-      if (currentEvent?.event_id === eventId) {
-        setCurrentEvent(response.event);
+      if (response.event) {
+        setEvents((prev) =>
+          prev.map((e) => (e.event_id === eventId ? response.event! : e))
+        );
+        if (currentEvent?.event_id === eventId) {
+          setCurrentEvent(response.event!);
+        }
+        return response.event!;
       }
-      return response.event;
+      throw new Error('Failed to update event: event is undefined');
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to update event';
       setError(message);

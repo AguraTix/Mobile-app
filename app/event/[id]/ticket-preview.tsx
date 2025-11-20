@@ -1,5 +1,6 @@
 import Header from '@/components/Header';
 import Colors from '@/constants/Colors';
+import { useEvent, useTicket } from '@/contexts';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
@@ -21,26 +22,26 @@ export default function TicketPreviewScreen() {
   if (Array.isArray(eventId)) eventId = eventId[0];
   let ticketId = params.ticketId;
   if (Array.isArray(ticketId)) ticketId = ticketId[0];
-  
-  const { userTickets } = useTicketsStore();
-  const { allEvents } = useEventsStore();
-  
+
+  const { myTickets } = useTicket();
+  const { events } = useEvent();
+
   // Find the specific ticket
-  const ticket = userTickets.find(t => t.ticket_id === ticketId || t.id === ticketId) || userTickets[0];
-  const event = allEvents.find(e => e.id === eventId);
-  
-  const ticketType = ticket?.category_name || 'Standard';
+  const ticket = myTickets.find(t => t.ticket_id === ticketId) || myTickets[0];
+  const event = events.find(e => e.event_id === eventId);
+
+  const ticketType = ticket?.sectionName || 'Standard';
   const amount = ticket?.price || 0;
-  const holderName = ticket?.holder_name || 'Guest';
+  const holderName = ticket?.User?.name || 'Guest';
 
   // Use real data from backend
   const eventName = event?.title || 'Event';
-  const venue = event?.location || 'Venue TBD';
-  const boughtAt = ticket?.purchase_date ? new Date(ticket.purchase_date).toLocaleTimeString() : 'N/A';
+  const venue = event?.Venue?.location || 'Venue TBD';
+  const boughtAt = ticket?.purchaseDate ? new Date(ticket.purchaseDate).toLocaleTimeString() : 'N/A';
   const date = event?.date ? new Date(event.date).toLocaleDateString() : 'TBD';
 
   // Generate a unique QR code value from ticket data
-  const qrValue = ticket?.qr_code || JSON.stringify({
+  const qrValue = ticket?.qrCodeUrl || JSON.stringify({
     ticketId: ticket?.ticket_id || ticketId,
     eventId,
     holderName,
@@ -119,10 +120,10 @@ export default function TicketPreviewScreen() {
           </View>
           <View style={styles.ticketInfo}>
             <Text style={styles.eventName}>{eventName}</Text>
-                                    <Text style={styles.ticketType}>{ticketType}</Text>
-                        <Text style={styles.ticketType}>Holder: {holderName}</Text>
-                        <Text style={styles.venue}>{venue}</Text>
-                        <Text style={styles.amount}>Amount: {amount.toLocaleString()} RWF</Text>
+            <Text style={styles.ticketType}>{ticketType}</Text>
+            <Text style={styles.ticketType}>Holder: {holderName}</Text>
+            <Text style={styles.venue}>{venue}</Text>
+            <Text style={styles.amount}>Amount: {amount.toLocaleString()} RWF</Text>
             <Text style={styles.meta}>Bought at: {boughtAt}</Text>
             <Text style={styles.meta}>Date: {date}</Text>
           </View>
@@ -200,8 +201,8 @@ const styles = StyleSheet.create({
   },
   ticketInfo: {
     alignItems: 'flex-start',
-      width: '100%',
-      alignSelf: 'center',
+    width: '100%',
+    alignSelf: 'center',
     marginTop: 6,
   },
   eventName: {
