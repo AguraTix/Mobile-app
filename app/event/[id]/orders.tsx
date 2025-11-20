@@ -1,75 +1,60 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import Header from '@/components/Header';
+import Colors from '@/constants/Colors';
+import { useOrder } from '@/contexts';
+import { FoodOrder } from '@/types/backend';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import Colors from '@/constants/Colors';
-import Header from '@/components/Header';
+import React, { useEffect, useState } from 'react';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function EventOrdersScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const [selectedTab, setSelectedTab] = useState<'menu' | 'orders'>('orders');
+  const { myOrders, fetchOrdersByEvent, isLoading } = useOrder();
+  const [orders, setOrders] = useState<FoodOrder[]>([]);
 
-  // Mock orders data with realistic Rwanda pricing
-  const orders = [
-    {
-      id: '1',
-      name: 'Cheese Burger',
-      description: 'Beef burger with fries',
-      price: 3500,
-      quantity: 1,
-      image: require('@/assets/images/m1.png'),
-      status: 'completed',
-    },
-    {
-      id: '2',
-      name: 'Soft Drinks',
-      description: 'Coca-Cola and Fanta',
-      price: 800,
-      quantity: 2,
-      image: require('@/assets/images/m2.png'),
-      status: 'completed',
-    },
-    {
-      id: '3',
-      name: 'Mutzig Beer',
-      description: 'Local premium beer',
-      price: 1200,
-      quantity: 1,
-      image: require('@/assets/images/m1.png'),
-      status: 'completed',
-    },
-    {
-      id: '4',
-      name: 'Chicken & Rice',
-      description: 'Grilled chicken with pilau',
-      price: 4500,
-      quantity: 1,
-      image: require('@/assets/images/m2.png'),
-      status: 'completed',
-    },
-  ];
+  useEffect(() => {
+    if (id) {
+      fetchOrdersByEvent(id)
+        .then(setOrders)
+        .catch((error) => {
+          console.error('Failed to fetch orders:', error);
+          // Fallback to myOrders if event-specific fetch fails
+          setOrders(myOrders);
+        });
+    } else {
+      setOrders(myOrders);
+    }
+  }, [id, myOrders]);
 
-  const handleOrderAgain = (order: any) => {
+  const handleOrderAgain = (order: FoodOrder) => {
     // Navigate back to menu or reorder
     router.push(`/event/${id}/menu`);
   };
 
   // Order Item Component
-  const OrderItem = ({ order }: { order: any }) => (
+  const OrderItem = ({ order }: { order: FoodOrder }) => (
     <View style={styles.orderItem}>
       <View style={styles.orderImageContainer}>
-        <Image source={order.image} style={styles.orderImage} />
+        <Image
+          source={require('@/assets/images/m1.png')}
+          style={styles.orderImage}
+        />
       </View>
       <View style={styles.orderContent}>
-        <Text style={styles.orderName}>{order.name}</Text>
-        <Text style={styles.orderDescription}>{order.description}</Text>
-        <Text style={styles.orderPrice}>${order.price.toFixed(2)}</Text>
+        <Text style={styles.orderName}>Food Order</Text>
+        <Text style={styles.orderDescription}>
+          {order.special_instructions || 'No special instructions'}
+        </Text>
+        <Text style={styles.orderPrice}>
+          Qty: {order.quantity}
+        </Text>
       </View>
       <View style={styles.orderActions}>
         <Text style={styles.orderQuantity}>{order.quantity}</Text>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.orderAgainButton}
           onPress={() => handleOrderAgain(order)}
         >
@@ -89,9 +74,9 @@ export default function EventOrdersScreen() {
         showLogo
         showProfile
         showSearch
-        onSearchPress={() => {}}
+        onSearchPress={() => { }}
       />
-      
+
       <View style={styles.content}>
         <View style={styles.titleRow}>
           <Text style={styles.screenTitle}>Event Orders</Text>
@@ -124,18 +109,23 @@ export default function EventOrdersScreen() {
         </View>
 
         {/* Orders List */}
-        <ScrollView 
+        <ScrollView
           style={styles.ordersList}
           contentContainerStyle={styles.ordersListContent}
           showsVerticalScrollIndicator={false}
         >
-          {orders.length === 0 ? (
+          {isLoading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color={Colors.primary} />
+              <Text style={styles.loadingText}>Loading orders...</Text>
+            </View>
+          ) : orders.length === 0 ? (
             <View style={styles.emptyState}>
               <Text style={styles.emptyStateText}>No orders yet</Text>
             </View>
           ) : (
             orders.map((order) => (
-              <OrderItem key={order.id} order={order} />
+              <OrderItem key={order.order_id} order={order} />
             ))
           )}
         </ScrollView>
@@ -286,5 +276,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
     lineHeight: 24,
+  },
+  loadingContainer: {
+    paddingVertical: 64,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingText: {
+    color: Colors.textSecondary,
+    fontSize: 16,
+    marginTop: 16,
   },
 });

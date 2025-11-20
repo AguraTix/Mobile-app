@@ -5,12 +5,12 @@ import Skeleton from "@/components/Skeleton";
 import Colors from "@/constants/Colors";
 import { radius, spacing } from "@/constants/spacing";
 import { typeScale } from "@/constants/typography";
-import { useAuth } from "@/contexts";
+import { useAuth, useEvent } from "@/contexts";
 import { useRouter } from "expo-router";
 import {
   Bell
 } from "lucide-react-native";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Alert,
   Dimensions,
@@ -39,39 +39,47 @@ const mockAllEvents: any[] = [
 export default function HomeScreen() {
   const router = useRouter();
   const { user } = useAuth()
-  const featuredEvents = mockFeaturedEvents;
-  const allEvents = mockAllEvents;
-  const loading = false;
-
-  // Compute upcoming events from all events
-  const upcomingEvents = useMemo(() => {
-    const now = new Date();
-    return allEvents
-      .filter(event => new Date(event.date) > now)
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-      .slice(0, 6);
-  }, [allEvents]);
-
-  // Helper function to check if a date is today
-  const isToday = (date: Date): boolean => {
-    const today = new Date();
-    return date.toDateString() === today.toDateString();
-  };
-
-  const [searchQuery, setSearchQuery] = useState("");
-  const [refreshing, setRefreshing] = useState(false);
-  const [recentSearches, setRecentSearches] = useState<string[]>([
+  const { events, fetchEvents, isLoading } = useEvent(); // Modified line
+  const [searchQuery, setSearchQuery] = useState(""); // Added line
+  const [isSearchFocused, setIsSearchFocused] = useState(false); // Added line
+  const [selectedCategory, setSelectedCategory] = useState("All"); // Added line
+  const [refreshing, setRefreshing] = useState(false); // Added line
+  const [recentSearches, setRecentSearches] = useState<string[]>([ // Added line
     "music festival",
     "tech conference",
     "food expo",
     "art exhibition"
   ]);
-  const [popularSearches, setPopularSearches] = useState<string[]>([
+  const [popularSearches, setPopularSearches] = useState<string[]>([ // Added line
     "summer events",
     "live music",
     "sports games",
     "business networking"
   ]);
+
+  useEffect(() => { // Added useEffect
+    fetchEvents().catch(console.error);
+  }, []);
+
+  // Use real events from context, fallback to mock if empty
+  const featuredEvents = events.length > 0 ? events.slice(0, 2) : mockFeaturedEvents; // Modified line
+  const allEvents = events.length > 0 ? events : mockAllEvents; // Modified line
+  const loading = isLoading; // Modified line
+
+  // Compute upcoming events from all events
+  const upcomingEvents = useMemo(() => {
+    const now = new Date();
+    return allEvents
+      .filter((event: any) => new Date(event.date) > now) // Modified line
+      .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime()) // Modified line
+      .slice(0, 6);
+  }, [allEvents]);
+
+  // Helper function to check if a date is today (kept for potential future use, though not used in the diff)
+  const isToday = (date: Date): boolean => {
+    const today = new Date();
+    return date.toDateString() === today.toDateString();
+  };
 
   const quickActions = [
     {

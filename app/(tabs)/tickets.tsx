@@ -6,27 +6,27 @@ import { useTicket } from "@/contexts";
 import { TicketStatus } from "@/types/backend";
 import { useRouter } from "expo-router";
 import {
-    ArrowRight,
-    Calendar,
-    Clock3,
-    Download,
-    MapPin,
-    Share2,
-    Ticket
+  ArrowRight,
+  Calendar,
+  Clock3,
+  Download,
+  MapPin,
+  Share2,
+  Ticket
 } from "lucide-react-native";
 import React from "react";
 import {
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TicketsScreen() {
   const router = useRouter();
-  const {myTickets:userTickets}=useTicket()
+  const { myTickets: userTickets } = useTicket()
   const loading = false;
 
   const activeTickets = userTickets.filter(ticket => ticket.status === TicketStatus.AVAILABLE);
@@ -67,52 +67,52 @@ export default function TicketsScreen() {
 
   const renderTicketCard = (ticket: any) => (
     <TouchableOpacity
-      key={ticket.id}
+      key={ticket.ticket_id}
       style={[
         styles.ticketCard,
-        ticket.status === "expired" && styles.expiredTicketCard,
+        ticket.status === TicketStatus.CANCELLED && styles.expiredTicketCard,
       ]}
-      onPress={() => handleTicketPress(ticket.id)}
+      onPress={() => handleTicketPress(ticket.ticket_id)}
       activeOpacity={0.8}
     >
       <View style={styles.ticketHeader}>
         <View style={styles.ticketTypeContainer}>
           <Ticket size={20} color={Colors.primary} />
-          <Text style={styles.ticketType}>{ticket.category_name || "Standard"}</Text>
+          <Text style={styles.ticketType}>{ticket.sectionName || "Standard"}</Text>
         </View>
         <View style={styles.ticketStatus}>
           <View style={[
             styles.statusDot,
-            ticket.status === "active" ? styles.statusActive : styles.statusExpired
+            ticket.status === TicketStatus.AVAILABLE ? styles.statusActive : styles.statusExpired
           ]} />
           <Text style={[
             styles.statusText,
-            ticket.status === "active" ? styles.statusTextActive : styles.statusTextExpired
+            ticket.status === TicketStatus.AVAILABLE ? styles.statusTextActive : styles.statusTextExpired
           ]}>
-            {ticket.status === "active" ? "Active" : "Expired"}
+            {ticket.status === TicketStatus.AVAILABLE ? "Active" : "Expired"}
           </Text>
         </View>
       </View>
 
-      <Text style={styles.eventTitle}>{ticket.event_title || "Event"}</Text>
-      
+      <Text style={styles.eventTitle}>{ticket.Event?.title || "Event"}</Text>
+
       <View style={styles.eventDetails}>
         <View style={styles.detailRow}>
           <Calendar size={16} color={Colors.textSecondary} />
           <Text style={styles.detailText}>
-            {formatDate(ticket.event_date)} at {formatTime(ticket.event_date)}
+            {ticket.Event?.date ? formatDate(ticket.Event.date) : 'TBD'} at {ticket.Event?.date ? formatTime(ticket.Event.date) : 'TBD'}
           </Text>
         </View>
-        
+
         <View style={styles.detailRow}>
           <MapPin size={16} color={Colors.textSecondary} />
-          <Text style={styles.detailText}>{ticket.venue || ""}</Text>
+          <Text style={styles.detailText}>{ticket.Event?.Venue?.name || ""}</Text>
         </View>
-        
+
         <View style={styles.detailRow}>
           <Clock3 size={16} color={Colors.textSecondary} />
           <Text style={styles.detailText}>
-            {ticket.status === "active" ? "Event hasn't started" : "Event has ended"}
+            {ticket.status === TicketStatus.AVAILABLE ? "Event hasn't started" : "Event has ended"}
           </Text>
         </View>
       </View>
@@ -122,9 +122,9 @@ export default function TicketsScreen() {
           <Text style={styles.ticketNumberLabel}>Ticket #</Text>
           <Text style={styles.ticketNumberValue}>{ticket.ticket_id}</Text>
         </View>
-        
+
         <View style={styles.ticketActions}>
-          {ticket.status === "active" && (
+          {ticket.status === TicketStatus.AVAILABLE && (
             <>
               <TouchableOpacity
                 style={styles.actionButton}
@@ -133,7 +133,7 @@ export default function TicketsScreen() {
               >
                 <Download size={18} color={Colors.primary} />
               </TouchableOpacity>
-              
+
               <TouchableOpacity
                 style={styles.actionButton}
                 onPress={() => handleShareTicket(ticket)}
@@ -143,10 +143,10 @@ export default function TicketsScreen() {
               </TouchableOpacity>
             </>
           )}
-          
+
           <TouchableOpacity
             style={styles.viewButton}
-            onPress={() => handleTicketPress(ticket.id)}
+            onPress={() => handleTicketPress(ticket.ticket_id)}
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
           >
             <ArrowRight size={18} color={Colors.primary} />
@@ -159,7 +159,7 @@ export default function TicketsScreen() {
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       <Header title="My Tickets" showBack />
-      
+
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}

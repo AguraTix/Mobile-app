@@ -37,12 +37,6 @@ export default function ProfileWithLogoutScreen() {
   const router = useRouter();
   const { user, logout } = useAuth();
 
-  // Mock user data (would come from backend)
-  const userData = {
-    name: user?.name || 'Donye Collins',
-    email: user?.email || 'iamcollinsdonye@gmail.com',
-  };
-
   const handleLogout = () => {
     Alert.alert(
       'Logout',
@@ -91,12 +85,12 @@ export default function ProfileWithLogoutScreen() {
 
         <View style={styles.profileCard}>
           <Image
-            source={require('@/assets/images/profile.jpg')}
+            source={user?.profile_photo ? { uri: user.profile_photo } : require('@/assets/images/profile.jpg')}
             style={styles.profileImage}
           />
           <View style={styles.profileInfo}>
-            <Text style={styles.profileName}>{userData.name}</Text>
-            <Text style={styles.profileEmail}>{userData.email}</Text>
+            <Text style={styles.profileName}>{user?.name || 'User'}</Text>
+            <Text style={styles.profileEmail}>{user?.email || 'No email'}</Text>
           </View>
         </View>
 

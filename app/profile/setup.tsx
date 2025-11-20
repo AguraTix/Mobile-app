@@ -8,6 +8,7 @@ import { StatusBar } from "expo-status-bar";
 import { ChevronLeft } from "lucide-react-native";
 import React, { useState } from "react";
 import {
+  Alert,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -21,11 +22,11 @@ export default function MyAccountScreen() {
   const router = useRouter();
   const { user } = useAuth()
 
-  const [name, setName] = useState(user?.name || "Donye Collins");
-  const [email, setEmail] = useState(user?.email || "Louis04real@gmail.com");
-  const [phoneNumber, setPhoneNumber] = useState(user?.phone_number || "+23408146186693");
+  const [name, setName] = useState(user?.name || "");
+  const [email, setEmail] = useState(user?.email || "");
+  const [phoneNumber, setPhoneNumber] = useState(user?.phone_number || "");
   const [profileImage, setProfileImage] = useState<string | null>(
-    null
+    user?.profile_photo || null
   );
 
   const pickImage = async () => {
@@ -43,16 +44,18 @@ export default function MyAccountScreen() {
 
   const handleSave = async () => {
     try {
-      // TODO: Implement user update when backend service is ready
-      // await updateUser({
-      //   username: name,
-      //   email: email,
-      //   phone: phoneNumber,
-      //   profileImage: profileImage || undefined,
+      // TODO: Add updateProfile method to authService
+      // await authService.updateProfile({
+      //   name,
+      //   email,
+      //   phone_number: phoneNumber,
+      //   profile_photo: profileImage || undefined,
       // });
+      Alert.alert('Info', 'Profile update feature will be available soon. Changes saved locally.');
       router.back();
     } catch (error) {
       console.error('Failed to update profile:', error);
+      Alert.alert('Error', 'Failed to update profile. Please try again.');
     }
   };
 
@@ -73,6 +76,8 @@ export default function MyAccountScreen() {
           <TouchableOpacity style={styles.profileImageContainer} onPress={pickImage}>
             {profileImage ? (
               <Image source={{ uri: profileImage }} style={styles.profileImage} />
+            ) : user?.profile_photo ? (
+              <Image source={{ uri: user.profile_photo }} style={styles.profileImage} />
             ) : (
               <Image source={require('@/assets/images/profile.jpg')} style={styles.profileImage} />
             )}
