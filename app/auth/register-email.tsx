@@ -3,18 +3,22 @@ import Header from '@/components/Header'
 import Input from '@/components/Input'
 import SocialLoginButton from '@/components/SocialLoginButton'
 import Colors from '@/constants/Colors'
+import { useAuth } from '@/contexts'
 import { commonValidations, useFormValidation } from '@/hooks/useFormValidation'
 import { useRouter } from 'expo-router'
 import React from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 interface RegisterFormValues {
+  name:string
   email: string
   phone: string
   password: string
 }
 
 const registerValidationSchema = {
+  
+  name: commonValidations.name,
   email: commonValidations.email,
   phone: commonValidations.phone,
   password: commonValidations.password,
@@ -22,7 +26,7 @@ const registerValidationSchema = {
 
 export default function RegisterEmailScreen() {
   const router = useRouter()
-
+const {register}=useAuth()
   const {
     formik,
     getFieldError,
@@ -32,6 +36,7 @@ export default function RegisterEmailScreen() {
     isSubmitting,
   } = useFormValidation<RegisterFormValues>(
     {
+      name:'',
       email: '',
       phone: '',
       password: '',
@@ -39,8 +44,19 @@ export default function RegisterEmailScreen() {
     registerValidationSchema,
     async (values) => {
       try {
-        router.replace('/(tabs)')
-      } catch {
+        console.log('Registering with:', values);
+      const response = await register({
+          name: values.name,
+          email: values.email.trim(),
+          phone_number: values.phone.trim(),
+          password: values.password,
+        });
+        console.log('Registration response:', response);
+       
+          router.replace('/(tabs)');
+        
+      } catch (error) {
+        console.error('Registration error:', error);
         // Error handled
       }
     }
@@ -63,6 +79,16 @@ export default function RegisterEmailScreen() {
       <Header title="Register with Gmail" showBack />
       <View style={styles.content}>
         <View style={styles.inputContainer}>
+
+          <Input
+            label="Full Name"
+            placeholder="Full Name"
+            value={getFieldValue('name')}
+            onChangeText={(text) => setFieldValue('name', text)}
+            onBlur={() => setFieldTouched('name')}
+            error={getFieldError('name')}
+          />
+          
           <Input
             label="Email"
             placeholder="Email"

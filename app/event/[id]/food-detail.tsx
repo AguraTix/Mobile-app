@@ -3,48 +3,26 @@ import Colors from '@/constants/Colors';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { ChevronLeft, Minus, Plus } from 'lucide-react-native';
-import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+// Mock food items
+const mockFoodItems: any = {
+  '1': { id: '1', name: 'Burger', price: 5000, available: true, description: 'Delicious burger' },
+  '2': { id: '2', name: 'Pizza', price: 8000, available: true, description: 'Fresh pizza' },
+  '3': { id: '3', name: 'Coke', price: 2000, available: true, description: 'Cold drink' },
+};
 
 export default function FoodDetailScreen() {
   const router = useRouter();
   const { id, itemId } = useLocalSearchParams<{ id?: string; itemId?: string }>();
   const [quantity, setQuantity] = useState(1);
   
-  const { 
-    menuItems, 
-    addToCart, 
-    fetchMenuItems,
-    loading, 
-    error,
-    clearError 
-  } = useFoodStore();
-
-  const currentMenuItems = id ? menuItems[id] || [] : [];
-  const foodItem = currentMenuItems.find(item => item.id === itemId);
-
-  const loadMenuItems = useCallback(async () => {
-    if (!id) return;
-    
-    try {
-      clearError();
-      await fetchMenuItems(id);
-    } catch (error: any) {
-      console.error('Failed to load menu items:', error);
-    }
-  }, [id, clearError, fetchMenuItems]);
-
-  useEffect(() => {
-    if (id && itemId) {
-      loadMenuItems();
-    }
-  }, [id, itemId, currentMenuItems.length, loadMenuItems]);
+  const foodItem = itemId ? mockFoodItems[itemId] : null;
 
   const handleAddToCart = () => {
     if (!foodItem || !foodItem.available) return;
-    
-    addToCart(foodItem, quantity);
     router.push(`/event/${id}/cart`);
   };
 
@@ -74,30 +52,14 @@ export default function FoodDetailScreen() {
     return stars.join('');
   };
 
-  if (loading) {
-    return (
-      <SafeAreaView style={styles.container} edges={['top']}>
-        <StatusBar style="light" />
-        <Header showLogo showProfile showSearch />
-        
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={Colors.primary} />
-          <Text style={styles.loadingText}>Loading item details...</Text>
-        </View>
-      </SafeAreaView>
-    );
-  }
-
-  if (error || !foodItem) {
+  if (!foodItem) {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
         <StatusBar style="light" />
         <Header showLogo showProfile showSearch />
         
         <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>
-            {error || 'Item not found'}
-          </Text>
+          <Text style={styles.errorText}>Item not found</Text>
           <TouchableOpacity style={styles.retryButton} onPress={() => router.back()}>
             <Text style={styles.retryButtonText}>Go Back</Text>
           </TouchableOpacity>

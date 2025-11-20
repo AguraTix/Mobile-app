@@ -2,13 +2,14 @@ import CustomSplashScreen from '@/components/CustomSplashScreen';
 import { ProductionErrorBoundary } from '@/components/ProductionErrorBoundary';
 import { ToastProvider } from '@/components/ToastProvider';
 import Colors from '@/constants/Colors';
+import { RootProvider } from '@/contexts/RootProvider';
+import * as NavigationBar from 'expo-navigation-bar';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import '../global.css'
-import * as NavigationBar from 'expo-navigation-bar'
+import '../global.css';
 
 export default function RootLayout() {
   const [isSplashVisible, setIsSplashVisible] = React.useState(true);
@@ -27,16 +28,17 @@ export default function RootLayout() {
     <>
       <StatusBar style="light" backgroundColor={Colors.background} />
       <CustomSplashScreen visible={isSplashVisible} />
-      <ToastProvider>
-        <Stack
-        screenOptions={{
-          headerShown: false,
-          contentStyle: {
-            backgroundColor: Colors.background,
-          },
-          animation: 'slide_from_right',
-        }}
-      >
+      <RootProvider>
+        <ToastProvider>
+          <Stack
+          screenOptions={{
+            headerShown: false,
+            contentStyle: {
+              backgroundColor: Colors.background,
+            },
+            animation: 'slide_from_right',
+          }}
+        >
         {/* Public screens - no authentication required */}
         <Stack.Screen name="index" options={{ animation: 'none' }} />
         <Stack.Screen name="onboarding" options={{ animation: 'none' }} />
@@ -78,8 +80,9 @@ export default function RootLayout() {
         <Stack.Screen name="events/user" />
         <Stack.Screen name="event" />
         <Stack.Screen name="notifications" />
-        </Stack>
-      </ToastProvider>
+          </Stack>
+        </ToastProvider>
+      </RootProvider>
     </>
   );
 

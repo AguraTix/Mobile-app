@@ -1,7 +1,7 @@
-import { client } from './client';
-import { API_ENDPOINTS } from './constants';
 import { Event, EventImage, TicketType } from '@/types/events';
 import { EventServiceResponse } from '@/types/response';
+import { client } from './client';
+import { API_ENDPOINTS } from './constants';
 
 type EventData = {
   title: string;

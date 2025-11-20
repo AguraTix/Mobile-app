@@ -4,12 +4,14 @@ import Input from "@/components/Input";
 import NetworkError from "@/components/NetworkError";
 import { useToast } from "@/components/ToastProvider";
 import Colors from "@/constants/Colors";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNotification } from "@/contexts/NotificationContext";
 import { commonValidations, useFormValidation } from "@/hooks/useFormValidation";
 import * as Linking from "expo-linking";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import * as WebBrowser from "expo-web-browser";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface LoginFormValues {
@@ -25,9 +27,25 @@ const loginValidationSchema = {
 export default function LoginScreen() {
   const router = useRouter();
   const { showToast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { login, isLoading: authLoading, error: authError, user } = useAuth();
+  const { addNotification } = useNotification();
   const [networkError, setNetworkError] = useState(false);
+  const [localError, setLocalError] = useState<string | null>(null);
+
+  // Navigate to home if already logged in
+  useEffect(() => {
+    if (user) {
+      router.replace("/(tabs)");
+    }
+  }, [user]);
+
+  // Handle auth errors
+  useEffect(() => {
+    if (authError) {
+      setLocalError(authError);
+      addNotification(authError, 'error', 5000);
+    }
+  }, [authError]);
 
   const {
     formik,
@@ -44,8 +62,16 @@ export default function LoginScreen() {
     loginValidationSchema,
     async (values) => {
       try {
-        // Mock login - just navigate
-        showToast("Welcome back!", { type: 'success' });
+        setLocalError(null);
+        setNetworkError(false);
+        
+        // Call the login function from context
+        await login({
+          identifier: values.identifier,
+          password: values.password,
+        });
+        
+        addNotification("Welcome back!", 'success', 3000);
         router.replace("/(tabs)");
       } catch (error: any) {
         console.error('Login error:', error);
@@ -53,25 +79,29 @@ export default function LoginScreen() {
         // Check if it's a network error
         if (error?.message?.includes('Network Error') || 
             error?.message?.includes('timeout') ||
-            error?.code === 'NETWORK_ERROR') {
+            error?.code === 'NETWORK_ERROR' ||
+            error?.message?.includes('ECONNREFUSED')) {
           setNetworkError(true);
+          addNotification('Network error. Please check your connection.', 'error', 5000);
         } else {
-          setError(error?.message || "Login failed. Please check your credentials and try again.");
+          const errorMessage = error?.response?.data?.message || 
+                              error?.message || 
+                              "Login failed. Please check your credentials and try again.";
+          setLocalError(errorMessage);
+          addNotification(errorMessage, 'error', 5000);
         }
-      } finally {
-        setIsLoading(false);
       }
     }
   );
 
   const handleGoogleLogin = async () => {
     try {
-      setIsLoading(true);
-      setError(null);
       setNetworkError(false);
+      setLocalError(null);
       
       const redirectUrl = Linking.createURL("/auth/login");
-      const authUrl = `/api/users/google?redirect_uri=${encodeURIComponent(redirectUrl)}`;
+      console.log(redirectUrl)
+      const authUrl = `http://10.12.74.188:3000/api/auth/google?redirect_uri=${encodeURIComponent(redirectUrl)}`;
       
       const result = await WebBrowser.openAuthSessionAsync(
         authUrl,
@@ -81,20 +111,19 @@ export default function LoginScreen() {
       if (result.type === "success" && result.url) {
         const parsed = Linking.parse(result.url);
         const query = parsed.queryParams || {};
-        const token = String(query.token || "");
+        addNotification("Google login successful!", 'success', 3000);
         router.replace("/(tabs)");
         return;
       }
     } catch (error: any) {
       console.error('Google login error:', error);
-    } finally {
-      setIsLoading(false);
+      addNotification('Google login failed', 'error', 5000);
     }
   };
 
   const handleRetry = () => {
     setNetworkError(false);
-    setError(null);
+    setLocalError(null);
   };
 
   const handleSubmit = () => {
@@ -148,16 +177,16 @@ export default function LoginScreen() {
           </View>
 
           <View style={styles.bottomSection}>
-            {error && <Text style={styles.errorText}>{error}</Text>}
+            {localError && <Text style={styles.errorText}>{localError}</Text>}
 
             <Button
               title="Login"
               onPress={handleSubmit}
-              loading={isSubmitting || isLoading}
+              loading={isSubmitting || authLoading}
               style={styles.loginButton}
               fullWidth
               size="large"
-              disabled={!formik.isValid || !formik.dirty}
+              disabled={!formik.isValid || !formik.dirty || authLoading}
             />
 
             <Button
@@ -166,7 +195,7 @@ export default function LoginScreen() {
               style={styles.googleButton}
               fullWidth
               size="large"
-              disabled={isLoading}
+              disabled={authLoading || isSubmitting}
             />
 
             <View style={styles.signupContainer}>

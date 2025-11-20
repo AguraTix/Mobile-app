@@ -1,24 +1,48 @@
+import {
+    PasswordResetInput,
+    PasswordResetOutput,
+    PasswordResetRequestInput,
+    PasswordResetRequestOutput,
+    PasswordResetVerifyInput,
+    PasswordResetVerifyOutput,
+    UserLoginInput,
+    UserLoginOutput,
+    UserRegisterInput,
+    UserRegisterOutput,
+} from '@/types/backend';
 import { client } from './client';
 import { API_ENDPOINTS } from './constants';
-import { ApiResponse, AuthResponse, LoginRequest, SignupRequest, GoogleAuthRequest } from "@/types";
 
 export class AuthService {
-    async login(data: LoginRequest): Promise<ApiResponse<AuthResponse>> {
-        return await client.post<AuthResponse>(API_ENDPOINTS.AUTH.LOGIN, data);
-    }
+  async login(data: UserLoginInput): Promise<UserLoginOutput> {
+    return await client.post<UserLoginOutput>(API_ENDPOINTS.AUTH.LOGIN, data);
+  }
 
-    async signup(data: SignupRequest): Promise<ApiResponse<AuthResponse>> {
-        return await client.post<AuthResponse>(API_ENDPOINTS.AUTH.SIGNUP, data)
-    }    
+  async register(data: UserRegisterInput): Promise<UserRegisterOutput> {
+    return await client.post<UserRegisterOutput>(API_ENDPOINTS.AUTH.SIGNUP, data);
+  }
 
-    async googleRegister(data: GoogleAuthRequest): Promise<ApiResponse<AuthResponse>> {
-        return await client.post<AuthResponse>(API_ENDPOINTS.AUTH.GOOGLE_REGISTER, data)
-    }
+  async requestPasswordReset(data: PasswordResetRequestInput): Promise<PasswordResetRequestOutput> {
+    return await client.post<PasswordResetRequestOutput>(
+      API_ENDPOINTS.AUTH.PASSWORD_RESET_REQUEST,
+      data
+    );
+  }
 
-    async googleLogin(data: string): Promise<ApiResponse<AuthResponse>> {
-        return await client.post<AuthResponse>(API_ENDPOINTS.AUTH.GOOGLE_LOGIN, { token: data })
-    }
+  async verifyPasswordReset(data: PasswordResetVerifyInput): Promise<PasswordResetVerifyOutput> {
+    return await client.post<PasswordResetVerifyOutput>(
+      API_ENDPOINTS.AUTH.PASSWORD_RESET_VERIFY,
+      data
+    );
+  }
 
+  async resetPassword(data: PasswordResetInput): Promise<PasswordResetOutput> {
+    return await client.post<PasswordResetOutput>(API_ENDPOINTS.AUTH.PASSWORD_RESET, data);
+  }
+
+  async logout(): Promise<void> {
+    return await client.post<void>(API_ENDPOINTS.AUTH.LOGOUT);
+  }
 }
 
-export const authService = new AuthService()
+export const authService = new AuthService();

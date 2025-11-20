@@ -1,114 +1,112 @@
 // API Configuration Constants
 
-const SERVER_URL = 'http://10.12.74.188:5050'
+const SERVER_URL = 'https://agurabackend.onrender.com'
 
 export const API_CONFIG = {
   BASE_URL: SERVER_URL,
-  API_VERSION: 'v1',
   TIMEOUT: 60000,
 };
 
 export const API_ENDPOINTS = {
+  // ============================================================================
+  // AUTHENTICATION ENDPOINTS
+  // ============================================================================
   AUTH: {
-    LOGIN: '/auth/login',
-    LOGOUT: '/auth/logout',
-    SIGNUP: '/auth/register',
+    LOGIN: '/users/login',
+    LOGOUT: '/users/logout',
+    SIGNUP: '/users/register',
     GOOGLE_REGISTER: '/auth/google/register',
     GOOGLE_LOGIN: '/auth/google/login',
-  },
-  PROJECT: {
-    ALL: '/projects',
-    DASHBOARD: '/projects/dashboard',
-    CREATE: '/projects',
-    BY_ID: (id: string) => `/projects/${id}`,
-    MY_PROJECTS: '/projects/my',
-    BY_CATEGORY: (category: string) => `/projects/category/${category}`,
-    BY_STATUS: (status: string) => `/projects/status/${status}`,
-    TRENDING: '/projects/trending',
-    SPOTLIGHT: '/projects/spotlight',
-    SEARCH: (title: string) => `/projects/search?title=${title}`,
-    UPDATE: (id: string) => `/projects/${id}`,
-    DELETE: (id: string) => `/projects/${id}`,
-    STATISTICS: '/projects/statistics',
-    OVERVIEW: '/projects/overview',
-    UPLOAD: '/upload/projects',
-    LIKE: (id: string) => `/projects/${id}/like`,
-    DISLIKE: (id: string) => `/projects/${id}/unlike`,
-    COMMENT: (id: string) => `/projects/${id}/comment`,
-    SHARE: (id: string) => `/projects/${id}/share`,
-    ADD_DONOR: (id: string) => `/projects/${id}/donor`,
-    
-  },
-  USER: {
-    ALL: '/users',
-    ME: '/users/me',
-    GRADUATE: '/users/graduates',
-    SPONSORS: '/users/sponsors',
-    CREATE: '/users',
-    REPORTS: '/worker-reports',
-    REPORT: (id: string) => `/worker-reports/${id}`,
-    BY_ID: (id: string) => `/projects/workers/${id}`,
-    UPDATE: (id: string) => `/projects/workers/${id}`,
-    DELETE: (id: string) => `/projects/workers/${id}`,
+    PASSWORD_RESET_REQUEST: '/auth/password-reset/request',
+    PASSWORD_RESET_VERIFY: '/auth/password-reset/verify',
+    PASSWORD_RESET: '/auth/password-reset',
   },
 
-  ADMIN: {
-    USER: {
-      ALL: '/admin/users',
-      CREATE: '/admin/users',
-    },
-    PROJECT: {
-      ALL: '/admin/projects',
-      ANALYTICS: '/admin/projects/analytics',
-      BY_ID: (id: string) => `/admin/projects/${id}`,
-      STATS: '/admin/projects/stats',
-    }
-  },
-  UPLOAD: {
-    BASE: '/upload/image'
-  },
-  
+  // ============================================================================
+  // USER ENDPOINTS
+  // ============================================================================
   USERS: {
     REGISTER: '/users/register',
     REGISTER_ADMIN: '/users/register-admin',
     LOGIN: '/users/login',
-    UPDATE_ROLE: (id: string) => `/users/${id}/role`
+    UPDATE_ROLE: (id: string) => `/users/${id}/role`,
+    ALL: '/users',
+    ME: '/users/me',
+    BY_ID: (id: string) => `/users/${id}`,
+    UPDATE: (id: string) => `/users/${id}`,
+    DELETE: (id: string) => `/users/${id}`,
   },
-  
+
+  // ============================================================================
+  // VENUE ENDPOINTS
+  // ============================================================================
+  VENUES: {
+    ALL: '/venues',
+    CREATE: '/venues',
+    BY_ID: (id: string) => `/venues/${id}`,
+    UPDATE: (id: string) => `/venues/${id}`,
+    DELETE: (id: string) => `/venues/${id}`,
+  },
+
+  // ============================================================================
+  // EVENT ENDPOINTS
+  // ============================================================================
   EVENTS: {
     ALL: '/events',
+    CREATE: '/events',
     RECENT: '/events/recent',
     BY_ID: (id: string) => `/events/${id}`,
+    UPDATE: (id: string) => `/events/${id}`,
+    DELETE: (id: string) => `/events/${id}`,
     BY_VENUE: (venueId: string) => `/events/venue/${venueId}`,
-    IMAGES: (id: string) => `/events/${id}/images`
+    IMAGES: (id: string) => `/events/${id}/images`,
   },
-  
-  FOODS: {
-    ALL: '/foods',
-    BY_ID: (id: string) => `/foods/${id}`,
-    BY_EVENT: (eventId: string) => `/foods/event/${eventId}`
-  },
-  
+
+  // ============================================================================
+  // TICKET ENDPOINTS
+  // ============================================================================
   TICKETS: {
     AVAILABLE: (eventId: string) => `/tickets/event/${eventId}/available`,
     BOOK: (ticketId: string) => `/tickets/${ticketId}/book`,
     MY_TICKETS: '/tickets/my-tickets',
     CANCEL: (ticketId: string) => `/tickets/${ticketId}/cancel`,
-    ADMIN_BOOKED: '/tickets/admin/booked'
+    ADMIN_BOOKED: '/tickets/admin/booked',
   },
-  
-  VENUES: {
-    ALL: '/venues',
-    BY_ID: (id: string) => `/venues/${id}`
+
+  // ============================================================================
+  // FOOD ENDPOINTS
+  // ============================================================================
+  FOODS: {
+    ALL: '/foods',
+    CREATE: '/foods',
+    BY_ID: (id: string) => `/foods/${id}`,
+    UPDATE: (id: string) => `/foods/${id}`,
+    DELETE: (id: string) => `/foods/${id}`,
+    BY_EVENT: (eventId: string) => `/foods/event/${eventId}`,
   },
-  
-  ORDERS: {
-    ALL: '/orders',
-    MY_ORDERS: '/orders/my-orders',
-    HISTORY: '/orders/history',
-    BY_EVENT: (eventId: string) => `/orders/event/${eventId}`,
-    BY_ID: (id: string) => `/orders/${id}`
-  }
+
+  // ============================================================================
+  // FOOD ORDER ENDPOINTS
+  // ============================================================================
+  FOOD_ORDERS: {
+    ALL: '/food-orders',
+    CREATE: '/food-orders',
+    MY_ORDERS: '/food-orders/my-orders',
+    HISTORY: '/food-orders/history',
+    BY_EVENT: (eventId: string) => `/food-orders/event/${eventId}`,
+    BY_ID: (id: string) => `/food-orders/${id}`,
+    UPDATE: (id: string) => `/food-orders/${id}`,
+    DELETE: (id: string) => `/food-orders/${id}`,
+  },
+
+  // ============================================================================
+  // UPLOAD ENDPOINTS
+  // ============================================================================
+  UPLOAD: {
+    BASE: '/upload/image',
+    EVENT_IMAGE: '/upload/event-image',
+    FOOD_IMAGE: '/upload/food-image',
+  },
 }
 
 export const HTTP_STATUS = {

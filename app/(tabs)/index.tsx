@@ -84,7 +84,7 @@ export default function HomeScreen() {
     {
       id: "2",
       title: "Book Event",
-      icon: "📅",
+      icon: "📅", 
       color: "#3b82f6",
       onPress: () => router.push("/(tabs)/events-user")
     },

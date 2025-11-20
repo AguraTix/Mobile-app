@@ -2,36 +2,81 @@ import Button from "@/components/Button";
 import EventCard from "@/components/EventCard";
 import Header from "@/components/Header";
 import Colors from "@/constants/Colors";
+import { useEvent } from "@/contexts/EventContext";
+import { useNotification } from "@/contexts/NotificationContext";
 import { useRouter } from "expo-router";
-import { Calendar } from "lucide-react-native";
-import React from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { AlertCircle, Calendar } from "lucide-react-native";
+import React, { useEffect } from "react";
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-// Mock upcoming events
-const mockUpcomingEvents = [
-  { id: '1', title: 'Summer Music Festival', date: new Date(Date.now() + 7*24*60*60*1000).toISOString(), location: 'Central Park', category: 'music', imageUrl: 'https://via.placeholder.com/300x200?text=Music+Festival', price: 50 },
-  { id: '2', title: 'Tech Conference 2024', date: new Date(Date.now() + 14*24*60*60*1000).toISOString(), location: 'Convention Center', category: 'tech', imageUrl: 'https://via.placeholder.com/300x200?text=Tech+Conference', price: 100 },
-  { id: '3', title: 'Sports Championship', date: new Date(Date.now() + 3*24*60*60*1000).toISOString(), location: 'Stadium', category: 'sports', imageUrl: 'https://via.placeholder.com/300x200?text=Sports', price: 75 },
-];
 
 export default function UpcomingEventsScreen() {
   const router = useRouter();
-  const allEvents = mockUpcomingEvents;
-  const loading = false;
-  const error = null;
+  const { events, isLoading, error, fetchRecentEvents, clearError } = useEvent();
+  const { addNotification } = useNotification();
+
+  // Fetch events on mount
+  useEffect(() => {
+    fetchRecentEvents(10, 0);
+  }, []);
+
+  // Handle errors
+  useEffect(() => {
+    if (error) {
+      addNotification(error, 'error', 5000);
+      clearError();
+    }
+  }, [error]);
 
   const handleEventPress = (eventId: string) => {
     router.push(`/event/${eventId}`);
   };
 
+  const handleRetry = () => {
+    fetchRecentEvents(10, 0);
+  };
 
   // Filter upcoming events (events with future dates)
-  const upcomingEvents = allEvents.filter(event => {
+  const upcomingEvents = events.filter((event) => {
     const eventDate = new Date(event.date);
     const now = new Date();
     return eventDate > now;
   }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+  // Show loading state
+  if (isLoading && events.length === 0) {
+    return (
+      <SafeAreaView style={styles.container} edges={["top"]}>
+        <Header title="Upcoming Events" showBack />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={Colors.primary} />
+          <Text style={styles.loadingText}>Loading events...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // Show error state
+  if (error && events.length === 0) {
+    return (
+      <SafeAreaView style={styles.container} edges={["top"]}>
+        <Header title="Upcoming Events" showBack />
+        <View style={styles.errorContainer}>
+          <View style={styles.errorIconContainer}>
+            <AlertCircle size={48} color={Colors.error} />
+          </View>
+          <Text style={styles.errorTitle}>Unable to Load Events</Text>
+          <Text style={styles.errorMessage}>{error}</Text>
+          <Button
+            title="Try Again"
+            variant="primary"
+            onPress={handleRetry}
+            style={styles.retryButton}
+          />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
@@ -57,11 +102,11 @@ export default function UpcomingEventsScreen() {
         {upcomingEvents.length > 0 ? (
           <View style={styles.eventsSection}>
             {upcomingEvents.map((event, index) => (
-              <View key={event.id} style={styles.eventContainer}>
+              <View key={event.event_id} style={styles.eventContainer}>
                 <EventCard
                   event={event}
                   variant="compact"
-                  onPress={() => handleEventPress(event.id)}
+                  onPress={() => handleEventPress(event.event_id)}
                 />
                 {index < upcomingEvents.length - 1 && (
                   <View style={styles.eventSeparator} />
@@ -112,6 +157,17 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: 40,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 16,
+  },
+  loadingText: {
+    fontSize: 16,
+    color: Colors.textSecondary,
+    fontWeight: '500',
   },
   headerSection: {
     alignItems: "center",

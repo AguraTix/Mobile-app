@@ -11,7 +11,7 @@ class ApiClient {
 
     constructor() {
         this.axiosInstance = axios.create({
-            baseURL: `${API_CONFIG.BASE_URL}/api/${API_CONFIG.API_VERSION}`,
+            baseURL: `${API_CONFIG.BASE_URL}/api`,
             timeout: API_CONFIG.TIMEOUT,
             headers: {
                 'Content-Type': 'application/json',
@@ -42,7 +42,7 @@ class ApiClient {
             (response: AxiosResponse) => response,
             async (error) => {
                 try {
-
+console.log(error.message)
                     if (error.response) {
                         const apiError: ApiError = {
                             status: error.status,
