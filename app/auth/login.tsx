@@ -1,14 +1,10 @@
-import AuthGuard from "@/components/AuthGuard";
 import Button from "@/components/Button";
 import Header from "@/components/Header";
 import Input from "@/components/Input";
 import NetworkError from "@/components/NetworkError";
-import { API_BASE_URL } from "@/config/api";
 import { useToast } from "@/components/ToastProvider";
 import Colors from "@/constants/Colors";
 import { commonValidations, useFormValidation } from "@/hooks/useFormValidation";
-import { login, validateEmail, validatePhone } from "@/lib/api/auth";
-import { setToken } from "@/lib/authToken";
 import * as Linking from "expo-linking";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -22,11 +18,7 @@ interface LoginFormValues {
 }
 
 const loginValidationSchema = {
-  identifier: (value: string) => {
-    if (!value) return 'Email or phone number is required';
-    if (validateEmail(value) || validatePhone(value)) return null;
-    return 'Please enter a valid email or phone number';
-  },
+  identifier: commonValidations.required('Email or phone number'),
   password: commonValidations.required('Password'),
 };
 
@@ -52,19 +44,9 @@ export default function LoginScreen() {
     loginValidationSchema,
     async (values) => {
       try {
-        setIsLoading(true);
-        setError(null);
-        setNetworkError(false);
-        
-        const response = await login(values);
-        
-        if (response.success && response.token) {
-          await setToken(response.token);
-          showToast("Welcome back!", { type: 'success' });
-          router.replace("/(tabs)");
-        } else {
-          setError(response.message || "Login failed. Please try again.");
-        }
+        // Mock login - just navigate
+        showToast("Welcome back!", { type: 'success' });
+        router.replace("/(tabs)");
       } catch (error: any) {
         console.error('Login error:', error);
         
@@ -89,7 +71,7 @@ export default function LoginScreen() {
       setNetworkError(false);
       
       const redirectUrl = Linking.createURL("/auth/login");
-      const authUrl = `${API_BASE_URL}/api/users/google?redirect_uri=${encodeURIComponent(redirectUrl)}`;
+      const authUrl = `/api/users/google?redirect_uri=${encodeURIComponent(redirectUrl)}`;
       
       const result = await WebBrowser.openAuthSessionAsync(
         authUrl,
@@ -100,26 +82,11 @@ export default function LoginScreen() {
         const parsed = Linking.parse(result.url);
         const query = parsed.queryParams || {};
         const token = String(query.token || "");
-        const email = String(query.email || "");
-        const name = String(query.name || "");
-        
-        if (token) {
-          await setToken(token);
-          router.replace("/(tabs)");
-          return;
-        }
+        router.replace("/(tabs)");
+        return;
       }
-      
-      setError("Google login was cancelled or failed. Please try again.");
     } catch (error: any) {
       console.error('Google login error:', error);
-      
-      if (error?.message?.includes('Network Error') || 
-          error?.message?.includes('timeout')) {
-        setNetworkError(true);
-      } else {
-        setError("Google login failed. Please try again.");
-      }
     } finally {
       setIsLoading(false);
     }
@@ -149,7 +116,7 @@ export default function LoginScreen() {
   }
 
   return (
-    <AuthGuard requireGuest redirectTo="/(tabs)">
+    <>
       <SafeAreaView style={styles.container}>
         <StatusBar style="light" />
         <Header title="Login" showBack />
@@ -211,7 +178,7 @@ export default function LoginScreen() {
           </View>
         </View>
       </SafeAreaView>
-    </AuthGuard>
+    </>
   );
 }
 
@@ -223,7 +190,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 24,
-    paddingTop: 32,
+    padding: 32,
     justifyContent: "space-between",
   },
   inputContainer: {

@@ -1,4 +1,3 @@
-import AuthGuard from '@/components/AuthGuard';
 import Button from '@/components/Button';
 import Carousel from '@/components/Carousel';
 import Images from '@/constants/images';
@@ -21,7 +20,7 @@ export default function WelcomeScreen() {
     };
 
     return (
-        <AuthGuard requireGuest={true} redirectTo="/(tabs)">
+        <>
             <View style={styles.container} >
                 <StatusBar style="light" />
                 <View style={styles.innerContent}>
@@ -65,7 +64,7 @@ export default function WelcomeScreen() {
                     </View>
                 </View>
             </View>
-        </AuthGuard>
+        </>
     );
 }
 

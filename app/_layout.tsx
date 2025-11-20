@@ -8,11 +8,13 @@ import React from 'react';
 import { Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import '../global.css'
+import * as NavigationBar from 'expo-navigation-bar'
 
 export default function RootLayout() {
   const [isSplashVisible, setIsSplashVisible] = React.useState(true);
 
   React.useEffect(() => {
+    NavigationBar.setButtonStyleAsync('light')
     // Hide splash screen after a short delay for smooth transition
     const timer = setTimeout(() => {
       setIsSplashVisible(false);

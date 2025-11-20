@@ -2,7 +2,6 @@ import Button from "@/components/Button";
 import Header from "@/components/Header";
 import Skeleton from "@/components/Skeleton";
 import Colors from "@/constants/Colors";
-import { useTicketsStore } from "@/store/tickets-store";
 import { useRouter } from "expo-router";
 import {
     ArrowRight,
@@ -13,7 +12,7 @@ import {
     Share2,
     Ticket
 } from "lucide-react-native";
-import React, { useEffect } from "react";
+import React from "react";
 import {
     ScrollView,
     StyleSheet,
@@ -23,13 +22,17 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+// Mock tickets data
+const mockTickets = [
+  { id: '1', eventTitle: 'Summer Music Festival', eventDate: new Date(Date.now() + 7*24*60*60*1000).toISOString(), location: 'Central Park', status: 'active', ticketNumber: 'TKT-001-2024', seatNumber: 'A-12' },
+  { id: '2', eventTitle: 'Tech Conference 2024', eventDate: new Date(Date.now() + 14*24*60*60*1000).toISOString(), location: 'Convention Center', status: 'active', ticketNumber: 'TKT-002-2024', seatNumber: 'B-05' },
+  { id: '3', eventTitle: 'Past Concert', eventDate: new Date(Date.now() - 30*24*60*60*1000).toISOString(), location: 'Arena', status: 'expired', ticketNumber: 'TKT-003-2024', seatNumber: 'C-10' },
+];
+
 export default function TicketsScreen() {
   const router = useRouter();
-  const { userTickets, loading, fetchUserTickets } = useTicketsStore();
-
-  useEffect(() => {
-    fetchUserTickets().catch(() => {});
-  }, [fetchUserTickets]);
+  const userTickets = mockTickets;
+  const loading = false;
 
   const activeTickets = userTickets.filter(ticket => ticket.status === "active");
   const expiredTickets = userTickets.filter(ticket => ticket.status === "expired");

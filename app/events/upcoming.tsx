@@ -2,12 +2,10 @@ import DatabaseError from "@/components/DatabaseError";
 import EventCard from "@/components/EventCard";
 import Header from "@/components/Header";
 import Colors from "@/constants/Colors";
-import { useEventsStore } from "@/store/events-store";
 import { useRouter } from "expo-router";
 import React from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { isDatabaseError } from "@/lib/errorHandler";
 
 export default function UpcomingEventsScreen() {
   const router = useRouter();
@@ -23,7 +21,7 @@ export default function UpcomingEventsScreen() {
   };
 
   // Show database error if there's a database-related error
-  if (error && isDatabaseError({ message: error })) {
+  if (error) {
     return (
       <SafeAreaView style={styles.container} edges={["top"]}>
         <Header title="Upcoming Events" showBack />

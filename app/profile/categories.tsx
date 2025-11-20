@@ -1,14 +1,12 @@
 import Button from '@/components/Button';
 import CategoryButton from '@/components/CategoryButton';
 import Header from '@/components/Header';
-import { useAuthStore } from '@/store/auth-store';
-import { useEventsStore } from '@/store/events-store';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
-import { EventCategory } from '@/mocks/events';
+type EventCategory = 'Sports' | 'Art' | 'Music' | 'Tech' | 'Culture' | 'Film';
 
 const categories: EventCategory[] = [
   'Sports',
@@ -21,8 +19,6 @@ const categories: EventCategory[] = [
 
 export default function CategoriesScreen() {
   const router = useRouter();
-  const { updateUser } = useAuthStore();
-  const { setSelectedCategories } = useEventsStore();
 
   const [selectedCategories, setSelected] = useState<EventCategory[]>([]);
 
@@ -35,8 +31,7 @@ export default function CategoriesScreen() {
   };
 
   const handleSave = () => {
-    updateUser({ categories: selectedCategories });
-    setSelectedCategories(selectedCategories as any);
+    // Mock save - just navigate back
     router.replace('/(tabs)');
   };
 

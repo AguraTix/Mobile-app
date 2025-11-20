@@ -1,13 +1,12 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import Header from '@/components/Header';
+import Colors from '@/constants/Colors';
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { User, Settings, HelpCircle, Phone } from 'lucide-react-native';
-import { Image } from 'expo-image';
-import Colors from '@/constants/Colors';
-import Header from '@/components/Header';
-import { useAuthStore } from '@/store/auth-store';
+import { HelpCircle, Phone, Settings, User } from 'lucide-react-native';
+import React from 'react';
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface ProfileOptionProps {
   icon: React.ReactNode;

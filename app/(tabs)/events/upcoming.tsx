@@ -1,78 +1,30 @@
-import React from "react";
-import { ScrollView, StyleSheet, TouchableOpacity, View, Text } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
-import { RefreshCw, AlertTriangle, Calendar, MapPin, Users, Star } from "lucide-react-native";
-import Header from "@/components/Header";
-import EventCard from "@/components/EventCard";
 import Button from "@/components/Button";
+import EventCard from "@/components/EventCard";
+import Header from "@/components/Header";
 import Colors from "@/constants/Colors";
-import { useEventsStore } from "@/store/events-store";
-import { isDatabaseError } from "@/lib/errorHandler";
+import { useRouter } from "expo-router";
+import { Calendar } from "lucide-react-native";
+import React from "react";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+// Mock upcoming events
+const mockUpcomingEvents = [
+  { id: '1', title: 'Summer Music Festival', date: new Date(Date.now() + 7*24*60*60*1000).toISOString(), location: 'Central Park', category: 'music', imageUrl: 'https://via.placeholder.com/300x200?text=Music+Festival', price: 50 },
+  { id: '2', title: 'Tech Conference 2024', date: new Date(Date.now() + 14*24*60*60*1000).toISOString(), location: 'Convention Center', category: 'tech', imageUrl: 'https://via.placeholder.com/300x200?text=Tech+Conference', price: 100 },
+  { id: '3', title: 'Sports Championship', date: new Date(Date.now() + 3*24*60*60*1000).toISOString(), location: 'Stadium', category: 'sports', imageUrl: 'https://via.placeholder.com/300x200?text=Sports', price: 75 },
+];
 
 export default function UpcomingEventsScreen() {
   const router = useRouter();
-  const { allEvents, fetchAll, loading, error } = useEventsStore();
-
-  React.useEffect(() => {
-    fetchAll().catch(() => void 0);
-  }, [fetchAll]);
-
-  const handleRetry = () => {
-    fetchAll().catch(() => void 0);
-  };
+  const allEvents = mockUpcomingEvents;
+  const loading = false;
+  const error = null;
 
   const handleEventPress = (eventId: string) => {
     router.push(`/event/${eventId}`);
   };
 
-  // Show database error if there's a database-related error
-  if (error && isDatabaseError({ message: error })) {
-    return (
-      <SafeAreaView style={styles.container} edges={["top"]}>
-        <Header title="Upcoming Events" showBack />
-        <View style={styles.errorContainer}>
-          <View style={styles.errorIconContainer}>
-            <AlertTriangle size={48} color={Colors.primary} />
-          </View>
-          <Text style={styles.errorTitle}>Database Error</Text>
-          <Text style={styles.errorMessage}>
-            We're experiencing a technical issue with our database. Our team has been notified and is working to fix it.
-          </Text>
-          <Button
-            title="Try Again"
-            variant="primary"
-            icon={RefreshCw}
-            onPress={handleRetry}
-            style={styles.retryButton}
-          />
-        </View>
-      </SafeAreaView>
-    );
-  }
-
-  // Show generic error for other types of errors
-  if (error) {
-    return (
-      <SafeAreaView style={styles.container} edges={["top"]}>
-        <Header title="Upcoming Events" showBack />
-        <View style={styles.errorContainer}>
-          <View style={styles.errorIconContainer}>
-            <AlertTriangle size={48} color={Colors.primary} />
-          </View>
-          <Text style={styles.errorTitle}>Unable to Load Events</Text>
-          <Text style={styles.errorMessage}>{error}</Text>
-          <Button
-            title="Try Again"
-            variant="primary"
-            icon={RefreshCw}
-            onPress={handleRetry}
-            style={styles.retryButton}
-          />
-        </View>
-      </SafeAreaView>
-    );
-  }
 
   // Filter upcoming events (events with future dates)
   const upcomingEvents = allEvents.filter(event => {

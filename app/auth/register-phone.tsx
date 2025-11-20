@@ -1,11 +1,9 @@
-import AuthLayout from '@/components/AuthLayout';
 import Button from '@/components/Button';
 import Header from '@/components/Header';
 import Input from '@/components/Input';
 import SocialLoginButton from '@/components/SocialLoginButton';
 import Colors from '@/constants/Colors';
 import { commonValidations, useFormValidation } from '@/hooks/useFormValidation';
-import { useAuthStore } from '@/store/auth-store';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -22,7 +20,6 @@ const phoneRegisterValidationSchema = {
 
 export default function RegisterPhoneScreen() {
   const router = useRouter();
-  const { register, isLoading, error } = useAuthStore();
 
   const {
     formik,
@@ -39,11 +36,10 @@ export default function RegisterPhoneScreen() {
     phoneRegisterValidationSchema,
     async (values) => {
       try {
-        await register({ phone: values.phone, password: values.password });
-        // Registration successful, user will be automatically logged in and redirected
+        // Mock registration - just navigate to home
         router.replace('/(tabs)');
       } catch {
-        // handled in store
+        // Error handled
       }
     }
   );
@@ -53,7 +49,7 @@ export default function RegisterPhoneScreen() {
   };
 
   return (
-    <AuthLayout>
+    <>
       <Header title="Register with Phone" showBack />
       <View style={styles.content}>
         <View style={styles.inputContainer}>
@@ -76,11 +72,10 @@ export default function RegisterPhoneScreen() {
             secureTextEntry
           />
         </View>
-        {error && <Text style={styles.errorText}>{error}</Text>}
         <Button
           title="Sign Up"
           onPress={handleSubmit}
-          loading={isSubmitting || isLoading}
+          loading={isSubmitting}
           style={styles.signUpButton}
           fullWidth
           size="large"
@@ -105,7 +100,7 @@ export default function RegisterPhoneScreen() {
           </TouchableOpacity>
         </View>
       </View>
-    </AuthLayout>
+    </>
   );
 }
 

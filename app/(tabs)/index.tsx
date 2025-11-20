@@ -3,33 +3,45 @@ import SearchBar from "@/components/SearchBar";
 import SectionHeader from "@/components/SectionHeader";
 import Skeleton from "@/components/Skeleton";
 import Colors from "@/constants/Colors";
-import { spacing, radius } from "@/constants/spacing";
+import { radius, spacing } from "@/constants/spacing";
 import { typeScale } from "@/constants/typography";
-import { useAuthStore } from "@/store/auth-store";
-import { useEventsStore } from "@/store/events-store";
 import { useRouter } from "expo-router";
 import {
-    Bell
+  Bell
 } from "lucide-react-native";
 import React, { useMemo, useState } from "react";
 import {
-    Alert,
-    Dimensions,
-    RefreshControl,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  Alert,
+  Dimensions,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get("window");
 
+// Mock data for UI-only mode
+const mockUser = { username: 'Guest' };
+const mockFeaturedEvents = [
+  { id: '1', title: 'Summer Music Festival', date: new Date(Date.now() + 7*24*60*60*1000).toISOString(), location: 'Central Park', category: 'music', isFeatured: true, imageUrl: 'https://via.placeholder.com/300x200?text=Music+Festival' },
+  { id: '2', title: 'Tech Conference 2024', date: new Date(Date.now() + 14*24*60*60*1000).toISOString(), location: 'Convention Center', category: 'tech', isFeatured: true, imageUrl: 'https://via.placeholder.com/300x200?text=Tech+Conference' },
+];
+const mockAllEvents = [
+  ...mockFeaturedEvents,
+  { id: '3', title: 'Sports Championship', date: new Date(Date.now() + 3*24*60*60*1000).toISOString(), location: 'Stadium', category: 'sports', imageUrl: 'https://via.placeholder.com/300x200?text=Sports' },
+  { id: '4', title: 'Food Expo', date: new Date(Date.now() + 21*24*60*60*1000).toISOString(), location: 'Exhibition Hall', category: 'business', imageUrl: 'https://via.placeholder.com/300x200?text=Food+Expo' },
+];
+
 export default function HomeScreen() {
   const router = useRouter();
-  const { user } = useAuthStore();
-  const { featuredEvents, allEvents, loading } = useEventsStore();
+  const user = mockUser;
+  const featuredEvents = mockFeaturedEvents;
+  const allEvents = mockAllEvents;
+  const loading = false;
   
   // Compute upcoming events from all events
   const upcomingEvents = useMemo(() => {
@@ -179,7 +191,11 @@ export default function HomeScreen() {
         {/* Quick Actions */}
         <View style={styles.quickActionsContainer}>
           <Text style={styles.sectionTitle}>Quick Actions</Text>
-          <View style={styles.quickActionsGrid}>
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.quickActionsScroll}
+          >
             {quickActions.map((action) => (
               <TouchableOpacity
                 key={action.id}
@@ -191,7 +207,7 @@ export default function HomeScreen() {
                 <Text style={styles.quickActionTitle}>{action.title}</Text>
               </TouchableOpacity>
             ))}
-          </View>
+          </ScrollView>
         </View>
 
         {/* Featured Events */}
@@ -337,24 +353,24 @@ const styles = StyleSheet.create({
     color: Colors.text,
     marginBottom: spacing.md,
   },
-  quickActionsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+  quickActionsScroll: {
+    paddingHorizontal: 20,
     gap: spacing.md,
   },
   quickActionButton: {
-    width: '48%',
+    width: 140,
     padding: spacing.md,
     borderRadius: radius.lg,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 80,
+    minHeight: 100,
     backgroundColor: Colors.card,
     elevation: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 6,
+    marginRight: spacing.md,
   },
   quickActionIcon: {
     fontSize: 24,

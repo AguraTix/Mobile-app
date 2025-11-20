@@ -1,25 +1,22 @@
-import React, { useState, useEffect } from "react";
+import Colors from "@/constants/Colors";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { Bell, ChevronLeft, CreditCard, Search, Smartphone, User } from "lucide-react-native";
+import React, { useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  TextInput,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Alert,
-  ActivityIndicator,
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ChevronLeft, Search, Bell, User, CreditCard, Smartphone } from "lucide-react-native";
-import { StatusBar } from "expo-status-bar";
-import Colors from "@/constants/Colors";
-import { useRouter, useLocalSearchParams } from "expo-router";
-import { usePaymentStore } from "@/store/payment-store";
-import { useOrdersStore } from "@/store/orders-store";
-import { useAuthStore } from "@/store/auth-store";
-import * as PaymentAPI from "@/lib/api/payment";
+
+type PaymentMethod = 'mobile_money' | 'card';
 
 export default function PaymentScreen() {
   const router = useRouter();
@@ -32,11 +29,10 @@ export default function PaymentScreen() {
     price?: string;
   }>();
 
-  const { user } = useAuthStore();
-  const { initiatePayment, availableMethods, fetchAvailableMethods, paymentLoading, paymentError } = usePaymentStore();
-  const { createTicketOrder, orderProcessing } = useOrdersStore();
+  const mockUser = { id: '1', email: 'user@example.com' };
+  const availableMethods: PaymentMethod[] = ['mobile_money', 'card'];
 
-  const [selectedMethod, setSelectedMethod] = useState<PaymentAPI.PaymentMethod>('mobile_money');
+  const [selectedMethod, setSelectedMethod] = useState<PaymentMethod>('mobile_money');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [cardNumber, setCardNumber] = useState('');
   const [expiryMonth, setExpiryMonth] = useState('');
@@ -51,85 +47,13 @@ export default function PaymentScreen() {
   const tax = totalAmount * 0.18; // 18% tax
   const finalTotal = totalAmount + tax;
 
-  useEffect(() => {
-    fetchAvailableMethods();
-  }, []);
-
   const handlePayment = async () => {
-    if (!user) {
-      Alert.alert("Error", "Please login to continue");
-      return;
-    }
-
     try {
-      // First create the ticket order
-      const order = await createTicketOrder(id!, [{
-        category_id: categoryId!,
-        quantity: ticketCount,
-        holder_names: Array(ticketCount).fill("Guest"),
-        seats: seats ? seats.split(',') : undefined,
-      }]);
-
-      // Prepare payment data
-      const paymentData: PaymentAPI.PaymentRequest = {
-        amount: finalTotal,
-        currency: 'RWF',
-        payment_method: selectedMethod,
-        description: `${ticketCount} ticket(s) for ${categoryName}`,
-        reference: order.order_id,
-        metadata: {
-          order_id: order.order_id,
-          event_id: id,
-          ticket_count: ticketCount,
-          seats: seats,
-        }
-      };
-
-      // Add method-specific data
-      if (selectedMethod === 'mobile_money') {
-        if (!phoneNumber.trim()) {
-          Alert.alert("Error", "Please enter a phone number");
-          return;
-        }
-        const mobilePaymentData: PaymentAPI.MobileMoneyPaymentRequest = {
-          ...paymentData,
-          payment_method: 'mobile_money',
-          phone_number: phoneNumber,
-          provider: 'mtn', // Default to MTN
-        };
-        await initiatePayment(mobilePaymentData);
-      } else if (selectedMethod === 'card') {
-        if (!cardNumber.trim() || !expiryMonth.trim() || !expiryYear.trim() || !cvv.trim() || !cardHolderName.trim()) {
-          Alert.alert("Error", "Please fill in all card details");
-          return;
-        }
-        const cardPaymentData: PaymentAPI.CardPaymentRequest = {
-          ...paymentData,
-          payment_method: 'card',
-          card_details: {
-            number: cardNumber,
-            expiry_month: expiryMonth,
-            expiry_year: expiryYear,
-            cvv: cvv,
-            holder_name: cardHolderName,
-          },
-          save_card: saveCard,
-        };
-        await initiatePayment(cardPaymentData);
-      } else if (selectedMethod === 'paypal') {
-        const paypalPaymentData: PaymentAPI.PayPalPaymentRequest = {
-          ...paymentData,
-          payment_method: 'paypal',
-          return_url: `agura://payment/success?orderId=${order.order_id}`,
-          cancel_url: `agura://payment/cancel?orderId=${order.order_id}`,
-        };
-        await initiatePayment(paypalPaymentData);
-      }
-
-      // Navigate to payment success
-      router.push(`/event/${id}/payment-success?orderId=${order.order_id}`);
+      // Mock payment - just navigate to success
+      Alert.alert("Success", "Payment processed successfully!");
+      router.push(`/event/${id}/payment-success`);
     } catch (error: any) {
-      Alert.alert("Payment Error", error.message || "Payment failed. Please try again.");
+      Alert.alert("Payment Error", "Payment failed. Please try again.");
     }
   };
 
@@ -258,23 +182,6 @@ export default function PaymentScreen() {
           </View>
         );
 
-      case 'paypal':
-        return (
-          <View style={styles.methodContainer}>
-            <Text style={styles.methodTitle}>PayPal Payment</Text>
-            <Text style={styles.methodDescription}>
-              You will be redirected to PayPal to complete your payment
-            </Text>
-            <View style={styles.paypalInfo}>
-              <Text style={styles.paypalText}>
-                • Secure payment through PayPal{'\n'}
-                • No account required{'\n'}
-                • Multiple payment options available
-              </Text>
-            </View>
-          </View>
-        );
-
       default:
         return null;
     }
@@ -306,19 +213,6 @@ export default function PaymentScreen() {
     </View>
   );
 
-  if (paymentLoading || orderProcessing) {
-    return (
-      <SafeAreaView style={styles.container} edges={["top"]}>
-        <StatusBar style="light" />
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={Colors.primary} />
-          <Text style={styles.loadingText}>
-            {paymentLoading ? "Processing payment..." : "Creating order..."}
-          </Text>
-        </View>
-      </SafeAreaView>
-    );
-  }
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
@@ -379,27 +273,11 @@ export default function PaymentScreen() {
                   Credit/Debit Card
                 </Text>
               </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.methodButton, selectedMethod === 'paypal' && styles.methodButtonActive]}
-                onPress={() => setSelectedMethod('paypal')}
-              >
-                <Text style={[styles.methodButtonText, selectedMethod === 'paypal' && styles.methodButtonTextActive, { fontSize: 16, fontWeight: 'bold' }]}>
-                  PayPal
-                </Text>
-              </TouchableOpacity>
             </View>
           </View>
 
           {/* Payment Method Form */}
           {renderPaymentMethod()}
-
-          {/* Error Display */}
-          {paymentError && (
-            <View style={styles.errorContainer}>
-              <Text style={styles.errorText}>{paymentError}</Text>
-            </View>
-          )}
         </ScrollView>
 
         {/* Payment Button */}
@@ -407,7 +285,6 @@ export default function PaymentScreen() {
           <TouchableOpacity
             style={styles.payButton}
             onPress={handlePayment}
-            disabled={paymentLoading || orderProcessing}
           >
             <Text style={styles.payButtonText}>
               Pay {finalTotal.toLocaleString()} RWF

@@ -10,7 +10,6 @@ import {
     View,
 } from "react-native";
 
-import AuthGuard from "@/components/AuthGuard";
 import Header from "@/components/Header";
 import SocialLoginButton from "@/components/SocialLoginButton";
 import Colors from "@/constants/Colors";
@@ -24,7 +23,7 @@ export default function RegisterScreen() {
   const handleRegisterWithGoogle = () => goEmail();
 
   return (
-    <AuthGuard requireGuest redirectTo="/(tabs)">
+    <>
       <SafeAreaView style={styles.container}>
         <ScrollView
           style={styles.scrollView}
@@ -71,7 +70,7 @@ export default function RegisterScreen() {
           </View>
         </ScrollView>
       </SafeAreaView>
-    </AuthGuard>
+    </>
   );
 }
 
@@ -79,6 +78,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
+    paddingBottom:40
   },
   scrollView: {
     flex: 1,

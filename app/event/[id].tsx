@@ -1,25 +1,21 @@
-import Header from "@/components/Header";
-import Skeleton from "@/components/Skeleton";
 import Colors from "@/constants/Colors";
-import { Event, useEventsStore } from "@/store/events-store";
-import { TicketCategory, useTicketsStore } from "@/store/tickets-store";
+import { radius, spacing } from "@/constants/spacing";
+import { typeScale } from "@/constants/typography";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Bell, Calendar, ChevronLeft, MapPin, Search, User } from "lucide-react-native";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
-    Alert,
-    Image as RNImage,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  Alert,
+  Image as RNImage,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { spacing, radius } from "@/constants/spacing";
-import { typeScale } from "@/constants/typography";
 
 export const options = {
   headerShown: false,
@@ -29,106 +25,54 @@ function formatPrice(price: number, currency: string = 'RWF'): string {
   return `${price.toLocaleString()} ${currency}`;
 }
 
+// Mock event data
+const mockEventData = {
+  id: '1',
+  title: 'Summer Music Festival',
+  date: new Date(Date.now() + 7*24*60*60*1000).toISOString(),
+  location: 'Central Park, Kigali',
+  imageUrl: 'https://via.placeholder.com/400x300?text=Music+Festival',
+  description: 'Join us for an amazing summer music festival featuring top artists and live performances.',
+  price: 50,
+  category: 'music',
+};
+
+const mockCategories = [
+  { id: '1', name: 'VIP', price: 100, quantity: 50 },
+  { id: '2', name: 'Regular', price: 50, quantity: 200 },
+  { id: '3', name: 'Student', price: 30, quantity: 100 },
+];
+
 export default function EventDetailScreen() {
   const { id } = useLocalSearchParams<{
     id: string;
   }>();
   const router = useRouter();
   
-  const { fetchById: fetchEvent, loading: eventsLoading, error: eventsError } = useEventsStore();
-  const { fetchTicketCategories, loading: ticketsLoading, error: ticketsError } = useTicketsStore();
-  
-  const [event, setEvent] = useState<Event | null>(null);
-  const [categories, setCategories] = useState<TicketCategory[]>([]);
+  const [event, setEvent] = useState(mockEventData);
+  const [categories, setCategories] = useState(mockCategories);
   const [coords, setCoords] = useState<{ latitude: number; longitude: number }>({
     latitude: -1.9441,
     longitude: 30.0619,
   });
 
-  const loadEventData = useCallback(async () => {
-    if (!id) return;
-    
-    try {
-      // Fetch event details
-      const eventData = await fetchEvent(id);
-      if (eventData) {
-        setEvent(eventData);
-        
-        // Try to extract coordinates from location
-        if (eventData.location) {
-          // You can implement geocoding here or expect coordinates from backend
-          // For now, using default Rwanda coordinates (Kigali)
-          setCoords({
-            latitude: -1.9441,
-            longitude: 30.0619,
-          });
-        }
-      }
-      
-      // Fetch ticket categories
-      const ticketCats = await fetchTicketCategories(id);
-      setCategories(ticketCats);
-      
-    } catch (error: any) {
-      Alert.alert("Error", error.message || "Failed to load event details");
-    }
-  }, [id, fetchEvent, fetchTicketCategories]);
-
   useEffect(() => {
-    if (id) {
-      loadEventData();
-    }
-  }, [id, loadEventData]);
+    // Mock data already loaded
+  }, [id]);
 
-  const handleBuyTicket = (category: TicketCategory) => {
-    if (!category.available_quantity || category.available_quantity <= 0) {
+  const handleBuyTicket = (category: any) => {
+    if (!category.quantity || category.quantity <= 0) {
       Alert.alert("Sold Out", "This ticket category is no longer available.");
       return;
     }
     
     // Navigate to seat selection with category info
-    router.push(`/event/${id}/seat-selection?categoryId=${category.category_id}&categoryName=${encodeURIComponent(category.name)}&price=${category.price}`);
+    router.push(`/event/${id}/seat-selection?categoryId=${category.id}&categoryName=${encodeURIComponent(category.name)}&price=${category.price}`);
   };
 
   const handleViewMap = () => {
     router.push(`/event/${id}/map`);
   };
-
-  if (eventsLoading || ticketsLoading) {
-    return (
-      <SafeAreaView style={styles.container} edges={["top"]}>
-        <StatusBar style="light" />
-        <Header showLogo showProfile showSearch />
-        <View style={{ padding: 20, gap: 16 }}>
-          <Skeleton height={220} radius={16} />
-          <Skeleton height={28} radius={8} />
-          <Skeleton height={20} radius={8} />
-          <Skeleton height={120} radius={12} />
-          <Skeleton height={44} radius={22} />
-        </View>
-      </SafeAreaView>
-    );
-  }
-
-  if (eventsError || ticketsError || !event) {
-    return (
-      <SafeAreaView style={styles.container} edges={["top"]}>
-        <StatusBar style="light" />
-        <Header showLogo showProfile showSearch />
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>
-            {eventsError || ticketsError || "Event not found"}
-          </Text>
-          <TouchableOpacity 
-            style={styles.retryButton} 
-            onPress={loadEventData}
-          >
-            <Text style={styles.retryButtonText}>Retry</Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
-    );
-  }
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
@@ -164,7 +108,7 @@ export default function EventDetailScreen() {
             source={
               event.imageUrl 
                 ? { uri: event.imageUrl }
-                : event.image || require('@/assets/images/m1.png')
+                : require('@/assets/images/m1.png')
             }
             style={styles.eventImage}
             resizeMode="cover"
@@ -215,19 +159,19 @@ export default function EventDetailScreen() {
                   <Text style={styles.ticketType}>{category.name}</Text>
                   <View style={styles.ticketBadge}>
                     <Text style={styles.ticketBadgeText}>
-                      {category.available_quantity || 0} left
+                      {category.quantity || 0} left
                     </Text>
                   </View>
                   <Text style={styles.ticketPrice}>
-                    {formatPrice(category.price, category.currency)}
+                    {category.price.toLocaleString()} RWF
                   </Text>
                   <TouchableOpacity 
                     style={[
                       styles.buyButton,
-                      (!category.available_quantity || category.available_quantity <= 0) && styles.buyButtonDisabled
+                      (!category.quantity || category.quantity <= 0) && styles.buyButtonDisabled
                     ]}
                     onPress={() => handleBuyTicket(category)}
-                    disabled={!category.available_quantity || category.available_quantity <= 0}
+                    disabled={!category.quantity || category.quantity <= 0}
                   >
                     <Text style={styles.buyButtonText}>Buy</Text>
                   </TouchableOpacity>

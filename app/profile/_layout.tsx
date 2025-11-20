@@ -1,11 +1,9 @@
 import { Stack } from 'expo-router';
 import React from 'react';
-import AuthGuard from '@/components/AuthGuard';
 
 export default function ProfileLayout() {
   return (
-    <AuthGuard>
-      <Stack
+    <Stack
         screenOptions={{
           headerShown: false,
         }}
@@ -19,6 +17,6 @@ export default function ProfileLayout() {
         <Stack.Screen name="help-support" />
         <Stack.Screen name="contact" />
       </Stack>
-    </AuthGuard>
+    
   );
 }

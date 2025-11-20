@@ -217,15 +217,15 @@ export default function EventCard({
                     onPress={onFavorite}
                   >
                     <Heart 
-                      size={18} 
-                      color={isFavorite ? Colors.primary : Colors.text} 
-                      fill={isFavorite ? Colors.primary : 'transparent'} 
+                      size={20} 
+                      color={isFavorite ? '#ffffff' : Colors.text} 
+                      fill={isFavorite ? '#ffffff' : 'transparent'} 
                     />
                   </TouchableOpacity>
                 )}
                 {onShare && (
                   <TouchableOpacity style={styles.actionButton} onPress={onShare}>
-                    <Share2 size={18} color={Colors.text} />
+                    <Share2 size={20} color={Colors.text} />
                   </TouchableOpacity>
                 )}
                 {onBookmark && (
@@ -234,9 +234,9 @@ export default function EventCard({
                     onPress={onBookmark}
                   >
                     <Bookmark 
-                      size={18} 
-                      color={isBookmarked ? Colors.primary : Colors.text} 
-                      fill={isBookmarked ? Colors.primary : 'transparent'} 
+                      size={20} 
+                      color={isBookmarked ? '#ffffff' : Colors.text} 
+                      fill={isBookmarked ? '#ffffff' : 'transparent'} 
                     />
                   </TouchableOpacity>
                 )}

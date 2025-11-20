@@ -1,6 +1,5 @@
 import Header from '@/components/Header';
 import Colors from '@/constants/Colors';
-import { useEventsStore } from '@/store/events-store';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';

@@ -57,12 +57,12 @@ export default function TabLayout() {
 const styles = StyleSheet.create({
     tabBarContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-evenly',
+        justifyContent: 'space-between',
         alignItems: 'center',
         backgroundColor: Colors.card,
         borderRadius: 40,
         marginHorizontal: 16,
-        marginBottom: Platform.OS === 'ios' ? 24 : 16,
+        marginBottom: Platform.OS === 'ios' ? 24 : 40,
         marginTop: 8,
         paddingHorizontal: 0,
         paddingVertical: 10,
@@ -73,14 +73,16 @@ const styles = StyleSheet.create({
         shadowRadius: 10,
     },
     tabButton: {
-        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
+        paddingHorizontal: 12,
     },
     iconWrap: {
         padding: 8,
         borderRadius: 24,
         backgroundColor: 'transparent',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     iconWrapActive: {
         backgroundColor: Colors.inputBackground,

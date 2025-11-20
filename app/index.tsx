@@ -1,26 +1,20 @@
-import { useAuthStore } from '@/store/auth-store';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useEffect } from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import 'react-native-gesture-handler';
 
-const { height, width } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 export default function SplashScreen() {
-    const { isAuthenticated } = useAuthStore();
-
     useEffect(() => {
         const timer = setTimeout(() => {
-            if (isAuthenticated) {
-                router.replace('/(tabs)');
-            } else {
-                router.replace('./onboarding');
-            }
+            // Always go to onboarding for UI-only mode
+            router.replace('./onboarding');
         }, 2000); // Show splash for 2 seconds
 
         return () => clearTimeout(timer);
-    }, [isAuthenticated, router]);
+    }, []);
 
     return (
         <View style={styles.container}>

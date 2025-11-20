@@ -12,8 +12,6 @@ import { StatusBar } from "expo-status-bar";
 import { CheckCircle, Download, Share2, Home, Ticket, ArrowRight } from "lucide-react-native";
 import Colors from "@/constants/Colors";
 import { useRouter, useLocalSearchParams } from "expo-router";
-import { useOrdersStore } from "@/store/orders-store";
-import { usePaymentStore } from "@/store/payment-store";
 
 export default function PaymentSuccessScreen() {
   const router = useRouter();

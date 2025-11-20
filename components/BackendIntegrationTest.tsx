@@ -1,85 +1,33 @@
-import React, { useState, useEffect } from 'react';
+import Colors from '@/constants/Colors';
+import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  TouchableOpacity,
+  Alert,
   ScrollView,
   StyleSheet,
-  ActivityIndicator,
-  Alert,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Colors from '@/constants/Colors';
-import { 
-  runBackendTestSuite, 
-  logTestResults, 
-  BackendTestSuite, 
-  BackendTestResult 
-} from '@/utils/backendTest';
-
-interface TestResultItemProps {
-  title: string;
-  result: BackendTestResult;
-}
-
-const TestResultItem: React.FC<TestResultItemProps> = ({ title, result }) => (
-  <View style={styles.testItem}>
-    <View style={styles.testHeader}>
-      <Text style={styles.testTitle}>{title}</Text>
-      <Text style={[styles.testStatus, result.success ? styles.success : styles.failure]}>
-        {result.success ? '✅ PASS' : '❌ FAIL'}
-      </Text>
-    </View>
-    <Text style={styles.testMessage}>{result.message}</Text>
-    {result.details && (
-      <Text style={styles.testDetails}>
-        {JSON.stringify(result.details, null, 2)}
-      </Text>
-    )}
-  </View>
-);
 
 export default function BackendIntegrationTest() {
-  const [testResults, setTestResults] = useState<BackendTestSuite | null>(null);
   const [isRunning, setIsRunning] = useState(false);
 
   const runTests = async () => {
     setIsRunning(true);
-    setTestResults(null);
     
     try {
-      const results = await runBackendTestSuite();
-      setTestResults(results);
-      logTestResults(results);
-      
-      if (results.overall.success) {
-        Alert.alert(
-          '✅ Integration Tests Passed',
-          'All backend integration tests passed successfully! Your app is ready for production.',
-          [{ text: 'OK' }]
-        );
-      } else {
-        Alert.alert(
-          '⚠️ Integration Tests Failed',
-          `${results.overall.message}. Please check the console for details.`,
-          [{ text: 'OK' }]
-        );
-      }
-    } catch (error: any) {
       Alert.alert(
-        '❌ Test Error',
-        `Failed to run integration tests: ${error.message}`,
+        '✅ UI-Only Mode',
+        'Backend integration tests are disabled in UI-only mode.',
         [{ text: 'OK' }]
       );
+    } catch (error: any) {
+      Alert.alert('Error', 'Failed to run tests');
     } finally {
       setIsRunning(false);
     }
   };
-
-  useEffect(() => {
-    // Auto-run tests on component mount
-    runTests();
-  }, []);
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -90,71 +38,20 @@ export default function BackendIntegrationTest() {
           onPress={runTests}
           disabled={isRunning}
         >
-          {isRunning ? (
-            <ActivityIndicator size="small" color="#FFFFFF" />
-          ) : (
-            <Text style={styles.runButtonText}>Run Tests</Text>
-          )}
+          <Text style={styles.runButtonText}>Run Tests</Text>
         </TouchableOpacity>
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {isRunning && !testResults && (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={Colors.primary} />
-            <Text style={styles.loadingText}>Running backend integration tests...</Text>
+        <View style={styles.resultsContainer}>
+          <View style={styles.overallResult}>
+            <Text style={styles.overallTitle}>UI-Only Mode</Text>
+            <Text style={[styles.overallStatus, styles.success]}>
+              ✅ BACKEND TESTS DISABLED
+            </Text>
+            <Text style={styles.overallMessage}>This is a UI-only prototype with no backend integration.</Text>
           </View>
-        )}
-
-        {testResults && (
-          <View style={styles.resultsContainer}>
-            <View style={styles.overallResult}>
-              <Text style={styles.overallTitle}>Overall Result</Text>
-              <Text style={[
-                styles.overallStatus,
-                testResults.overall.success ? styles.success : styles.failure
-              ]}>
-                {testResults.overall.success ? '✅ ALL TESTS PASSED' : '❌ SOME TESTS FAILED'}
-              </Text>
-              <Text style={styles.overallMessage}>{testResults.overall.message}</Text>
-            </View>
-
-            <View style={styles.testResults}>
-              <Text style={styles.sectionTitle}>Test Details</Text>
-              
-              <TestResultItem
-                title="Backend Connectivity"
-                result={testResults.connectivity}
-              />
-              
-              <TestResultItem
-                title="Authentication System"
-                result={testResults.auth}
-              />
-              
-              <TestResultItem
-                title="Events API"
-                result={testResults.events}
-              />
-              
-              <TestResultItem
-                title="Payment System"
-                result={testResults.payment}
-              />
-            </View>
-
-            {testResults.overall.success && (
-              <View style={styles.successBanner}>
-                <Text style={styles.successText}>
-                  🎉 Your app is ready for production deployment!
-                </Text>
-                <Text style={styles.successSubtext}>
-                  All backend integrations are working correctly.
-                </Text>
-              </View>
-            )}
-          </View>
-        )}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

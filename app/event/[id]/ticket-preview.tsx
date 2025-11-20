@@ -1,7 +1,5 @@
 import Header from '@/components/Header';
 import Colors from '@/constants/Colors';
-import { useEventsStore } from "@/store/events-store";
-import { useTicketsStore } from "@/store/tickets-store";
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';

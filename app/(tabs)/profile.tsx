@@ -1,52 +1,56 @@
 import Button from "@/components/Button";
 import Header from "@/components/Header";
 import Colors from "@/constants/Colors";
-import { useAuthStore } from "@/store/auth-store";
-import { useRouter } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
+import { useRouter } from "expo-router";
 import {
-    Bell,
-    Calendar,
-    ChevronRight,
-    CreditCard,
-    DollarSign,
-    Edit3,
-    FileText,
-    Grid3X3,
-    Heart,
-    HelpCircle,
-    LogOut,
-    MapPin,
-    MessageCircle,
-    Settings,
-    Share2,
-    Shield,
-    Star
+  Bell,
+  Calendar,
+  ChevronRight,
+  CreditCard,
+  DollarSign,
+  Edit3,
+  FileText,
+  Grid3X3,
+  Heart,
+  HelpCircle,
+  LogOut,
+  MapPin,
+  MessageCircle,
+  Settings,
+  Share2,
+  Shield,
+  Star
 } from "lucide-react-native";
 import React, { useEffect, useRef } from "react";
 import {
-    Animated,
-    Dimensions,
-    Image,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Animated,
+  Dimensions,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get("window");
 
+// Mock user data
+const mockUser = {
+  username: 'John Doe',
+  email: 'john@example.com',
+  phone: '+1 (555) 123-4567',
+  profileImage: 'https://via.placeholder.com/150?text=Profile',
+  bio: 'Event enthusiast and music lover',
+  ticketsBooked: 12,
+  eventsAttended: 8,
+};
+
 export default function ProfileScreen() {
   const router = useRouter();
-  const { user, logout, updateUser } = useAuthStore();
-
-  // Helper function to check if a date is today
-  const isToday = (date: Date): boolean => {
-    const today = new Date();
-    return date.toDateString() === today.toDateString();
-  };
+  const user = mockUser;
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -59,12 +63,8 @@ export default function ProfileScreen() {
   }, []);
 
   const handleLogout = async () => {
-    try {
-      await logout();
-      router.replace("/auth/login");
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
+    // Mock logout - just navigate to login
+    router.replace("/auth/login");
   };
 
   const handleEditAvatar = async () => {
@@ -80,7 +80,8 @@ export default function ProfileScreen() {
         quality: 0.8,
       });
       if (!result.canceled && result.assets && result.assets[0]?.uri) {
-        updateUser({ profileImage: result.assets[0].uri });
+        // Mock update - just log
+        console.log('Profile image updated:', result.assets[0].uri);
       }
     } catch (e) {
       // no-op

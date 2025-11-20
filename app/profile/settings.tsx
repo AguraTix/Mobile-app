@@ -1,9 +1,8 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
+import Colors from '@/constants/Colors';
 import { useRouter } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
-import Colors from '@/constants/Colors';
-import { useAuthStore } from '@/store/auth-store';
+import React from 'react';
+import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface SettingsOptionProps {
   title: string;

@@ -1,5 +1,3 @@
-import AuthGuard from '@/components/AuthGuard';
-import { useAuthStore } from '@/store/auth-store';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -10,16 +8,9 @@ const { width, height } = Dimensions.get('window');
 
 export default function OnboardingScreen() {
     const router = useRouter();
-    const { isAuthenticated } = useAuthStore();
     const [progress, setProgress] = useState(10);
 
     useEffect(() => {
-        // If already authenticated, skip onboarding
-        if (isAuthenticated) {
-            router.replace('/(tabs)');
-            return;
-        }
-
         const interval = setInterval(() => {
             setProgress((prev) => {
                 if (prev >= 100) {
@@ -35,10 +26,10 @@ export default function OnboardingScreen() {
         }, 200); // Faster loading for better UX
 
         return () => clearInterval(interval);
-    }, [router, isAuthenticated]);
+    }, [router]);
 
     return (
-        <AuthGuard requireGuest={true} redirectTo="/(tabs)">
+        <>
             <View style={styles.container}>
                 <StatusBar style="light" />
                 
@@ -71,7 +62,7 @@ export default function OnboardingScreen() {
                     <Text style={styles.progressText}>{progress}%</Text>
                 </View>
             </View>
-        </AuthGuard>
+        </>
     );
 }
 

@@ -1,6 +1,5 @@
 import Header from '@/components/Header';
 import Colors from '@/constants/Colors';
-import { useFoodStore } from '@/store/food-store';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { ChevronLeft, Minus, Plus } from 'lucide-react-native';

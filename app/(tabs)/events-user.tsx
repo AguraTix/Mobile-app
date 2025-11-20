@@ -5,8 +5,6 @@ import SearchBar from "@/components/SearchBar";
 import SectionHeader from "@/components/SectionHeader";
 import Skeleton from "@/components/Skeleton";
 import Colors from "@/constants/Colors";
-import { useAuthStore } from "@/store/auth-store";
-import { useEventsStore } from "@/store/events-store";
 import { useRouter } from "expo-router";
 import {
   Calendar,
@@ -46,16 +44,20 @@ type SortOption = {
   icon: React.ReactNode;
 };
 
+// Mock data for UI-only mode
+const mockEvents = [
+  { id: '1', title: 'Summer Music Festival', date: new Date(Date.now() + 7*24*60*60*1000).toISOString(), location: 'Central Park', category: 'music', imageUrl: 'https://via.placeholder.com/300x200?text=Music+Festival', price: 50 },
+  { id: '2', title: 'Tech Conference 2024', date: new Date(Date.now() + 14*24*60*60*1000).toISOString(), location: 'Convention Center', category: 'tech', imageUrl: 'https://via.placeholder.com/300x200?text=Tech+Conference', price: 100 },
+  { id: '3', title: 'Sports Championship', date: new Date(Date.now() + 3*24*60*60*1000).toISOString(), location: 'Stadium', category: 'sports', imageUrl: 'https://via.placeholder.com/300x200?text=Sports', price: 75 },
+  { id: '4', title: 'Food Expo', date: new Date(Date.now() + 21*24*60*60*1000).toISOString(), location: 'Exhibition Hall', category: 'business', imageUrl: 'https://via.placeholder.com/300x200?text=Food+Expo', price: 30 },
+  { id: '5', title: 'Art Exhibition', date: new Date(Date.now() + 10*24*60*60*1000).toISOString(), location: 'Art Gallery', category: 'other', imageUrl: 'https://via.placeholder.com/300x200?text=Art+Exhibition', price: 20 },
+];
+
 export default function EventsUserScreen() {
   const router = useRouter();
-  const { allEvents, fetchAll, loading, error } = useEventsStore();
-  const { user } = useAuthStore();
-
-  // Helper function to check if a date is today
-  const isToday = (date: Date): boolean => {
-    const today = new Date();
-    return date.toDateString() === today.toDateString();
-  };
+  const allEvents = mockEvents;
+  const loading = false;
+  const error = null;
 
   const [searchQuery, setSearchQuery] = useState("");
   const [refreshing, setRefreshing] = useState(false);
@@ -71,12 +73,8 @@ export default function EventsUserScreen() {
   const [selectedDate, setSelectedDate] = useState<string>("all");
 
   const loadData = useCallback(async () => {
-    try {
-      await fetchAll();
-    } catch (error) {
-      console.error("Error loading events:", error);
-    }
-  }, [fetchAll]);
+    // Mock data already loaded
+  }, []);
 
   useEffect(() => {
     loadData();
@@ -188,14 +186,12 @@ export default function EventsUserScreen() {
       const query = debouncedQuery.toLowerCase();
       const matchesSearch = query.length === 0 ||
         event.title.toLowerCase().includes(query) ||
-        (event.description?.toLowerCase() || "").includes(query) ||
         event.location.toLowerCase().includes(query);
 
       if (!matchesSearch) return false;
 
       // Apply filters
       if (selectedFilters.includes("free") && (event.price ?? 0) > 0) return false;
-      if (selectedFilters.includes("today") && !isToday(new Date(event.date))) return false;
       if (selectedFilters.includes("music") && event.category !== "music") return false;
       if (selectedFilters.includes("tech") && event.category !== "tech") return false;
       if (selectedFilters.includes("sports") && event.category !== "sports") return false;
@@ -219,17 +215,13 @@ export default function EventsUserScreen() {
           return (a.price ?? 0) - (b.price ?? 0);
         case "price-desc":
           return (b.price ?? 0) - (a.price ?? 0);
-        case "rating":
-          return (b.rating ?? 0) - (a.rating ?? 0);
-        case "popularity":
-          return (b.attendees ?? 0) - (a.attendees ?? 0);
         default:
           return 0;
       }
     });
 
     return sortedEvents;
-  }, [allEvents, debouncedQuery, selectedFilters, selectedSort, priceRange, selectedDate, isToday]);
+  }, [allEvents, debouncedQuery, selectedFilters, selectedSort, priceRange, selectedDate]);
 
   const renderLoadingSkeletons = () => (
     <View style={{ paddingHorizontal: 20 }}>

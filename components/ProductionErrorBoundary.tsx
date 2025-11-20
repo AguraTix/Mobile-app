@@ -1,6 +1,5 @@
 import Colors from '@/constants/Colors';
-import { isDatabaseError } from '@/lib/errorHandler';
-import { AlertTriangle, RefreshCw, Shield } from 'lucide-react-native';
+import { AlertTriangle, RefreshCw } from 'lucide-react-native';
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -53,28 +52,19 @@ export class ProductionErrorBoundary extends Component<Props, State> {
 
   render() {
     if (this.state.hasError) {
-      const isDbError = this.state.error ? isDatabaseError(this.state.error) : false;
-
       return (
         <View style={styles.container}>
           <View style={styles.content}>
             <View style={styles.iconContainer}>
-              {isDbError ? (
-                <Shield size={64} color={Colors.primary} />
-              ) : (
-                <AlertTriangle size={64} color={Colors.primary} />
-              )}
+              <AlertTriangle size={64} color={Colors.primary} />
             </View>
             
             <Text style={styles.title}>
-              {isDbError ? 'Database Issue' : "Oops! Something went wrong"}
+              Oops! Something went wrong
             </Text>
             
             <Text style={styles.message}>
-              {isDbError 
-                ? "We're experiencing a technical issue with our database. Our team has been notified and is working to fix it."
-                : "We're sorry, but something unexpected happened. Our team has been notified."
-              }
+              We're sorry, but something unexpected happened. Our team has been notified.
             </Text>
             
             <View style={styles.buttonContainer}>

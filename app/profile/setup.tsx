@@ -1,24 +1,25 @@
+import Header from "@/components/Header";
+import Colors from "@/constants/Colors";
+import { Image } from "expo-image";
+import * as ImagePicker from "expo-image-picker";
+import { useRouter } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { ChevronLeft } from "lucide-react-native";
 import React, { useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  SafeAreaView,
-  TextInput,
+    SafeAreaView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
-import { Image } from "expo-image";
-import { useRouter } from "expo-router";
-import { ChevronLeft } from "lucide-react-native";
-import * as ImagePicker from "expo-image-picker";
-import { useAuthStore } from "@/store/auth-store";
-import Colors from "@/constants/Colors";
-import Header from "@/components/Header";
-import { StatusBar } from "expo-status-bar";
+
+const mockUser = { username: 'John Doe', email: 'john@example.com', phone: '+1234567890', profileImage: null };
 
 export default function MyAccountScreen() {
   const router = useRouter();
-  const { user, updateUser } = useAuthStore();
+  const user = mockUser;
 
   const [name, setName] = useState(user?.username || "Donye Collins");
   const [email, setEmail] = useState(user?.email || "Louis04real@gmail.com");

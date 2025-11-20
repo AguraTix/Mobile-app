@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import { getToken } from '@/lib/authToken';
 import Colors from '@/constants/Colors';
 
 interface SecureRouteProps {
@@ -26,7 +25,7 @@ export default function SecureRoute({
   const checkAuthentication = async () => {
     try {
       setIsLoading(true);
-      const token = await getToken();
+      const token =8976
       
       if (token) {
         // Token exists, consider user authenticated

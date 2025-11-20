@@ -1,7 +1,8 @@
-import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, ViewStyle } from 'react-native';
 import Colors from '@/constants/Colors';
-import { EventCategory } from '@/mocks/events';
+import React from 'react';
+import { StyleSheet, Text, TouchableOpacity, ViewStyle } from 'react-native';
+
+type EventCategory = 'music' | 'sports' | 'business' | 'tech' | 'other' | 'Sports' | 'Art' | 'Music' | 'Tech' | 'Culture' | 'Film';
 
 interface CategoryButtonProps {
   category: EventCategory;

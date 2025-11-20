@@ -1,48 +1,26 @@
 import Header from '@/components/Header';
 import Colors from '@/constants/Colors';
-import { MenuItem, useFoodStore } from '@/store/food-store';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { ChevronLeft } from 'lucide-react-native';
-import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+// Mock menu items
+const mockMenuItems = [
+  { id: '1', name: 'Burger', category: 'food', price: 5000, available: true },
+  { id: '2', name: 'Pizza', category: 'food', price: 8000, available: true },
+  { id: '3', name: 'Coke', category: 'drinks', price: 2000, available: true },
+];
 
 export default function EventMenuScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const [selectedTab, setSelectedTab] = useState<'menu' | 'orders'>('menu');
-  
-  const { 
-    menuItems, 
-    fetchMenuItems, 
-    setCurrentEventId,
-    loading, 
-    error,
-    clearError 
-  } = useFoodStore();
+  const currentMenuItems = mockMenuItems;
 
-  const loadMenuItems = useCallback(async () => {
-    if (!id) return;
-    
-    try {
-      clearError();
-      await fetchMenuItems(id);
-    } catch (error: any) {
-      console.error('Failed to load menu items:', error);
-    }
-  }, [id, clearError, fetchMenuItems]);
-
-  const currentMenuItems = id ? menuItems[id] || [] : [];
-
-  useEffect(() => {
-    if (id) {
-      setCurrentEventId(id);
-      loadMenuItems();
-    }
-  }, [id, setCurrentEventId, loadMenuItems]);
-
-  const handleOrderItem = (item: MenuItem) => {
+  const handleOrderItem = (item: any) => {
     if (!item.available) return;
     router.push(`/event/${id}/food-detail?itemId=${item.id}`);
   };
@@ -61,43 +39,13 @@ export default function EventMenuScreen() {
     }
   };
 
-  const groupedItems = currentMenuItems.reduce((acc, item) => {
+  const groupedItems = currentMenuItems.reduce((acc: any, item: any) => {
     if (!acc[item.category]) {
       acc[item.category] = [];
     }
     acc[item.category].push(item);
     return acc;
-  }, {} as Record<string, MenuItem[]>);
-
-  if (loading && currentMenuItems.length === 0) {
-    return (
-      <SafeAreaView style={styles.container} edges={['top']}>
-        <StatusBar style="light" />
-        <Header showLogo showProfile showSearch />
-        
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={Colors.primary} />
-          <Text style={styles.loadingText}>Loading menu...</Text>
-        </View>
-      </SafeAreaView>
-    );
-  }
-
-  if (error) {
-    return (
-      <SafeAreaView style={styles.container} edges={['top']}>
-        <StatusBar style="light" />
-        <Header showLogo showProfile showSearch />
-        
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>{error}</Text>
-          <TouchableOpacity style={styles.retryButton} onPress={loadMenuItems}>
-            <Text style={styles.retryButtonText}>Retry</Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
-    );
-  }
+  }, {});
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -153,7 +101,7 @@ export default function EventMenuScreen() {
                 </View>
                 
                 <View style={styles.itemsGrid}>
-                  {items.map((item) => (
+                  {(items as any[]).map((item: any) => (
                     <MenuItemComponent key={item.id} item={item} onPress={() => handleOrderItem(item)} />
                   ))}
                 </View>
@@ -167,7 +115,7 @@ export default function EventMenuScreen() {
 }
 
 // Menu Item Component
-const MenuItemComponent: React.FC<{ item: MenuItem; onPress: () => void }> = ({ item, onPress }) => (
+const MenuItemComponent: React.FC<{ item: any; onPress: () => void }> = ({ item, onPress }) => (
   <TouchableOpacity
     style={[styles.menuItem, !item.available && styles.menuItemDisabled]}
     onPress={onPress}
@@ -175,26 +123,15 @@ const MenuItemComponent: React.FC<{ item: MenuItem; onPress: () => void }> = ({ 
     activeOpacity={0.8}
   >
     <Image 
-      source={
-        item.image_url 
-          ? { uri: item.image_url }
-          : require('@/assets/images/m1.png')
-      } 
+      source={require('@/assets/images/m1.png')} 
       style={styles.menuItemImage} 
     />
     <View style={styles.menuItemContent}>
       <Text style={styles.menuItemName}>{item.name}</Text>
-      <Text style={styles.menuItemDescription} numberOfLines={2}>
-        {item.description}
-      </Text>
       <Text style={styles.menuItemPrice}>
-        {item.price.toLocaleString()} {item.currency}
+        {item.price.toLocaleString()} RWF
       </Text>
       <View style={styles.menuItemFooter}>
-        <View style={styles.ratingContainer}>
-          <Text style={styles.starIcon}>⭐</Text>
-          <Text style={styles.ratingText}>{item.rating?.toFixed(1) || '4.0'}+</Text>
-        </View>
         <View style={[
           styles.orderButton, 
           !item.available && styles.orderButtonDisabled

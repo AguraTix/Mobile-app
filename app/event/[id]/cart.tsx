@@ -1,35 +1,42 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import Header from '@/components/Header';
+import Colors from '@/constants/Colors';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { ChevronLeft, Minus, Plus } from 'lucide-react-native';
-import Colors from '@/constants/Colors';
-import Header from '@/components/Header';
-import { useFoodStore, CartItem } from '@/store/food-store';
+import React, { useState } from 'react';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+// Mock cart item type
+type CartItem = {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+  image_url?: string;
+};
 
 export default function CartScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
-  
-  const { 
-    cart, 
-    updateCartItem, 
-    removeFromCart, 
-    getCartTotal,
-    clearCart 
-  } = useFoodStore();
+  const [cart, setCart] = useState<CartItem[]>([]);
 
   const updateQuantity = (itemId: string, newQuantity: number) => {
-    updateCartItem(itemId, newQuantity);
+    if (newQuantity <= 0) {
+      setCart(cart.filter(item => item.id !== itemId));
+    } else {
+      setCart(cart.map(item => 
+        item.id === itemId ? { ...item, quantity: newQuantity } : item
+      ));
+    }
   };
 
   const removeItem = (itemId: string) => {
-    removeFromCart(itemId);
+    setCart(cart.filter(item => item.id !== itemId));
   };
 
   const calculateTotal = () => {
-    return getCartTotal();
+    return cart.reduce((sum: number, item: CartItem) => sum + (item.price * item.quantity), 0);
   };
 
   const handleProceedToCheckout = () => {
@@ -57,11 +64,8 @@ export default function CartScreen() {
       
       <View style={styles.itemContent}>
         <Text style={styles.itemName}>{item.name}</Text>
-        <Text style={styles.itemDescription} numberOfLines={2}>
-          {item.description}
-        </Text>
         <Text style={styles.itemPrice}>
-          {item.price.toLocaleString()} {item.currency} each
+          {item.price.toLocaleString()} RWF each
         </Text>
       </View>
 
@@ -85,7 +89,7 @@ export default function CartScreen() {
         </View>
         
         <Text style={styles.itemTotal}>
-          {item.total.toLocaleString()} {item.currency}
+          {(item.price * item.quantity).toLocaleString()} RWF
         </Text>
         
         <TouchableOpacity 
@@ -119,7 +123,7 @@ export default function CartScreen() {
           </TouchableOpacity>
           <Text style={styles.screenTitle}>Your Cart</Text>
           {cart.length > 0 && (
-            <TouchableOpacity onPress={clearCart} style={styles.clearButton}>
+            <TouchableOpacity onPress={() => setCart([])} style={styles.clearButton}>
               <Text style={styles.clearButtonText}>Clear</Text>
             </TouchableOpacity>
           )}
