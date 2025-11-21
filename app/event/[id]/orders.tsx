@@ -5,7 +5,7 @@ import { FoodOrder } from '@/types/backend';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function EventOrdersScreen() {
@@ -36,39 +36,39 @@ export default function EventOrdersScreen() {
 
   // Order Item Component
   const OrderItem = ({ order }: { order: FoodOrder }) => (
-    <View style={styles.orderItem}>
-      <View style={styles.orderImageContainer}>
+    <View className="flex-row items-center bg-[#1C1C1E] rounded-2xl p-4 mb-3 relative">
+      <View className="w-12 h-12 rounded-xl overflow-hidden mr-4">
         <Image
           source={require('@/assets/images/m1.png')}
-          style={styles.orderImage}
+          className="w-full h-full"
         />
       </View>
-      <View style={styles.orderContent}>
-        <Text style={styles.orderName}>Food Order</Text>
-        <Text style={styles.orderDescription}>
+      <View className="flex-1">
+        <Text className="text-text text-base font-semibold mb-1">Food Order</Text>
+        <Text className="text-text-secondary text-sm mb-1">
           {order.special_instructions || 'No special instructions'}
         </Text>
-        <Text style={styles.orderPrice}>
+        <Text className="text-text text-sm font-medium">
           Qty: {order.quantity}
         </Text>
       </View>
-      <View style={styles.orderActions}>
-        <Text style={styles.orderQuantity}>{order.quantity}</Text>
+      <View className="items-end">
+        <Text className="text-text text-base font-bold mb-2">{order.quantity}</Text>
         <TouchableOpacity
-          style={styles.orderAgainButton}
+          className="bg-primary px-3 py-1.5 rounded-xl"
           onPress={() => handleOrderAgain(order)}
         >
-          <Text style={styles.orderAgainText}>Order again</Text>
+          <Text className="text-text text-xs font-semibold">Order again</Text>
         </TouchableOpacity>
       </View>
-      <View style={styles.statusBadge}>
-        <Text style={styles.statusText}>✓</Text>
+      <View className="absolute top-2 right-2 w-6 h-6 rounded-full bg-[#4CAF50] items-center justify-center">
+        <Text className="text-white text-xs font-bold">✓</Text>
       </View>
     </View>
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView className="flex-1 bg-background" edges={['top']}>
       <StatusBar style="light" />
       <Header
         showLogo
@@ -77,32 +77,32 @@ export default function EventOrdersScreen() {
         onSearchPress={() => { }}
       />
 
-      <View style={styles.content}>
-        <View style={styles.titleRow}>
-          <Text style={styles.screenTitle}>Event Orders</Text>
+      <View className="flex-1">
+        <View className="flex-row justify-between items-center px-5 mb-5">
+          <Text className="text-text text-lg font-bold">Event Orders</Text>
           <TouchableOpacity>
-            <Text style={styles.recentText}>Recent</Text>
+            <Text className="text-text-secondary text-sm">Recent</Text>
           </TouchableOpacity>
         </View>
 
         {/* Tab Navigation */}
-        <View style={styles.tabContainer}>
+        <View className="flex-row mx-5 mb-5 bg-[#1C1C1E] rounded-3xl p-1">
           <TouchableOpacity
-            style={[styles.tab, selectedTab === 'menu' && styles.tabActive]}
+            className={`flex-1 py-3 items-center rounded-3xl ${selectedTab === 'menu' ? 'bg-primary' : ''}`}
             onPress={() => {
               setSelectedTab('menu');
               router.push(`/event/${id}/menu`);
             }}
           >
-            <Text style={[styles.tabText, selectedTab === 'menu' && styles.tabTextActive]}>
+            <Text className={`text-sm font-medium ${selectedTab === 'menu' ? 'text-text font-semibold' : 'text-text-secondary'}`}>
               Menu
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.tab, selectedTab === 'orders' && styles.tabActive]}
+            className={`flex-1 py-3 items-center rounded-3xl ${selectedTab === 'orders' ? 'bg-primary' : ''}`}
             onPress={() => setSelectedTab('orders')}
           >
-            <Text style={[styles.tabText, selectedTab === 'orders' && styles.tabTextActive]}>
+            <Text className={`text-sm font-medium ${selectedTab === 'orders' ? 'text-text font-semibold' : 'text-text-secondary'}`}>
               Orders
             </Text>
           </TouchableOpacity>
@@ -110,18 +110,18 @@ export default function EventOrdersScreen() {
 
         {/* Orders List */}
         <ScrollView
-          style={styles.ordersList}
-          contentContainerStyle={styles.ordersListContent}
+          className="flex-1"
+          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 32 }}
           showsVerticalScrollIndicator={false}
         >
           {isLoading ? (
-            <View style={styles.loadingContainer}>
+            <View className="py-16 items-center justify-center">
               <ActivityIndicator size="large" color={Colors.primary} />
-              <Text style={styles.loadingText}>Loading orders...</Text>
+              <Text className="text-text-secondary text-base mt-4">Loading orders...</Text>
             </View>
           ) : orders.length === 0 ? (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyStateText}>No orders yet</Text>
+            <View className="py-16 items-center justify-center">
+              <Text className="text-text-secondary text-base text-center leading-6">No orders yet</Text>
             </View>
           ) : (
             orders.map((order) => (
@@ -133,158 +133,3 @@ export default function EventOrdersScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  content: {
-    flex: 1,
-  },
-  titleRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
-  screenTitle: {
-    color: Colors.text,
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  recentText: {
-    color: Colors.textSecondary,
-    fontSize: 14,
-  },
-  tabContainer: {
-    flexDirection: 'row',
-    marginHorizontal: 20,
-    marginBottom: 20,
-    backgroundColor: '#1C1C1E',
-    borderRadius: 25,
-    padding: 4,
-  },
-  tab: {
-    flex: 1,
-    paddingVertical: 12,
-    alignItems: 'center',
-    borderRadius: 20,
-  },
-  tabActive: {
-    backgroundColor: Colors.primary,
-  },
-  tabText: {
-    color: Colors.textSecondary,
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  tabTextActive: {
-    color: Colors.text,
-    fontWeight: '600',
-  },
-  ordersList: {
-    flex: 1,
-  },
-  ordersListContent: {
-    paddingHorizontal: 20,
-    paddingBottom: 32,
-  },
-  orderItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#1C1C1E',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 12,
-    position: 'relative',
-  },
-  orderImageContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-    overflow: 'hidden',
-    marginRight: 16,
-  },
-  orderImage: {
-    width: '100%',
-    height: '100%',
-  },
-  orderContent: {
-    flex: 1,
-  },
-  orderName: {
-    color: Colors.text,
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  orderDescription: {
-    color: Colors.textSecondary,
-    fontSize: 14,
-    marginBottom: 4,
-  },
-  orderPrice: {
-    color: Colors.text,
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  orderActions: {
-    alignItems: 'flex-end',
-  },
-  orderQuantity: {
-    color: Colors.text,
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  orderAgainButton: {
-    backgroundColor: Colors.primary,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
-  },
-  orderAgainText: {
-    color: Colors.text,
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  statusBadge: {
-    position: 'absolute',
-    top: 8,
-    right: 8,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: '#4CAF50',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  statusText: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
-  emptyState: {
-    paddingVertical: 64,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyStateText: {
-    color: Colors.textSecondary,
-    fontSize: 16,
-    textAlign: 'center',
-    lineHeight: 24,
-  },
-  loadingContainer: {
-    paddingVertical: 64,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  loadingText: {
-    color: Colors.textSecondary,
-    fontSize: 16,
-    marginTop: 16,
-  },
-});

@@ -1,14 +1,13 @@
 import Colors from "@/constants/Colors";
 import { useOrder } from "@/contexts/OrderContext";
 import { usePayment } from "@/contexts/PaymentContext";
+import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   ScrollView,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -62,11 +61,11 @@ export default function PaymentSuccessScreen() {
 
   if (isLoading || orderProcessing || paymentLoading) {
     return (
-      <SafeAreaView style={styles.container} edges={["top"]}>
+      <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
         <StatusBar style="light" />
-        <View style={styles.loadingContainer}>
+        <View className="flex-1 justify-center items-center">
           <ActivityIndicator size="large" color={Colors.primary} />
-          <Text style={styles.loadingText}>Loading order details...</Text>
+          <Text className="text-text text-base mt-4">Loading order details...</Text>
         </View>
       </SafeAreaView>
     );
@@ -77,15 +76,15 @@ export default function PaymentSuccessScreen() {
 
   if (!order) {
     return (
-      <SafeAreaView style={styles.container} edges={["top"]}>
+      <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
         <StatusBar style="light" />
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorTitle}>Order Not Found</Text>
-          <Text style={styles.errorMessage}>
+        <View className="flex-1 justify-center items-center px-5">
+          <Text className="text-text text-xl font-bold mb-3 text-center">Order Not Found</Text>
+          <Text className="text-text-secondary text-base text-center leading-6 mb-8 px-5">
             We couldn't find the order details. Please check your tickets or contact support.
           </Text>
-          <TouchableOpacity style={styles.primaryButton} onPress={handleGoHome}>
-            <Text style={styles.primaryButtonText}>Go Home</Text>
+          <TouchableOpacity className="flex-row items-center justify-center bg-primary rounded-xl py-4 px-4 mx-1" onPress={handleGoHome}>
+            <Text className="text-white text-base font-semibold mx-2">Go Home</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -93,44 +92,44 @@ export default function PaymentSuccessScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       <StatusBar style="light" />
-      
-      <ScrollView 
-        style={styles.content}
-        contentContainerStyle={styles.scrollContent}
+
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{ padding: 20, paddingBottom: 200 }}
         showsVerticalScrollIndicator={false}
       >
         {/* Success Header */}
-        <View style={styles.successHeader}>
-          <View style={styles.successIconContainer}>
+        <View className="items-center py-8 mb-6">
+          <View className="mb-4">
             <Ionicons name="checkmark-circle" size={64} color="#34C759" />
           </View>
-          <Text style={styles.successTitle}>Payment Successful!</Text>
-          <Text style={styles.successMessage}>
+          <Text className="text-text text-2xl font-bold mb-3 text-center">Payment Successful!</Text>
+          <Text className="text-text-secondary text-base text-center leading-6 max-w-[300px]">
             Your tickets have been purchased successfully. You will receive a confirmation email shortly.
           </Text>
         </View>
 
         {/* Order Details */}
-        <View style={styles.orderContainer}>
-          <Text style={styles.sectionTitle}>Order Details</Text>
-          
-          <View style={styles.orderRow}>
-            <Text style={styles.orderLabel}>Order ID:</Text>
-            <Text style={styles.orderValue}>{order.order_id}</Text>
+        <View className="bg-card rounded-2xl p-5 mb-5">
+          <Text className="text-text text-lg font-bold mb-4">Order Details</Text>
+
+          <View className="flex-row justify-between items-center mb-3">
+            <Text className="text-text-secondary text-sm">Order ID:</Text>
+            <Text className="text-text text-sm font-medium">{order.order_id}</Text>
           </View>
-          
-          <View style={styles.orderRow}>
-            <Text style={styles.orderLabel}>Date:</Text>
-            <Text style={styles.orderValue}>
+
+          <View className="flex-row justify-between items-center mb-3">
+            <Text className="text-text-secondary text-sm">Date:</Text>
+            <Text className="text-text text-sm font-medium">
               {order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}
             </Text>
           </View>
-          
-          <View style={styles.orderRow}>
-            <Text style={styles.orderLabel}>Status:</Text>
-            <Text style={[styles.orderValue, styles.statusText]}>
+
+          <View className="flex-row justify-between items-center mb-3">
+            <Text className="text-text-secondary text-sm">Status:</Text>
+            <Text className="text-[#34C759] font-semibold">
               {order.order_status.charAt(0).toUpperCase() + order.order_status.slice(1)}
             </Text>
           </View>
@@ -138,24 +137,24 @@ export default function PaymentSuccessScreen() {
 
         {/* Payment Details */}
         {payment && (
-          <View style={styles.paymentContainer}>
-            <Text style={styles.sectionTitle}>Payment Details</Text>
-            
-            <View style={styles.orderRow}>
-              <Text style={styles.orderLabel}>Payment ID:</Text>
-              <Text style={styles.orderValue}>{payment.payment_id}</Text>
+          <View className="bg-card rounded-2xl p-5 mb-5">
+            <Text className="text-text text-lg font-bold mb-4">Payment Details</Text>
+
+            <View className="flex-row justify-between items-center mb-3">
+              <Text className="text-text-secondary text-sm">Payment ID:</Text>
+              <Text className="text-text text-sm font-medium">{payment.payment_id}</Text>
             </View>
-            
-            <View style={styles.orderRow}>
-              <Text style={styles.orderLabel}>Method:</Text>
-              <Text style={styles.orderValue}>
+
+            <View className="flex-row justify-between items-center mb-3">
+              <Text className="text-text-secondary text-sm">Method:</Text>
+              <Text className="text-text text-sm font-medium">
                 {payment.payment_method.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
               </Text>
             </View>
-            
-            <View style={styles.orderRow}>
-              <Text style={styles.orderLabel}>Status:</Text>
-              <Text style={[styles.orderValue, styles.statusText]}>
+
+            <View className="flex-row justify-between items-center mb-3">
+              <Text className="text-text-secondary text-sm">Status:</Text>
+              <Text className="text-[#34C759] font-semibold">
                 {payment.payment_status.charAt(0).toUpperCase() + payment.payment_status.slice(1)}
               </Text>
             </View>
@@ -163,22 +162,22 @@ export default function PaymentSuccessScreen() {
         )}
 
         {/* Ticket Summary */}
-        <View style={styles.ticketsContainer}>
-          <Text style={styles.sectionTitle}>Tickets</Text>
-          
+        <View className="bg-card rounded-2xl p-5 mb-5">
+          <Text className="text-text text-lg font-bold mb-4">Tickets</Text>
+
           {order.quantity && (
-            <View style={styles.ticketItem}>
-              <View style={styles.ticketHeader}>
+            <View className="mb-4 pb-4 border-b border-border">
+              <View className="flex-row items-center mb-3">
                 <Ionicons name="ticket" size={20} color={Colors.primary} />
-                <Text style={styles.ticketTitle}>Food Order</Text>
+                <Text className="text-text text-base font-semibold ml-3">Food Order</Text>
               </View>
-              
-              <View style={styles.ticketDetails}>
-                <Text style={styles.ticketDetail}>
+
+              <View className="ml-8">
+                <Text className="text-text-secondary text-sm mb-1">
                   Quantity: {order.quantity}
                 </Text>
                 {order.special_instructions && (
-                  <Text style={styles.ticketDetail}>
+                  <Text className="text-text-secondary text-sm mb-1">
                     Instructions: {order.special_instructions}
                   </Text>
                 )}
@@ -188,40 +187,40 @@ export default function PaymentSuccessScreen() {
         </View>
 
         {/* Next Steps */}
-        <View style={styles.nextStepsContainer}>
-          <Text style={styles.sectionTitle}>What's Next?</Text>
-          
-          <View style={styles.stepItem}>
-            <View style={styles.stepNumber}>
-              <Text style={styles.stepNumberText}>1</Text>
+        <View className="bg-card rounded-2xl p-5 mb-5">
+          <Text className="text-text text-lg font-bold mb-4">What's Next?</Text>
+
+          <View className="flex-row items-start mb-5">
+            <View className="w-8 h-8 rounded-full bg-primary items-center justify-center mr-4">
+              <Text className="text-white text-base font-bold">1</Text>
             </View>
-            <View style={styles.stepContent}>
-              <Text style={styles.stepTitle}>Check Your Email</Text>
-              <Text style={styles.stepDescription}>
+            <View className="flex-1">
+              <Text className="text-text text-base font-semibold mb-1">Check Your Email</Text>
+              <Text className="text-text-secondary text-sm leading-5">
                 You'll receive a confirmation email with your tickets attached
               </Text>
             </View>
           </View>
-          
-          <View style={styles.stepItem}>
-            <View style={styles.stepNumber}>
-              <Text style={styles.stepNumberText}>2</Text>
+
+          <View className="flex-row items-start mb-5">
+            <View className="w-8 h-8 rounded-full bg-primary items-center justify-center mr-4">
+              <Text className="text-white text-base font-bold">2</Text>
             </View>
-            <View style={styles.stepContent}>
-              <Text style={styles.stepTitle}>Download Tickets</Text>
-              <Text style={styles.stepDescription}>
+            <View className="flex-1">
+              <Text className="text-text text-base font-semibold mb-1">Download Tickets</Text>
+              <Text className="text-text-secondary text-sm leading-5">
                 Download your tickets and save them to your phone
               </Text>
             </View>
           </View>
-          
-          <View style={styles.stepItem}>
-            <View style={styles.stepNumber}>
-              <Text style={styles.stepNumberText}>3</Text>
+
+          <View className="flex-row items-start mb-5">
+            <View className="w-8 h-8 rounded-full bg-primary items-center justify-center mr-4">
+              <Text className="text-white text-base font-bold">3</Text>
             </View>
-            <View style={styles.stepContent}>
-              <Text style={styles.stepTitle}>Attend the Event</Text>
-              <Text style={styles.stepDescription}>
+            <View className="flex-1">
+              <Text className="text-text text-base font-semibold mb-1">Attend the Event</Text>
+              <Text className="text-text-secondary text-sm leading-5">
                 Present your tickets at the event entrance
               </Text>
             </View>
@@ -230,287 +229,32 @@ export default function PaymentSuccessScreen() {
       </ScrollView>
 
       {/* Action Buttons */}
-      <View style={styles.bottomContainer}>
-        <View style={styles.buttonRow}>
-          <TouchableOpacity style={styles.secondaryButton} onPress={handleDownloadTickets}>
+      <View className="absolute bottom-0 left-0 right-0 bg-background px-5 py-4 border-t border-border">
+        <View className="flex-row mb-3">
+          <TouchableOpacity className="flex-1 flex-row items-center justify-center bg-card rounded-xl py-4 px-4 mx-1 border border-primary" onPress={handleDownloadTickets}>
             <Ionicons name="download" size={20} color={Colors.primary} />
-            <Text style={styles.secondaryButtonText}>Download</Text>
+            <Text className="text-primary text-sm font-semibold ml-2">Download</Text>
           </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.secondaryButton} onPress={handleShareOrder}>
+
+          <TouchableOpacity className="flex-1 flex-row items-center justify-center bg-card rounded-xl py-4 px-4 mx-1 border border-primary" onPress={handleShareOrder}>
             <Ionicons name="share-social" size={20} color={Colors.primary} />
-            <Text style={styles.secondaryButtonText}>Share</Text>
+            <Text className="text-primary text-sm font-semibold ml-2">Share</Text>
           </TouchableOpacity>
         </View>
-        
-        <View style={styles.buttonRow}>
-          <TouchableOpacity style={styles.primaryButton} onPress={handleViewTickets}>
+
+        <View className="flex-row mb-3">
+          <TouchableOpacity className="flex-1 flex-row items-center justify-center bg-primary rounded-xl py-4 px-4 mx-1" onPress={handleViewTickets}>
             <Ionicons name="ticket" size={20} color="#FFFFFF" />
-            <Text style={styles.primaryButtonText}>View My Tickets</Text>
+            <Text className="text-white text-base font-semibold mx-2">View My Tickets</Text>
             <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
           </TouchableOpacity>
         </View>
-        
-        <TouchableOpacity style={styles.homeButton} onPress={handleGoHome}>
+
+        <TouchableOpacity className="flex-row items-center justify-center py-4" onPress={handleGoHome}>
           <Ionicons name="home" size={20} color={Colors.textSecondary} />
-          <Text style={styles.homeButtonText}>Back to Home</Text>
+          <Text className="text-text-secondary text-sm ml-2">Back to Home</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  content: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: 20,
-    paddingBottom: 200,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    color: Colors.text,
-    fontSize: 16,
-    marginTop: 16,
-  },
-
-  // Success Header
-  successHeader: {
-    alignItems: 'center',
-    paddingVertical: 32,
-    marginBottom: 24,
-  },
-  successIconContainer: {
-    marginBottom: 16,
-  },
-  successTitle: {
-    color: Colors.text,
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  successMessage: {
-    color: Colors.textSecondary,
-    fontSize: 16,
-    textAlign: 'center',
-    lineHeight: 24,
-    maxWidth: 300,
-  },
-
-  // Order Container
-  orderContainer: {
-    backgroundColor: Colors.card,
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 20,
-  },
-  sectionTitle: {
-    color: Colors.text,
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 16,
-  },
-  orderRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  orderLabel: {
-    color: Colors.textSecondary,
-    fontSize: 14,
-  },
-  orderValue: {
-    color: Colors.text,
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  statusText: {
-    color: '#34C759',
-    fontWeight: '600',
-  },
-  amountText: {
-    color: Colors.primary,
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-
-  // Payment Container
-  paymentContainer: {
-    backgroundColor: Colors.card,
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 20,
-  },
-
-  // Tickets Container
-  ticketsContainer: {
-    backgroundColor: Colors.card,
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 20,
-  },
-  ticketItem: {
-    marginBottom: 16,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-  },
-  ticketHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  ticketTitle: {
-    color: Colors.text,
-    fontSize: 16,
-    fontWeight: '600',
-    marginLeft: 12,
-  },
-  ticketDetails: {
-    marginLeft: 32,
-  },
-  ticketDetail: {
-    color: Colors.textSecondary,
-    fontSize: 14,
-    marginBottom: 4,
-  },
-
-  // Next Steps
-  nextStepsContainer: {
-    backgroundColor: Colors.card,
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 20,
-  },
-  stepItem: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 20,
-  },
-  stepNumber: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: Colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 16,
-  },
-  stepNumberText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  stepContent: {
-    flex: 1,
-  },
-  stepTitle: {
-    color: Colors.text,
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  stepDescription: {
-    color: Colors.textSecondary,
-    fontSize: 14,
-    lineHeight: 20,
-  },
-
-  // Error Container
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  errorTitle: {
-    color: Colors.text,
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  errorMessage: {
-    color: Colors.textSecondary,
-    fontSize: 16,
-    textAlign: 'center',
-    lineHeight: 24,
-    marginBottom: 32,
-  },
-
-  // Bottom Container
-  bottomContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: Colors.background,
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border,
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    marginBottom: 12,
-  },
-  secondaryButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Colors.card,
-    borderRadius: 12,
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    marginHorizontal: 4,
-    borderWidth: 1,
-    borderColor: Colors.primary,
-  },
-  secondaryButtonText: {
-    color: Colors.primary,
-    fontSize: 14,
-    fontWeight: '600',
-    marginLeft: 8,
-  },
-  primaryButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Colors.primary,
-    borderRadius: 12,
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    marginHorizontal: 4,
-  },
-  primaryButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
-    marginLeft: 8,
-    marginRight: 8,
-  },
-  homeButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 16,
-  },
-  homeButtonText: {
-    color: Colors.textSecondary,
-    fontSize: 14,
-    marginLeft: 8,
-  },
-});

@@ -6,7 +6,7 @@ import EventMenuScreen from './event/[id]/menu';
 export default function MenuTabScreen() {
     // You may want to pass props or params here if needed
     return (
-        <View style={{ flex: 1 }}>
+        <View className="flex-1">
             <EventMenuScreen />
             <BottomNav />
         </View>

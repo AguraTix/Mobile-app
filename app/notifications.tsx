@@ -1,10 +1,10 @@
 import Header from '@/components/Header';
 import Colors from '@/constants/Colors';
+import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { Ionicons } from "@expo/vector-icons";
-import React, { useCallback, useEffect, useState, useMemo } from 'react';
-import { RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface Notification {
@@ -25,10 +25,10 @@ interface NotificationItemProps {
 
 const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onPress }) => {
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('en-US', { 
-      hour: 'numeric', 
+    return date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
       minute: '2-digit',
-      hour12: true 
+      hour12: true
     });
   };
 
@@ -46,24 +46,28 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onPre
   };
 
   return (
-    <TouchableOpacity style={styles.notificationItem} onPress={onPress} activeOpacity={0.8}>
-      <View style={styles.notificationIcon}>
-        <Text style={styles.iconText}>{getNotificationIcon(notification.type)}</Text>
+    <TouchableOpacity
+      className="flex-row items-start py-3 border-b border-white/10"
+      onPress={onPress}
+      activeOpacity={0.8}
+    >
+      <View className="w-10 h-10 rounded-full bg-[#4CAF50] items-center justify-center mr-3">
+        <Text className="text-white text-lg font-bold">{getNotificationIcon(notification.type)}</Text>
       </View>
-      
-      <View style={styles.notificationContent}>
-        <Text style={styles.notificationTitle}>{notification.title}</Text>
-        <Text style={styles.notificationMessage}>{notification.message}</Text>
-        
+
+      <View className="flex-1 pr-3">
+        <Text className="text-text text-base font-semibold mb-1">{notification.title}</Text>
+        <Text className="text-text-secondary text-sm leading-5 mb-2">{notification.message}</Text>
+
         {notification.actionText && (
-          <TouchableOpacity style={styles.actionButton}>
-            <Text style={styles.actionButtonText}>{notification.actionText}</Text>
+          <TouchableOpacity className="self-start">
+            <Text className="text-primary text-sm font-semibold">{notification.actionText}</Text>
           </TouchableOpacity>
         )}
       </View>
-      
-      <View style={styles.timestampContainer}>
-        <Text style={styles.timestamp}>{formatTime(notification.timestamp)}</Text>
+
+      <View className="justify-center">
+        <Text className="text-text-secondary text-xs text-right">{formatTime(notification.timestamp)}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -175,11 +179,11 @@ export default function NotificationsScreen() {
   const groupNotificationsByDate = (notifications: Notification[]) => {
     const today = new Date();
     const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
-    
+
     const isToday = (date: Date) => {
       return date.toDateString() === today.toDateString();
     };
-    
+
     const isYesterday = (date: Date) => {
       return date.toDateString() === yesterday.toDateString();
     };
@@ -201,8 +205,8 @@ export default function NotificationsScreen() {
     if (notifications.length === 0) return null;
 
     return (
-      <View style={styles.notificationGroup} key={title}>
-        <Text style={styles.groupTitle}>{title}</Text>
+      <View className="mb-6" key={title}>
+        <Text className="text-text text-base font-bold mb-4">{title}</Text>
         {notifications.map((notification) => (
           <NotificationItem
             key={notification.id}
@@ -215,22 +219,22 @@ export default function NotificationsScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView className="flex-1 bg-background" edges={['top']}>
       <StatusBar style="light" />
       <Header showLogo showProfile showSearch />
-      
-      <View style={styles.content}>
-        <View style={styles.titleRow}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+
+      <View className="flex-1 px-5">
+        <View className="flex-row items-center mb-6">
+          <TouchableOpacity onPress={() => router.back()} className="mr-3 p-1">
             <Ionicons name="chevron-back" size={24} color={Colors.text} />
           </TouchableOpacity>
-          <Text style={styles.screenTitle}>Notifications</Text>
+          <Text className="text-text text-lg font-bold">Notifications</Text>
         </View>
 
-        <View style={styles.notificationsContainer}>
+        <View className="flex-1 bg-card rounded-2xl border-2 border-[#007AFF] border-dashed p-5">
           <ScrollView
-            style={styles.scrollView}
-            contentContainerStyle={styles.scrollContent}
+            className="flex-1"
+            contentContainerStyle={{ paddingBottom: 20 }}
             showsVerticalScrollIndicator={false}
             refreshControl={
               <RefreshControl
@@ -243,11 +247,11 @@ export default function NotificationsScreen() {
             {renderNotificationGroup('Today', groupedNotifications.today)}
             {renderNotificationGroup('Yesterday', groupedNotifications.yesterday)}
             {renderNotificationGroup('Older', groupedNotifications.older)}
-            
+
             {notifications.length === 0 && (
-              <View style={styles.emptyState}>
-                <Text style={styles.emptyStateText}>No notifications yet</Text>
-                <Text style={styles.emptyStateSubtext}>
+              <View className="items-center justify-center py-16">
+                <Text className="text-text text-lg font-semibold mb-2">No notifications yet</Text>
+                <Text className="text-text-secondary text-sm text-center leading-5">
                   You&apos;ll see your notifications here when you have some
                 </Text>
               </View>
@@ -258,122 +262,3 @@ export default function NotificationsScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  backBtn: {
-    marginRight: 12,
-    padding: 4,
-  },
-  screenTitle: {
-    color: Colors.text,
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  notificationsContainer: {
-    flex: 1,
-    backgroundColor: Colors.card,
-    borderRadius: 16,
-    borderWidth: 2,
-    borderColor: '#007AFF',
-    borderStyle: 'dashed',
-    padding: 20,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingBottom: 20,
-  },
-  notificationGroup: {
-    marginBottom: 24,
-  },
-  groupTitle: {
-    color: Colors.text,
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 16,
-  },
-  notificationItem: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  notificationIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#4CAF50',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  iconText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  notificationContent: {
-    flex: 1,
-    paddingRight: 12,
-  },
-  notificationTitle: {
-    color: Colors.text,
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  notificationMessage: {
-    color: Colors.textSecondary,
-    fontSize: 14,
-    lineHeight: 20,
-    marginBottom: 8,
-  },
-  actionButton: {
-    alignSelf: 'flex-start',
-  },
-  actionButtonText: {
-    color: Colors.primary,
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  timestampContainer: {
-    justifyContent: 'center',
-  },
-  timestamp: {
-    color: Colors.textSecondary,
-    fontSize: 12,
-    textAlign: 'right',
-  },
-  emptyState: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 60,
-  },
-  emptyStateText: {
-    color: Colors.text,
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 8,
-  },
-  emptyStateSubtext: {
-    color: Colors.textSecondary,
-    fontSize: 14,
-    textAlign: 'center',
-    lineHeight: 20,
-  },
-});

@@ -1,7 +1,6 @@
-import React, { Component, ReactNode } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import Colors from '@/constants/Colors';
+import React, { Component, ReactNode } from 'react';
+import { Alert, Text, TouchableOpacity, View } from 'react-native';
 
 interface Props {
   children: ReactNode;
@@ -27,7 +26,7 @@ export class ErrorBoundary extends Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
     this.setState({ error, errorInfo });
-    
+
     // Log to production error reporting service
     if (__DEV__) {
       console.log('Error details:', { error, errorInfo });
@@ -53,32 +52,38 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <View style={styles.container}>
+        <View className="flex-1">
           <LinearGradient
             colors={['#e6007e', '#c2185b', '#ad1457']}
-            style={styles.background}
+            className="flex-1 justify-center items-center"
           >
-            <View style={styles.content}>
-              <Text style={styles.title}>Oops! Something went wrong</Text>
-              <Text style={styles.message}>
+            <View className="p-5 items-center max-w-[300px]">
+              <Text className="text-2xl font-bold text-white text-center mb-4">Oops! Something went wrong</Text>
+              <Text className="text-base text-white text-center mb-8 leading-[22px]">
                 We're sorry, but something unexpected happened. Our team has been notified.
               </Text>
-              
-              <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.retryButton} onPress={this.handleRetry}>
-                  <Text style={styles.retryButtonText}>Try Again</Text>
+
+              <View className="flex-row gap-4">
+                <TouchableOpacity
+                  className="bg-white px-6 py-3 rounded-lg min-w-[100px]"
+                  onPress={this.handleRetry}
+                >
+                  <Text className="text-[#e6007e] text-base font-semibold text-center">Try Again</Text>
                 </TouchableOpacity>
-                
-                <TouchableOpacity style={styles.reportButton} onPress={this.handleReportError}>
-                  <Text style={styles.reportButtonText}>Report Issue</Text>
+
+                <TouchableOpacity
+                  className="bg-white/20 px-6 py-3 rounded-lg min-w-[100px] border border-white"
+                  onPress={this.handleReportError}
+                >
+                  <Text className="text-white text-base font-semibold text-center">Report Issue</Text>
                 </TouchableOpacity>
               </View>
-              
+
               {__DEV__ && this.state.error && (
-                <View style={styles.debugInfo}>
-                  <Text style={styles.debugTitle}>Debug Information:</Text>
-                  <Text style={styles.debugText}>{this.state.error.message}</Text>
-                  <Text style={styles.debugText}>{this.state.error.stack}</Text>
+                <View className="mt-8 p-4 bg-black/30 rounded-lg w-full">
+                  <Text className="text-sm font-semibold text-white mb-2">Debug Information:</Text>
+                  <Text className="text-xs text-white/80 mb-1">{this.state.error.message}</Text>
+                  <Text className="text-xs text-white/80">{this.state.error.stack}</Text>
                 </View>
               )}
             </View>
@@ -90,84 +95,3 @@ export class ErrorBoundary extends Component<Props, State> {
     return this.props.children;
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  background: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  content: {
-    padding: 20,
-    alignItems: 'center',
-    maxWidth: 300,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    textAlign: 'center',
-    marginBottom: 16,
-  },
-  message: {
-    fontSize: 16,
-    color: '#ffffff',
-    textAlign: 'center',
-    marginBottom: 32,
-    lineHeight: 22,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    gap: 16,
-  },
-  retryButton: {
-    backgroundColor: '#ffffff',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
-    minWidth: 100,
-  },
-  retryButtonText: {
-    color: '#e6007e',
-    fontSize: 16,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  reportButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
-    minWidth: 100,
-    borderWidth: 1,
-    borderColor: '#ffffff',
-  },
-  reportButtonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  debugInfo: {
-    marginTop: 32,
-    padding: 16,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    borderRadius: 8,
-    width: '100%',
-  },
-  debugTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#ffffff',
-    marginBottom: 8,
-  },
-  debugText: {
-    fontSize: 12,
-    color: '#ffffff',
-    opacity: 0.8,
-    marginBottom: 4,
-  },
-});

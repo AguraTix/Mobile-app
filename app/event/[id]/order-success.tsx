@@ -1,15 +1,14 @@
 import Header from '@/components/Header';
-import Colors from '@/constants/Colors';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useRef } from 'react';
-import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function OrderSuccessScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
-  
+
   // Animation refs
   const checkmarkScale = useRef(new Animated.Value(0)).current;
   const checkmarkRotate = useRef(new Animated.Value(0)).current;
@@ -66,7 +65,7 @@ export default function OrderSuccessScreen() {
           }),
         ]).start(() => animateDots());
       };
-      
+
       setTimeout(animateDots, 1000);
     };
 
@@ -87,157 +86,75 @@ export default function OrderSuccessScreen() {
     const dots = [];
     const dotCount = 8;
     const radius = 80;
-    
+
     for (let i = 0; i < dotCount; i++) {
       const angle = (i * 360) / dotCount;
       const x = Math.cos((angle * Math.PI) / 180) * radius;
       const y = Math.sin((angle * Math.PI) / 180) * radius;
-      
+
       dots.push(
         <Animated.View
           key={i}
-          style={[
-            styles.dot,
-            {
-              transform: [
-                { translateX: x },
-                { translateY: y },
-                { scale: dotsScale },
-              ],
-              opacity: dotsOpacity,
-            },
-          ]}
+          className="absolute w-2 h-2 rounded-full bg-[#4CAF50]"
+          style={{
+            transform: [
+              { translateX: x },
+              { translateY: y },
+              { scale: dotsScale },
+            ],
+            opacity: dotsOpacity,
+          }}
         />
       );
     }
-    
+
     return dots;
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView className="flex-1 bg-background" edges={['top']}>
       <StatusBar style="light" />
       <Header
         showLogo
         showProfile
         showSearch
-        onSearchPress={() => {}}
+        onSearchPress={() => { }}
       />
-      
-      <View style={styles.content}>
-        <View style={styles.successContainer}>
-          <View style={styles.animationContainer}>
+
+      <View className="flex-1 justify-center px-5">
+        <View className="items-center py-[60px]">
+          <View className="relative w-[200px] h-[200px] items-center justify-center mb-12">
             {renderAnimatedDots()}
             <Animated.View
-              style={[
-                styles.checkmarkContainer,
-                {
-                  transform: [
-                    { scale: checkmarkScale },
-                    { rotate: rotation },
-                  ],
-                },
-              ]}
+              className="absolute"
+              style={{
+                transform: [
+                  { scale: checkmarkScale },
+                  { rotate: rotation },
+                ],
+              }}
             >
-              <View style={styles.checkmarkCircle}>
-                <Text style={styles.checkmarkIcon}>✓</Text>
+              <View className="w-[100px] h-[100px] rounded-full bg-[#4CAF50] items-center justify-center border-[3px] border-[#2E7D32]">
+                <Text className="text-white text-[40px] font-bold">✓</Text>
               </View>
             </Animated.View>
           </View>
-          
-          <Text style={styles.successTitle}>Your order has been successfully placed</Text>
-          <Text style={styles.successMessage}>
+
+          <Text className="text-text text-2xl font-bold text-center mb-4 leading-8">Your order has been successfully placed</Text>
+          <Text className="text-text-secondary text-base text-center leading-6 px-5">
             Sit and relax while your orders is being worked on. It&apos;ll take 5min before you get it
           </Text>
         </View>
 
-        <View style={styles.actionContainer}>
-          <TouchableOpacity 
-            style={styles.backButton}
+        <View className="pb-8">
+          <TouchableOpacity
+            className="bg-primary rounded-full py-4 items-center"
             onPress={handleGoBackToOrders}
           >
-            <Text style={styles.backButtonText}>Go back to orders</Text>
+            <Text className="text-text text-base font-semibold">Go back to orders</Text>
           </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 20,
-  },
-  successContainer: {
-    alignItems: 'center',
-    paddingVertical: 60,
-  },
-  animationContainer: {
-    position: 'relative',
-    width: 200,
-    height: 200,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 48,
-  },
-  checkmarkContainer: {
-    position: 'absolute',
-  },
-  checkmarkCircle: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: '#4CAF50',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 3,
-    borderColor: '#2E7D32',
-  },
-  checkmarkIcon: {
-    color: '#fff',
-    fontSize: 40,
-    fontWeight: 'bold',
-  },
-  dot: {
-    position: 'absolute',
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#4CAF50',
-  },
-  successTitle: {
-    color: Colors.text,
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 16,
-    lineHeight: 32,
-  },
-  successMessage: {
-    color: Colors.textSecondary,
-    fontSize: 16,
-    textAlign: 'center',
-    lineHeight: 24,
-    paddingHorizontal: 20,
-  },
-  actionContainer: {
-    paddingBottom: 32,
-  },
-  backButton: {
-    backgroundColor: Colors.primary,
-    borderRadius: 25,
-    paddingVertical: 16,
-    alignItems: 'center',
-  },
-  backButtonText: {
-    color: Colors.text,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-});

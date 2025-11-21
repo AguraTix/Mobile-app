@@ -1,18 +1,17 @@
 import Colors from "@/constants/Colors";
+import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -60,16 +59,16 @@ export default function PaymentScreen() {
     switch (selectedMethod) {
       case 'mobile_money':
         return (
-          <View style={styles.methodContainer}>
-            <Text style={styles.methodTitle}>Mobile Money Payment</Text>
-            <Text style={styles.methodDescription}>
+          <View className="bg-card rounded-2xl p-5 mb-6">
+            <Text className="text-text text-base font-bold mb-2">Mobile Money Payment</Text>
+            <Text className="text-text-secondary text-sm mb-5 leading-5">
               Enter your phone number to receive a payment prompt
             </Text>
-            
-            <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>Phone Number</Text>
+
+            <View className="mb-4">
+              <Text className="text-text text-sm font-medium mb-2">Phone Number</Text>
               <TextInput
-                style={styles.input}
+                className="bg-[#1C1C1E] rounded-xl py-4 px-4 text-text text-base border border-[#333]"
                 placeholder="e.g., 0781234567"
                 placeholderTextColor={Colors.textSecondary}
                 value={phoneNumber}
@@ -79,15 +78,15 @@ export default function PaymentScreen() {
               />
             </View>
 
-            <View style={styles.providerContainer}>
-              <Text style={styles.providerLabel}>Select Provider:</Text>
-              <View style={styles.providerButtons}>
+            <View className="mt-4">
+              <Text className="text-text text-sm font-medium mb-3">Select Provider:</Text>
+              <View className="flex-row justify-between">
                 {['mtn', 'airtel', 'mpesa'].map((provider) => (
                   <TouchableOpacity
                     key={provider}
-                    style={[styles.providerButton, { backgroundColor: Colors.primary }]}
+                    className="flex-1 bg-primary rounded-lg py-3 px-4 mx-1 items-center"
                   >
-                    <Text style={styles.providerButtonText}>{provider.toUpperCase()}</Text>
+                    <Text className="text-white text-xs font-semibold">{provider.toUpperCase()}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
@@ -97,16 +96,16 @@ export default function PaymentScreen() {
 
       case 'card':
         return (
-          <View style={styles.methodContainer}>
-            <Text style={styles.methodTitle}>Card Payment</Text>
-            <Text style={styles.methodDescription}>
+          <View className="bg-card rounded-2xl p-5 mb-6">
+            <Text className="text-text text-base font-bold mb-2">Card Payment</Text>
+            <Text className="text-text-secondary text-sm mb-5 leading-5">
               Enter your card details to complete the payment
             </Text>
-            
-            <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>Card Number</Text>
+
+            <View className="mb-4">
+              <Text className="text-text text-sm font-medium mb-2">Card Number</Text>
               <TextInput
-                style={styles.input}
+                className="bg-[#1C1C1E] rounded-xl py-4 px-4 text-text text-base border border-[#333]"
                 placeholder="1234 5678 9012 3456"
                 placeholderTextColor={Colors.textSecondary}
                 value={cardNumber}
@@ -116,11 +115,11 @@ export default function PaymentScreen() {
               />
             </View>
 
-            <View style={styles.row}>
-              <View style={[styles.inputContainer, { flex: 1, marginRight: 8 }]}>
-                <Text style={styles.inputLabel}>Expiry Month</Text>
+            <View className="flex-row">
+              <View className="flex-1 mr-2 mb-4">
+                <Text className="text-text text-sm font-medium mb-2">Expiry Month</Text>
                 <TextInput
-                  style={styles.input}
+                  className="bg-[#1C1C1E] rounded-xl py-4 px-4 text-text text-base border border-[#333]"
                   placeholder="MM"
                   placeholderTextColor={Colors.textSecondary}
                   value={expiryMonth}
@@ -129,10 +128,10 @@ export default function PaymentScreen() {
                   maxLength={2}
                 />
               </View>
-              <View style={[styles.inputContainer, { flex: 1, marginLeft: 8 }]}>
-                <Text style={styles.inputLabel}>Expiry Year</Text>
+              <View className="flex-1 ml-2 mb-4">
+                <Text className="text-text text-sm font-medium mb-2">Expiry Year</Text>
                 <TextInput
-                  style={styles.input}
+                  className="bg-[#1C1C1E] rounded-xl py-4 px-4 text-text text-base border border-[#333]"
                   placeholder="YY"
                   placeholderTextColor={Colors.textSecondary}
                   value={expiryYear}
@@ -143,11 +142,11 @@ export default function PaymentScreen() {
               </View>
             </View>
 
-            <View style={styles.row}>
-              <View style={[styles.inputContainer, { flex: 1, marginRight: 8 }]}>
-                <Text style={styles.inputLabel}>CVV</Text>
+            <View className="flex-row">
+              <View className="flex-1 mr-2 mb-4">
+                <Text className="text-text text-sm font-medium mb-2">CVV</Text>
                 <TextInput
-                  style={styles.input}
+                  className="bg-[#1C1C1E] rounded-xl py-4 px-4 text-text text-base border border-[#333]"
                   placeholder="123"
                   placeholderTextColor={Colors.textSecondary}
                   value={cvv}
@@ -156,10 +155,10 @@ export default function PaymentScreen() {
                   maxLength={4}
                 />
               </View>
-              <View style={[styles.inputContainer, { flex: 1, marginLeft: 8 }]}>
-                <Text style={styles.inputLabel}>Card Holder Name</Text>
+              <View className="flex-1 ml-2 mb-4">
+                <Text className="text-text text-sm font-medium mb-2">Card Holder Name</Text>
                 <TextInput
-                  style={styles.input}
+                  className="bg-[#1C1C1E] rounded-xl py-4 px-4 text-text text-base border border-[#333]"
                   placeholder="John Doe"
                   placeholderTextColor={Colors.textSecondary}
                   value={cardHolderName}
@@ -170,13 +169,13 @@ export default function PaymentScreen() {
             </View>
 
             <TouchableOpacity
-              style={styles.checkboxContainer}
+              className="flex-row items-center mt-4"
               onPress={() => setSaveCard(!saveCard)}
             >
-              <View style={[styles.checkbox, saveCard && styles.checkboxChecked]}>
-                {saveCard && <Text style={styles.checkmark}>✓</Text>}
+              <View className={`w-5 h-5 rounded border-2 border-primary mr-3 items-center justify-center ${saveCard ? 'bg-primary' : ''}`}>
+                {saveCard && <Text className="text-white text-xs font-bold">✓</Text>}
               </View>
-              <Text style={styles.checkboxLabel}>Save card for future payments</Text>
+              <Text className="text-text text-sm">Save card for future payments</Text>
             </TouchableOpacity>
           </View>
         );
@@ -187,88 +186,88 @@ export default function PaymentScreen() {
   };
 
   const renderPaymentSummary = () => (
-    <View style={styles.summaryContainer}>
-      <Text style={styles.summaryTitle}>Payment Summary</Text>
-      
-      <View style={styles.summaryRow}>
-        <Text style={styles.summaryLabel}>Tickets ({ticketCount}x)</Text>
-        <Text style={styles.summaryValue}>{ticketPrice.toLocaleString()} RWF</Text>
+    <View className="bg-card rounded-2xl p-5 mb-6">
+      <Text className="text-text text-lg font-bold mb-4">Payment Summary</Text>
+
+      <View className="flex-row justify-between items-center mb-3">
+        <Text className="text-text-secondary text-sm">Tickets ({ticketCount}x)</Text>
+        <Text className="text-text text-sm font-medium">{ticketPrice.toLocaleString()} RWF</Text>
       </View>
-      
-      <View style={styles.summaryRow}>
-        <Text style={styles.summaryLabel}>Subtotal</Text>
-        <Text style={styles.summaryValue}>{totalAmount.toLocaleString()} RWF</Text>
+
+      <View className="flex-row justify-between items-center mb-3">
+        <Text className="text-text-secondary text-sm">Subtotal</Text>
+        <Text className="text-text text-sm font-medium">{totalAmount.toLocaleString()} RWF</Text>
       </View>
-      
-      <View style={styles.summaryRow}>
-        <Text style={styles.summaryLabel}>Tax (18%)</Text>
-        <Text style={styles.summaryValue}>{tax.toLocaleString()} RWF</Text>
+
+      <View className="flex-row justify-between items-center mb-3">
+        <Text className="text-text-secondary text-sm">Tax (18%)</Text>
+        <Text className="text-text text-sm font-medium">{tax.toLocaleString()} RWF</Text>
       </View>
-      
-      <View style={[styles.summaryRow, styles.totalRow]}>
-        <Text style={styles.totalLabel}>Total</Text>
-        <Text style={styles.totalValue}>{finalTotal.toLocaleString()} RWF</Text>
+
+      <View className="flex-row justify-between items-center border-t border-border pt-3 mt-2">
+        <Text className="text-text text-base font-bold">Total</Text>
+        <Text className="text-primary text-lg font-bold">{finalTotal.toLocaleString()} RWF</Text>
       </View>
     </View>
   );
 
 
   return (
-    <SafeAreaView style={styles.container} edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       <StatusBar style="light" />
-      
+
       {/* Custom Header */}
-      <View style={styles.customHeader}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+      <View className="flex-row items-center justify-between px-5 py-4 bg-black">
+        <TouchableOpacity onPress={() => router.back()} className="p-2">
           <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Payment</Text>
-        <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.headerIcon}>
+        <Text className="text-white text-lg font-bold flex-1 text-center">Payment</Text>
+        <View className="flex-row items-center">
+          <TouchableOpacity className="p-2 mr-2">
             <Ionicons name="search" size={20} color="#FFFFFF" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.headerIcon}>
+          <TouchableOpacity className="p-2 mr-2">
             <Ionicons name="notifications" size={20} color="#FFFFFF" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.profileButton}>
+          <TouchableOpacity className="w-8 h-8 rounded-full bg-primary items-center justify-center">
             <Ionicons name="person" size={20} color="#FFFFFF" />
           </TouchableOpacity>
         </View>
       </View>
 
       <KeyboardAvoidingView
-        style={styles.keyboardContainer}
+        className="flex-1"
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <ScrollView 
-          style={styles.content}
-          contentContainerStyle={styles.scrollContent}
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{ padding: 20, paddingBottom: 100 }}
           showsVerticalScrollIndicator={false}
         >
           {/* Payment Summary */}
           {renderPaymentSummary()}
 
           {/* Payment Methods */}
-          <View style={styles.methodsContainer}>
-            <Text style={styles.methodsTitle}>Select Payment Method</Text>
-            
-            <View style={styles.methodButtons}>
+          <View className="mb-6">
+            <Text className="text-text text-lg font-bold mb-4">Select Payment Method</Text>
+
+            <View className="flex-row justify-between">
               <TouchableOpacity
-                style={[styles.methodButton, selectedMethod === 'mobile_money' && styles.methodButtonActive]}
+                className={`flex-1 flex-row items-center justify-center bg-card rounded-xl p-4 mx-1 border-2 ${selectedMethod === 'mobile_money' ? 'bg-primary border-primary' : 'border-transparent'}`}
                 onPress={() => setSelectedMethod('mobile_money')}
               >
                 <Ionicons name="phone-portrait" size={24} color={selectedMethod === 'mobile_money' ? '#FFFFFF' : Colors.primary} />
-                <Text style={[styles.methodButtonText, selectedMethod === 'mobile_money' && styles.methodButtonTextActive]}>
+                <Text className={`text-text text-xs font-medium ml-2 text-center ${selectedMethod === 'mobile_money' ? 'text-white' : ''}`}>
                   Mobile Money
                 </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.methodButton, selectedMethod === 'card' && styles.methodButtonActive]}
+                className={`flex-1 flex-row items-center justify-center bg-card rounded-xl p-4 mx-1 border-2 ${selectedMethod === 'card' ? 'bg-primary border-primary' : 'border-transparent'}`}
                 onPress={() => setSelectedMethod('card')}
               >
                 <Ionicons name="card" size={24} color={selectedMethod === 'card' ? '#FFFFFF' : Colors.primary} />
-                <Text style={[styles.methodButtonText, selectedMethod === 'card' && styles.methodButtonTextActive]}>
+                <Text className={`text-text text-xs font-medium ml-2 text-center ${selectedMethod === 'card' ? 'text-white' : ''}`}>
                   Credit/Debit Card
                 </Text>
               </TouchableOpacity>
@@ -280,12 +279,12 @@ export default function PaymentScreen() {
         </ScrollView>
 
         {/* Payment Button */}
-        <View style={styles.bottomContainer}>
+        <View className="absolute bottom-0 left-0 right-0 bg-background px-5 py-4 border-t border-border">
           <TouchableOpacity
-            style={styles.payButton}
+            className="bg-primary rounded-full py-4 items-center"
             onPress={handlePayment}
           >
-            <Text style={styles.payButtonText}>
+            <Text className="text-white text-base font-bold">
               Pay {finalTotal.toLocaleString()} RWF
             </Text>
           </TouchableOpacity>
@@ -294,293 +293,3 @@ export default function PaymentScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  customHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    backgroundColor: '#000000',
-  },
-  backButton: {
-    padding: 8,
-  },
-  headerTitle: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: 'bold',
-    flex: 1,
-    textAlign: 'center',
-  },
-  headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  headerIcon: {
-    padding: 8,
-    marginRight: 8,
-  },
-  profileButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: Colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  keyboardContainer: {
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: 20,
-    paddingBottom: 100,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    color: Colors.text,
-    fontSize: 16,
-    marginTop: 16,
-  },
-  
-  // Payment Summary Styles
-  summaryContainer: {
-    backgroundColor: Colors.card,
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 24,
-  },
-  summaryTitle: {
-    color: Colors.text,
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 16,
-  },
-  summaryRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  summaryLabel: {
-    color: Colors.textSecondary,
-    fontSize: 14,
-  },
-  summaryValue: {
-    color: Colors.text,
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  totalRow: {
-    borderTopWidth: 1,
-    borderTopColor: Colors.border,
-    paddingTop: 12,
-    marginTop: 8,
-  },
-  totalLabel: {
-    color: Colors.text,
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  totalValue: {
-    color: Colors.primary,
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-
-  // Payment Methods Styles
-  methodsContainer: {
-    marginBottom: 24,
-  },
-  methodsTitle: {
-    color: Colors.text,
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 16,
-  },
-  methodButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  methodButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Colors.card,
-    borderRadius: 12,
-    padding: 16,
-    marginHorizontal: 4,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  methodButtonActive: {
-    backgroundColor: Colors.primary,
-    borderColor: Colors.primary,
-  },
-  methodButtonText: {
-    color: Colors.text,
-    fontSize: 12,
-    fontWeight: '500',
-    marginLeft: 8,
-    textAlign: 'center',
-  },
-  methodButtonTextActive: {
-    color: '#FFFFFF',
-  },
-
-  // Payment Method Form Styles
-  methodContainer: {
-    backgroundColor: Colors.card,
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 24,
-  },
-  methodTitle: {
-    color: Colors.text,
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  methodDescription: {
-    color: Colors.textSecondary,
-    fontSize: 14,
-    marginBottom: 20,
-    lineHeight: 20,
-  },
-  inputContainer: {
-    marginBottom: 16,
-  },
-  inputLabel: {
-    color: Colors.text,
-    fontSize: 14,
-    fontWeight: '500',
-    marginBottom: 8,
-  },
-  input: {
-    backgroundColor: '#1C1C1E',
-    borderRadius: 12,
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    color: Colors.text,
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: '#333',
-  },
-  row: {
-    flexDirection: 'row',
-  },
-  providerContainer: {
-    marginTop: 16,
-  },
-  providerLabel: {
-    color: Colors.text,
-    fontSize: 14,
-    fontWeight: '500',
-    marginBottom: 12,
-  },
-  providerButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  providerButton: {
-    flex: 1,
-    backgroundColor: Colors.primary,
-    borderRadius: 8,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    marginHorizontal: 4,
-    alignItems: 'center',
-  },
-  providerButtonText: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  checkboxContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 16,
-  },
-  checkbox: {
-    width: 20,
-    height: 20,
-    borderRadius: 4,
-    borderWidth: 2,
-    borderColor: Colors.primary,
-    marginRight: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  checkboxChecked: {
-    backgroundColor: Colors.primary,
-  },
-  checkmark: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
-  checkboxLabel: {
-    color: Colors.text,
-    fontSize: 14,
-  },
-  paypalInfo: {
-    backgroundColor: 'rgba(0, 122, 255, 0.1)',
-    borderRadius: 8,
-    padding: 16,
-  },
-  paypalText: {
-    color: Colors.text,
-    fontSize: 14,
-    lineHeight: 20,
-  },
-
-  // Error Styles
-  errorContainer: {
-    backgroundColor: 'rgba(255, 59, 48, 0.1)',
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 24,
-  },
-  errorText: {
-    color: '#FF3B30',
-    fontSize: 14,
-    textAlign: 'center',
-  },
-
-  // Bottom Button Styles
-  bottomContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: Colors.background,
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border,
-  },
-  payButton: {
-    backgroundColor: Colors.primary,
-    borderRadius: 25,
-    paddingVertical: 16,
-    alignItems: 'center',
-  },
-  payButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-});

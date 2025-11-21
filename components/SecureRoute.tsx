@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
-import { useRouter } from 'expo-router';
 import Colors from '@/constants/Colors';
+import { useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Text, View } from 'react-native';
 
 interface SecureRouteProps {
   children: React.ReactNode;
@@ -9,8 +9,8 @@ interface SecureRouteProps {
   redirectTo?: string;
 }
 
-export default function SecureRoute({ 
-  children, 
+export default function SecureRoute({
+  children,
   fallback,
   redirectTo = '/auth/login'
 }: SecureRouteProps) {
@@ -25,8 +25,8 @@ export default function SecureRoute({
   const checkAuthentication = async () => {
     try {
       setIsLoading(true);
-      const token =8976
-      
+      const token = 8976; // Mock token for now
+
       if (token) {
         // Token exists, consider user authenticated
         setIsAuthenticated(true);
@@ -47,9 +47,9 @@ export default function SecureRoute({
   // Show loading spinner while checking authentication
   if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="flex-1 justify-center items-center bg-background">
         <ActivityIndicator size="large" color={Colors.primary} />
-        <Text style={styles.loadingText}>Loading...</Text>
+        <Text className="mt-4 text-base text-text font-medium">Loading...</Text>
       </View>
     );
   }
@@ -65,18 +65,3 @@ export default function SecureRoute({
   // User is authenticated, show protected content
   return <>{children}</>;
 }
-
-const styles = StyleSheet.create({
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: Colors.background,
-  },
-  loadingText: {
-    marginTop: 16,
-    fontSize: 16,
-    color: Colors.text,
-    fontWeight: '500',
-  },
-});

@@ -5,8 +5,8 @@ import Skeleton from "@/components/Skeleton";
 import Colors from "@/constants/Colors";
 import { useTicket } from "@/contexts";
 import { TicketStatus } from "@/types/backend";
-import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React from "react";
 import {
   ScrollView,
@@ -44,83 +44,72 @@ export default function TicketsScreen() {
   };
 
   const handleTicketPress = (ticketId: string) => {
-    // For now, just log the ticket press since we don't have a dedicated ticket detail screen
     console.log("Viewing ticket:", ticketId);
   };
 
   const handleDownloadTicket = (ticket: any) => {
-    // Implement ticket download functionality
     console.log("Downloading ticket:", ticket.id);
   };
 
   const handleShareTicket = (ticket: any) => {
-    // Implement ticket sharing functionality
     console.log("Sharing ticket:", ticket.id);
   };
 
   const renderTicketCard = (ticket: any) => (
     <TouchableOpacity
       key={ticket.ticket_id}
-      style={[
-        styles.ticketCard,
-        ticket.status === TicketStatus.CANCELLED && styles.expiredTicketCard,
-      ]}
+      className={`bg-card rounded-2xl p-5 mb-4 ${ticket.status === TicketStatus.CANCELLED ? 'opacity-60 bg-gray-100' : ''}`}
+      style={styles.shadow}
       onPress={() => handleTicketPress(ticket.ticket_id)}
       activeOpacity={0.8}
     >
-      <View style={styles.ticketHeader}>
-        <View style={styles.ticketTypeContainer}>
+      <View className="flex-row justify-between items-center mb-4">
+        <View className="flex-row items-center gap-2">
           <Ionicons name="ticket" size={20} color={Colors.primary} />
-          <Text style={styles.ticketType}>{ticket.sectionName || "Standard"}</Text>
+          <Text className="text-sm font-semibold text-primary uppercase">{ticket.sectionName || "Standard"}</Text>
         </View>
-        <View style={styles.ticketStatus}>
-          <View style={[
-            styles.statusDot,
-            ticket.status === TicketStatus.AVAILABLE ? styles.statusActive : styles.statusExpired
-          ]} />
-          <Text style={[
-            styles.statusText,
-            ticket.status === TicketStatus.AVAILABLE ? styles.statusTextActive : styles.statusTextExpired
-          ]}>
+        <View className="flex-row items-center gap-1.5">
+          <View className={`w-2 h-2 rounded-full ${ticket.status === TicketStatus.AVAILABLE ? 'bg-success' : 'bg-gray-500'}`} />
+          <Text className={`text-xs font-medium uppercase ${ticket.status === TicketStatus.AVAILABLE ? 'text-success' : 'text-gray-500'}`}>
             {ticket.status === TicketStatus.AVAILABLE ? "Active" : "Expired"}
           </Text>
         </View>
       </View>
 
-      <Text style={styles.eventTitle}>{ticket.Event?.title || "Event"}</Text>
+      <Text className="text-lg font-semibold text-text mb-4 leading-6">{ticket.Event?.title || "Event"}</Text>
 
-      <View style={styles.eventDetails}>
-        <View style={styles.detailRow}>
+      <View className="mb-5">
+        <View className="flex-row items-center gap-3 mb-2">
           <Ionicons name="calendar" size={16} color={Colors.textSecondary} />
-          <Text style={styles.detailText}>
+          <Text className="text-sm text-text-secondary flex-1">
             {ticket.Event?.date ? formatDate(ticket.Event.date) : 'TBD'} at {ticket.Event?.date ? formatTime(ticket.Event.date) : 'TBD'}
           </Text>
         </View>
 
-        <View style={styles.detailRow}>
+        <View className="flex-row items-center gap-3 mb-2">
           <Ionicons name="location" size={16} color={Colors.textSecondary} />
-          <Text style={styles.detailText}>{ticket.Event?.Venue?.name || ""}</Text>
+          <Text className="text-sm text-text-secondary flex-1">{ticket.Event?.Venue?.name || ""}</Text>
         </View>
 
-        <View style={styles.detailRow}>
+        <View className="flex-row items-center gap-3">
           <Ionicons name="time" size={16} color={Colors.textSecondary} />
-          <Text style={styles.detailText}>
+          <Text className="text-sm text-text-secondary flex-1">
             {ticket.status === TicketStatus.AVAILABLE ? "Event hasn't started" : "Event has ended"}
           </Text>
         </View>
       </View>
 
-      <View style={styles.ticketFooter}>
-        <View style={styles.ticketNumber}>
-          <Text style={styles.ticketNumberLabel}>Ticket #</Text>
-          <Text style={styles.ticketNumberValue}>{ticket.ticket_id}</Text>
+      <View className="flex-row justify-between items-center pt-4 border-t border-black/10">
+        <View className="flex-1">
+          <Text className="text-xs text-text-secondary mb-1">Ticket #</Text>
+          <Text className="text-sm font-semibold text-text font-mono">{ticket.ticket_id}</Text>
         </View>
 
-        <View style={styles.ticketActions}>
+        <View className="flex-row items-center gap-3">
           {ticket.status === TicketStatus.AVAILABLE && (
             <>
               <TouchableOpacity
-                style={styles.actionButton}
+                className="w-9 h-9 rounded-[18px] bg-primary/10 items-center justify-center"
                 onPress={() => handleDownloadTicket(ticket)}
                 hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
               >
@@ -128,7 +117,7 @@ export default function TicketsScreen() {
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={styles.actionButton}
+                className="w-9 h-9 rounded-[18px] bg-primary/10 items-center justify-center"
                 onPress={() => handleShareTicket(ticket)}
                 hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
               >
@@ -138,7 +127,7 @@ export default function TicketsScreen() {
           )}
 
           <TouchableOpacity
-            style={styles.viewButton}
+            className="w-9 h-9 rounded-[18px] bg-primary/10 items-center justify-center"
             onPress={() => handleTicketPress(ticket.ticket_id)}
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
           >
@@ -150,29 +139,32 @@ export default function TicketsScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       <Header title="My Tickets" showBack />
 
       <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
+        className="flex-1"
+        contentContainerStyle={{ paddingBottom: 40 }}
         showsVerticalScrollIndicator={false}
       >
         {/* Header Section */}
-        <View style={styles.headerSection}>
-          <View style={styles.headerIcon}>
+        <View
+          className="items-center px-5 py-8 bg-primary mx-5 mt-5 rounded-[20px]"
+          style={styles.headerShadow}
+        >
+          <View className="w-16 h-16 rounded-[32px] bg-white/20 items-center justify-center mb-4">
             <Ionicons name="ticket" size={32} color={Colors.primary} />
           </View>
-          <Text style={styles.headerTitle}>My Tickets</Text>
-          <Text style={styles.headerSubtitle}>
+          <Text className="text-2xl font-bold text-white mb-2 text-center">My Tickets</Text>
+          <Text className="text-base text-white/90 text-center font-medium">
             {activeTickets.length} active tickets
           </Text>
         </View>
 
         {/* Loading state */}
         {loading && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Loading Tickets</Text>
+          <View className="px-5 mt-8">
+            <Text className="text-xl font-semibold text-text mb-5">Loading Tickets</Text>
             <Skeleton height={120} radius={16} style={{ marginBottom: 12 }} />
             <Skeleton height={120} radius={16} style={{ marginBottom: 12 }} />
             <Skeleton height={120} radius={16} style={{ marginBottom: 12 }} />
@@ -181,28 +173,28 @@ export default function TicketsScreen() {
 
         {/* Active Tickets */}
         {!loading && activeTickets.length > 0 && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Active Tickets</Text>
+          <View className="px-5 mt-8">
+            <Text className="text-xl font-semibold text-text mb-5">Active Tickets</Text>
             {activeTickets.map(renderTicketCard)}
           </View>
         )}
 
         {/* Expired Tickets */}
         {!loading && expiredTickets.length > 0 && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Past Events</Text>
+          <View className="px-5 mt-8">
+            <Text className="text-xl font-semibold text-text mb-5">Past Events</Text>
             {expiredTickets.map(renderTicketCard)}
           </View>
         )}
 
         {/* Empty State */}
         {!loading && userTickets.length === 0 && (
-          <View style={styles.emptyState}>
-            <View style={styles.emptyIconContainer}>
+          <View className="items-center px-10 py-[60px] mt-10">
+            <View className="mb-6 opacity-50">
               <Ionicons name="ticket" size={48} color={Colors.textSecondary} />
             </View>
-            <Text style={styles.emptyTitle}>No Tickets Yet</Text>
-            <Text style={styles.emptyMessage}>
+            <Text className="text-xl font-semibold text-text mb-3 text-center">No Tickets Yet</Text>
+            <Text className="text-base text-text-secondary text-center leading-6 mb-8">
               You haven't purchased any tickets yet. Start exploring events to get your first ticket!
             </Text>
             <Button
@@ -211,14 +203,14 @@ export default function TicketsScreen() {
               size="large"
               fullWidth={true}
               onPress={() => router.push("/events-user")}
-              style={styles.browseButton}
+              style={{ minWidth: 200 }}
             />
           </View>
         )}
 
         {/* Call to Action */}
         {!loading && userTickets.length > 0 && (
-          <View style={styles.ctaSection}>
+          <View className="px-5 mt-10">
             <Button
               title="Browse More Events"
               variant="outline"
@@ -235,214 +227,18 @@ export default function TicketsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingBottom: 40,
-  },
-  headerSection: {
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingVertical: 32,
-    backgroundColor: Colors.primary,
-    marginHorizontal: 20,
-    marginTop: 20,
-    borderRadius: 20,
-    elevation: 4,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-  },
-  headerIcon: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 16,
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: "#ffffff",
-    marginBottom: 8,
-    textAlign: "center",
-  },
-  headerSubtitle: {
-    fontSize: 16,
-    color: "rgba(255, 255, 255, 0.9)",
-    textAlign: "center",
-    fontWeight: "500",
-  },
-  section: {
-    paddingHorizontal: 20,
-    marginTop: 32,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: Colors.text,
-    marginBottom: 20,
-  },
-  ticketCard: {
-    backgroundColor: Colors.card,
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 16,
+  shadow: {
     elevation: 2,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
   },
-  expiredTicketCard: {
-    opacity: 0.6,
-    backgroundColor: "#f8f9fa",
-  },
-  ticketHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  ticketTypeContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  ticketType: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: Colors.primary,
-    textTransform: "uppercase",
-  },
-  ticketStatus: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  statusDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-  },
-  statusActive: {
-    backgroundColor: "#10b981",
-  },
-  statusExpired: {
-    backgroundColor: "#6b7280",
-  },
-  statusText: {
-    fontSize: 12,
-    fontWeight: "500",
-    textTransform: "uppercase",
-  },
-  statusTextActive: {
-    color: "#10b981",
-  },
-  statusTextExpired: {
-    color: "#6b7280",
-  },
-  eventTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: Colors.text,
-    marginBottom: 16,
-    lineHeight: 24,
-  },
-  eventDetails: {
-    marginBottom: 20,
-  },
-  detailRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    marginBottom: 8,
-  },
-  detailText: {
-    fontSize: 14,
-    color: Colors.textSecondary,
-    flex: 1,
-  },
-  ticketFooter: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: "rgba(0, 0, 0, 0.1)",
-  },
-  ticketNumber: {
-    flex: 1,
-  },
-  ticketNumberLabel: {
-    fontSize: 12,
-    color: Colors.textSecondary,
-    marginBottom: 4,
-  },
-  ticketNumberValue: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: Colors.text,
-    fontFamily: "monospace",
-  },
-  ticketActions: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  actionButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: "rgba(230, 0, 126, 0.1)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  viewButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: "rgba(230, 0, 126, 0.1)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  emptyState: {
-    alignItems: "center",
-    paddingHorizontal: 40,
-    paddingVertical: 60,
-    marginTop: 40,
-  },
-  emptyIconContainer: {
-    marginBottom: 24,
-    opacity: 0.5,
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: Colors.text,
-    marginBottom: 12,
-    textAlign: "center",
-  },
-  emptyMessage: {
-    fontSize: 16,
-    color: Colors.textSecondary,
-    textAlign: "center",
-    lineHeight: 22,
-    marginBottom: 32,
-  },
-  browseButton: {
-    minWidth: 200,
-  },
-  ctaSection: {
-    paddingHorizontal: 20,
-    marginTop: 40,
+  headerShadow: {
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
   },
 });

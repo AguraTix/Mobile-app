@@ -4,11 +4,9 @@ import SearchBar from "@/components/SearchBar";
 import SectionHeader from "@/components/SectionHeader";
 import Skeleton from "@/components/Skeleton";
 import Colors from "@/constants/Colors";
-import { radius, spacing } from "@/constants/spacing";
-import { typeScale } from "@/constants/typography";
 import { useAuth, useEvent } from "@/contexts";
-import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Alert,
@@ -38,47 +36,39 @@ const mockAllEvents: any[] = [
 export default function HomeScreen() {
   const router = useRouter();
   const { user } = useAuth()
-  const { events, fetchEvents, isLoading } = useEvent(); // Modified line
-  const [searchQuery, setSearchQuery] = useState(""); // Added line
-  const [isSearchFocused, setIsSearchFocused] = useState(false); // Added line
-  const [selectedCategory, setSelectedCategory] = useState("All"); // Added line
-  const [refreshing, setRefreshing] = useState(false); // Added line
-  const [recentSearches, setRecentSearches] = useState<string[]>([ // Added line
+  const { events, fetchEvents, isLoading } = useEvent();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [recentSearches, setRecentSearches] = useState<string[]>([
     "music festival",
     "tech conference",
     "food expo",
     "art exhibition"
   ]);
-  const [popularSearches, setPopularSearches] = useState<string[]>([ // Added line
+  const [popularSearches, setPopularSearches] = useState<string[]>([
     "summer events",
     "live music",
     "sports games",
     "business networking"
   ]);
+  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => { // Added useEffect
+  useEffect(() => {
     fetchEvents().catch(console.error);
   }, []);
 
   // Use real events from context, fallback to mock if empty
-  const featuredEvents = events.length > 0 ? events.slice(0, 2) : mockFeaturedEvents; // Modified line
-  const allEvents = events.length > 0 ? events : mockAllEvents; // Modified line
-  const loading = isLoading; // Modified line
+  const featuredEvents = events.length > 0 ? events.slice(0, 2) : mockFeaturedEvents;
+  const allEvents = events.length > 0 ? events : mockAllEvents;
+  const loading = isLoading;
 
   // Compute upcoming events from all events
   const upcomingEvents = useMemo(() => {
     const now = new Date();
     return allEvents
-      .filter((event: any) => new Date(event.date) > now) // Modified line
-      .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime()) // Modified line
+      .filter((event: any) => new Date(event.date) > now)
+      .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
       .slice(0, 6);
   }, [allEvents]);
-
-  // Helper function to check if a date is today (kept for potential future use, though not used in the diff)
-  const isToday = (date: Date): boolean => {
-    const today = new Date();
-    return date.toDateString() === today.toDateString();
-  };
 
   const quickActions = [
     {
@@ -125,8 +115,6 @@ export default function HomeScreen() {
       // Add to recent searches
       const newRecentSearches = [query.trim(), ...recentSearches.filter(s => s !== query.trim())].slice(0, 5);
       setRecentSearches(newRecentSearches);
-
-      // For now, just update local state since we don't have a dedicated search screen
       console.log('Searching for:', query.trim());
     }
   };
@@ -159,85 +147,90 @@ export default function HomeScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       <ScrollView
-        style={styles.scrollView}
+        className="flex-1"
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
         {/* Header */}
-        <View style={styles.header}>
-          <View style={styles.headerLeft}>
-            <Text style={styles.greeting}>Hello, {user?.name || 'Guest'}! 👋</Text>
-            <Text style={styles.subtitle}>Discover amazing events today</Text>
+        <View className="flex-row justify-between items-center px-5 py-4">
+          <View className="flex-1">
+            <Text className="text-3xl font-bold text-text mb-1">Hello, {user?.name || 'Guest'}! 👋</Text>
+            <Text className="text-base text-text-secondary">Discover amazing events today</Text>
           </View>
           <TouchableOpacity
-            style={styles.notificationButton}
+            className="relative p-2 rounded-lg bg-card"
             onPress={handleNotificationPress}
             activeOpacity={0.8}
           >
             <Ionicons name="notifications" size={24} color={Colors.text} />
-            <View style={styles.notificationBadge} />
+            <View className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary" />
           </TouchableOpacity>
         </View>
 
         {/* Search Bar */}
-        <SearchBar
-          placeholder="Search events, venues, or categories..."
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          onSearch={handleSearch}
-          showFilter={true}
-          showSuggestions={true}
-          recentSearches={recentSearches}
-          popularSearches={popularSearches}
-        />
+        <View className="px-5">
+          <SearchBar
+            placeholder="Search events, venues, or categories..."
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            onSearch={handleSearch}
+            showFilter={true}
+            showSuggestions={true}
+            recentSearches={recentSearches}
+            popularSearches={popularSearches}
+          />
+        </View>
 
         {/* Quick Actions */}
-        <View style={styles.quickActionsContainer}>
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
+        <View className="mb-8 px-5">
+          <Text className="text-xl font-bold text-text mb-4">Quick Actions</Text>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.quickActionsScroll}
+            contentContainerStyle={{ gap: 16 }}
           >
             {quickActions.map((action) => (
               <TouchableOpacity
                 key={action.id}
-                style={[styles.quickActionButton, { backgroundColor: action.color + '20' }]}
+                className="w-[140px] p-4 rounded-lg items-center justify-center min-h-[100px] bg-card mr-4"
+                style={[{ backgroundColor: action.color + '20' }, styles.shadow]}
                 onPress={() => handleQuickAction(action)}
                 activeOpacity={0.8}
               >
-                <Text style={styles.quickActionIcon}>{action.icon}</Text>
-                <Text style={styles.quickActionTitle}>{action.title}</Text>
+                <Text className="text-2xl mb-2">{action.icon}</Text>
+                <Text className="text-sm font-semibold text-text text-center">{action.title}</Text>
               </TouchableOpacity>
             ))}
           </ScrollView>
         </View>
 
         {/* Featured Events */}
-        <View style={styles.section}>
-          <SectionHeader
-            title="Featured Events"
-            subtitle="Handpicked events just for you"
-            showSeeAll={true}
-            onSeeAllPress={handleViewAllEvents}
-          />
+        <View className="mb-10">
+          <View className="px-5">
+            <SectionHeader
+              title="Featured Events"
+              subtitle="Handpicked events just for you"
+              showSeeAll={true}
+              onSeeAllPress={handleViewAllEvents}
+            />
+          </View>
           {loading ? (
-            <View style={[styles.horizontalScroll, { flexDirection: 'row' }]}>
-              <View style={styles.featuredEventContainer}><Skeleton height={200} radius={16} /></View>
-              <View style={styles.featuredEventContainer}><Skeleton height={200} radius={16} /></View>
+            <View className="flex-row px-5 gap-5">
+              <View className="w-[calc(100vw-40px)] mr-5"><Skeleton height={200} radius={16} /></View>
+              <View className="w-[calc(100vw-40px)] mr-5"><Skeleton height={200} radius={16} /></View>
             </View>
           ) : (
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.horizontalScroll}
+              contentContainerStyle={{ paddingHorizontal: 20 }}
             >
               {featuredEvents.map((event) => (
-                <View key={event.id} style={styles.featuredEventContainer}>
+                <View key={event.id} style={{ width: width - 40, marginRight: 20 }}>
                   <EventCard
                     event={event}
                     variant="detailed"
@@ -253,7 +246,7 @@ export default function HomeScreen() {
         </View>
 
         {/* Upcoming Events */}
-        <View style={styles.section}>
+        <View className="mb-10 px-5">
           <SectionHeader
             title="Upcoming Events"
             subtitle="Events happening soon"
@@ -261,7 +254,7 @@ export default function HomeScreen() {
             onSeeAllPress={handleViewAllUpcoming}
           />
           {loading ? (
-            <View style={{ gap: 12, paddingHorizontal: 20 }}>
+            <View className="gap-3">
               <Skeleton height={92} radius={12} />
               <Skeleton height={92} radius={12} />
               <Skeleton height={92} radius={12} />
@@ -280,28 +273,28 @@ export default function HomeScreen() {
         </View>
 
         {/* Event Categories */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Browse by Category</Text>
-          <View style={styles.categoriesGrid}>
+        <View className="mb-10 px-5">
+          <Text className="text-xl font-bold text-text mb-4">Browse by Category</Text>
+          <View className="flex-row flex-wrap gap-4">
             {categories.map((category, index) => (
               <TouchableOpacity
                 key={index}
-                style={[styles.categoryButton, { backgroundColor: category.color + '20' }]}
+                className="w-[47%] p-5 rounded-lg items-center justify-center min-h-[100px] bg-card"
+                style={[{ backgroundColor: category.color + '20' }, styles.shadow]}
                 onPress={() => {
-                  // For now, just log the category selection since we don't have dedicated category screens
                   console.log('Selected category:', category.name);
                 }}
                 activeOpacity={0.8}
               >
-                <Text style={styles.categoryIcon}>{category.icon}</Text>
-                <Text style={styles.categoryName}>{category.name}</Text>
+                <Text className="text-[32px] mb-2">{category.icon}</Text>
+                <Text className="text-base font-semibold text-text text-center">{category.name}</Text>
               </TouchableOpacity>
             ))}
           </View>
         </View>
 
         {/* Bottom Spacing */}
-        <View style={styles.bottomSpacing} />
+        <View className="h-[100px]" />
       </ScrollView>
       <BottomNav />
     </SafeAreaView>
@@ -309,128 +302,11 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-  },
-  headerLeft: {
-    flex: 1,
-  },
-  greeting: {
-    fontSize: typeScale.h1.size,
-    fontWeight: typeScale.h1.weight,
-    color: Colors.text,
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: typeScale.subtitle.size,
-    color: Colors.textSecondary,
-  },
-  notificationButton: {
-    position: 'relative',
-    padding: spacing.sm,
-    borderRadius: radius.lg,
-    backgroundColor: Colors.card,
-  },
-  notificationBadge: {
-    position: 'absolute',
-    top: 6,
-    right: 6,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: Colors.primary,
-  },
-  quickActionsContainer: {
-    paddingHorizontal: 20,
-    marginBottom: spacing.lg,
-  },
-  sectionTitle: {
-    fontSize: typeScale.h3.size,
-    fontWeight: typeScale.h3.weight,
-    color: Colors.text,
-    marginBottom: spacing.md,
-  },
-  quickActionsScroll: {
-    paddingHorizontal: 20,
-    gap: spacing.md,
-  },
-  quickActionButton: {
-    width: 140,
-    padding: spacing.md,
-    borderRadius: radius.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 100,
-    backgroundColor: Colors.card,
+  shadow: {
     elevation: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 6,
-    marginRight: spacing.md,
-  },
-  quickActionIcon: {
-    fontSize: 24,
-    marginBottom: 8,
-  },
-  quickActionTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: Colors.text,
-    textAlign: 'center',
-  },
-  section: {
-    marginBottom: spacing.xl,
-  },
-  horizontalScroll: {
-    paddingHorizontal: 20,
-  },
-  featuredEventContainer: {
-    width: width - 40,
-    marginRight: 20,
-  },
-  categoriesGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.md,
-    paddingHorizontal: 20,
-  },
-  categoryButton: {
-    width: '48%',
-    padding: 20,
-    borderRadius: radius.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 100,
-    backgroundColor: Colors.card,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-  },
-  categoryIcon: {
-    fontSize: 32,
-    marginBottom: 8,
-  },
-  categoryName: {
-    fontSize: typeScale.subtitle.size,
-    fontWeight: '600',
-    color: Colors.text,
-    textAlign: 'center',
-  },
-  bottomSpacing: {
-    height: 100,
   },
 });

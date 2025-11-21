@@ -148,10 +148,10 @@ export default function EventsUserScreen() {
   );
 
   const renderEmptyState = () => (
-    <View style={styles.emptyState}>
+    <View className="items-center mt-[60px]">
       <Ionicons name="calendar" size={56} color={Colors.textSecondary} />
-      <Text style={styles.emptyStateTitle}>No events found</Text>
-      <Text style={styles.emptyStateText}>
+      <Text className="text-xl font-bold mt-2.5 text-text">No events found</Text>
+      <Text className="text-text-secondary mt-1">
         Try adjusting your search or filters
       </Text>
     </View>
@@ -159,10 +159,10 @@ export default function EventsUserScreen() {
 
   const renderSortModal = () => (
     <Modal visible={showSortModal} transparent animationType="slide">
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Sort By</Text>
+      <View className="flex-1 bg-black/50 justify-end">
+        <View className="bg-background p-5 rounded-t-[20px]">
+          <View className="flex-row justify-between mb-4">
+            <Text className="text-lg font-semibold text-text">Sort By</Text>
             <TouchableOpacity onPress={() => setShowSortModal(false)}>
               <Ionicons name="close" size={24} color={Colors.text} />
             </TouchableOpacity>
@@ -172,15 +172,15 @@ export default function EventsUserScreen() {
             {sortOptions.map((option) => (
               <TouchableOpacity
                 key={option.id}
-                style={styles.sortOption}
+                className="py-3.5"
                 onPress={() => {
                   setSelectedSort(option.id);
                   setShowSortModal(false);
                 }}
               >
-                <View style={styles.sortOptionContent}>
+                <View className="flex-row items-center">
                   {option.icon}
-                  <Text style={styles.sortOptionText}>{option.label}</Text>
+                  <Text className="ml-3 text-base text-text">{option.label}</Text>
                 </View>
               </TouchableOpacity>
             ))}
@@ -191,8 +191,8 @@ export default function EventsUserScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
+    <SafeAreaView className="flex-1 bg-background">
+      <View className="flex-1 p-4">
         {/* Search */}
         <SearchBar
           placeholder="Search events, venues, or categories..."
@@ -206,39 +206,33 @@ export default function EventsUserScreen() {
         />
 
         {/* Controls */}
-        <View style={styles.controlsSection}>
-          <View style={styles.controlsRow}>
-            <View style={styles.viewModeToggle}>
+        <View className="my-2.5">
+          <View className="flex-row justify-between">
+            <View className="flex-row gap-2">
               <TouchableOpacity
-                style={[
-                  styles.viewModeButton,
-                  viewMode === "list" && styles.viewModeButtonActive,
-                ]}
+                className={`p-2 rounded-md bg-background ${viewMode === "list" ? 'bg-primary/10' : ''}`}
                 onPress={() => setViewMode("list")}
               >
                 <Ionicons name="list" size={20} color={Colors.primary} />
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[
-                  styles.viewModeButton,
-                  viewMode === "grid" && styles.viewModeButtonActive,
-                ]}
+                className={`p-2 rounded-md bg-background ${viewMode === "grid" ? 'bg-primary/10' : ''}`}
                 onPress={() => setViewMode("grid")}
               >
                 <Ionicons name="grid" size={20} color={Colors.primary} />
               </TouchableOpacity>
             </View>
 
-            <View style={styles.rightControls}>
-              <TouchableOpacity style={styles.sortButton} onPress={handleSortPress}>
+            <View className="flex-row gap-2.5">
+              <TouchableOpacity className="flex-row items-center gap-1.5" onPress={handleSortPress}>
                 <Ionicons name="options" size={20} color={Colors.text} />
-                <Text style={styles.sortButtonText}>Sort</Text>
+                <Text className="text-text">Sort</Text>
                 <Ionicons name="chevron-down" size={16} color={Colors.text} />
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={styles.filterButton}
+                className="p-2 rounded-md bg-card"
                 onPress={handleFilterPress}
               >
                 <Ionicons name="filter" size={20} color={Colors.text} />
@@ -259,7 +253,7 @@ export default function EventsUserScreen() {
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
           ListEmptyComponent={renderEmptyState}
-          contentContainerStyle={styles.eventsList}
+          contentContainerStyle={{ paddingBottom: 50 }}
         />
       </View>
 
@@ -270,52 +264,5 @@ export default function EventsUserScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.background },
-  content: { flex: 1, padding: 16 },
-  controlsSection: { marginVertical: 10 },
-  controlsRow: { flexDirection: "row", justifyContent: "space-between" },
-  viewModeToggle: { flexDirection: "row", gap: 8 },
-  viewModeButton: {
-    padding: 8,
-    borderRadius: 6,
-    backgroundColor: Colors.background,
-  },
-  viewModeButtonActive: {
-    backgroundColor: Colors.primaryLight,
-  },
-  rightControls: { flexDirection: "row", gap: 10 },
-  sortButton: { flexDirection: "row", alignItems: "center", gap: 6 },
-  sortButtonText: { color: Colors.text },
-  filterButton: {
-    padding: 8,
-    borderRadius: 6,
-    backgroundColor: Colors.card,
-  },
   gridRow: { justifyContent: "space-between" },
-  listItem: { marginBottom: 16 },
-  gridItem: { width: "48%", marginBottom: 16 },
-  eventsList: { paddingBottom: 50 },
-  emptyState: { alignItems: "center", marginTop: 60 },
-  emptyStateTitle: { fontSize: 20, fontWeight: "700", marginTop: 10 },
-  emptyStateText: { color: Colors.textSecondary, marginTop: 4 },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "flex-end",
-  },
-  modalContent: {
-    backgroundColor: Colors.background,
-    padding: 20,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-  },
-  modalHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 16,
-  },
-  modalTitle: { fontSize: 18, fontWeight: "600" },
-  sortOption: { paddingVertical: 14 },
-  sortOptionContent: { flexDirection: "row", alignItems: "center" },
-  sortOptionText: { marginLeft: 12, fontSize: 16 },
 });

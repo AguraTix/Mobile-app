@@ -1,11 +1,11 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useLocalSearchParams, useRouter } from 'expo-router';
 import Header from '@/components/Header';
 import Colors from '@/constants/Colors';
 import { Ionicons } from "@expo/vector-icons";
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React from 'react';
+import { Dimensions, Text, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { width, height } = Dimensions.get('window');
 
@@ -22,16 +22,16 @@ export default function EventMapScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView className="flex-1 bg-background" edges={['top']}>
       <Header showLogo showProfile showSearch />
-      <View style={styles.headerRow}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+      <View className="flex-row items-center px-4 pt-3 pb-2 bg-background z-10">
+        <TouchableOpacity onPress={() => router.back()} className="mr-3 p-1">
           <Ionicons name="chevron-back" size={24} color={Colors.text} />
         </TouchableOpacity>
-        <Text style={styles.venueTitle}>{event.venue}</Text>
+        <Text className="text-lg font-bold text-text">{event.venue}</Text>
       </View>
       <MapView
-        style={styles.map}
+        className="flex-1 w-full h-full rounded-t-3xl mt-0"
         initialRegion={{
           latitude: event.latitude,
           longitude: event.longitude,
@@ -51,36 +51,3 @@ export default function EventMapScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 8,
-    backgroundColor: Colors.background,
-    zIndex: 2,
-  },
-  backBtn: {
-    marginRight: 12,
-    padding: 4,
-  },
-  venueTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: Colors.text,
-  },
-  map: {
-    flex: 1,
-    width: width,
-    height: height,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    marginTop: 0,
-  },
-});

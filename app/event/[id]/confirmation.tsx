@@ -1,8 +1,7 @@
-import Colors from '@/constants/Colors';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useMemo } from 'react';
-import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ConfirmationScreen() {
@@ -49,16 +48,16 @@ export default function ConfirmationScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView className="flex-1 bg-background" edges={['top']}>
       <StatusBar style="light" />
 
-      <View style={styles.content}>
+      <View className="flex-1 items-center justify-center px-8">
         {/* Success Message */}
-        <Text style={styles.title}>
+        <Text className="text-2xl font-bold text-text text-center mb-5 leading-8">
           You have successfully{'\n'}bought tickets
         </Text>
 
-        <Text style={styles.subtitle}>
+        <Text className="text-base text-text text-center leading-6 mb-16 opacity-80">
           You have now bought {ticketCount} {categoryName} ticket{ticketCount > 1 ? 's' : ''}{'\n'}
           for {parseInt(amount).toLocaleString()} RWF.{'\n'}
           Your tickets are ready to use!
@@ -66,94 +65,27 @@ export default function ConfirmationScreen() {
 
         {/* Animated Check Mark */}
         <Animated.View
-          style={[
-            styles.checkContainer,
-            {
-              transform: [{ scale: checkScale }],
-              opacity: checkOpacity,
-            }
-          ]}
+          className="mb-16"
+          style={{
+            transform: [{ scale: checkScale }],
+            opacity: checkOpacity,
+          }}
         >
-          <View style={styles.checkCircle}>
-            <View style={styles.checkMark}>
-              <Text style={styles.checkText}>✓</Text>
+          <View className="w-[120px] h-[120px] rounded-full border-[3px] border-[#4CAF50] items-center justify-center bg-[#4CAF50]/10">
+            <View className="w-20 h-20 rounded-full bg-[#4CAF50] items-center justify-center">
+              <Text className="text-white text-[40px] font-bold">✓</Text>
             </View>
           </View>
         </Animated.View>
 
         {/* Go Back Button */}
-        <TouchableOpacity style={styles.button} onPress={handleGoBack}>
-          <Text style={styles.buttonText}>Go back to Events</Text>
+        <TouchableOpacity
+          className="bg-primary rounded-full py-4 px-8 w-full items-center"
+          onPress={handleGoBack}
+        >
+          <Text className="text-text text-base font-bold">Go back to Events</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  content: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 32,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: Colors.text,
-    textAlign: 'center',
-    marginBottom: 20,
-    lineHeight: 32,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: Colors.text,
-    textAlign: 'center',
-    lineHeight: 24,
-    marginBottom: 60,
-    opacity: 0.8,
-  },
-  checkContainer: {
-    marginBottom: 60,
-  },
-  checkCircle: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    borderWidth: 3,
-    borderColor: '#4CAF50',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(76, 175, 80, 0.1)',
-  },
-  checkMark: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: '#4CAF50',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  checkText: {
-    color: '#fff',
-    fontSize: 40,
-    fontWeight: 'bold',
-  },
-  button: {
-    backgroundColor: Colors.primary,
-    borderRadius: 25,
-    paddingVertical: 16,
-    paddingHorizontal: 32,
-    width: '100%',
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: Colors.text,
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-});

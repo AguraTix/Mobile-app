@@ -94,7 +94,7 @@ export default function RootLayout() {
     return <ProductionErrorBoundary>{content}</ProductionErrorBoundary>;
   }
   return (
-    <GestureHandlerRootView style={{ flex: 1, backgroundColor: Colors.background }}>
+    <GestureHandlerRootView className="flex-1 bg-background">
       <ProductionErrorBoundary>{content}</ProductionErrorBoundary>
     </GestureHandlerRootView>
   );
