@@ -1,7 +1,7 @@
 import Header from '@/components/Header';
 import Colors from '@/constants/Colors';
 import { useRouter } from 'expo-router';
-import { ChevronDown, ChevronLeft, ExternalLink, FileText, Mail, MessageCircle, Phone } from 'lucide-react-native';
+import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from 'react';
 import { Alert, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -53,7 +53,7 @@ const contactOptions: ContactOption[] = [
     id: 'chat',
     title: 'Live Chat',
     subtitle: 'Get instant help from our support team',
-    icon: <MessageCircle size={24} color={Colors.text} />,
+    icon: <Ionicons name="chatbubble" size={24} color={Colors.text} />,
     action: () => {
       Alert.alert('Live Chat', 'Live chat feature coming soon!');
     },
@@ -62,7 +62,7 @@ const contactOptions: ContactOption[] = [
     id: 'phone',
     title: 'Call Support',
     subtitle: '+250 788 123 456',
-    icon: <Phone size={24} color={Colors.text} />,
+    icon: <Ionicons name="call" size={24} color={Colors.text} />,
     action: () => {
       Linking.openURL('tel:+250788123456');
     },
@@ -71,7 +71,7 @@ const contactOptions: ContactOption[] = [
     id: 'email',
     title: 'Email Support',
     subtitle: 'support@agura.com',
-    icon: <Mail size={24} color={Colors.text} />,
+    icon: <Ionicons name="mail" size={24} color={Colors.text} />,
     action: () => {
       Linking.openURL('mailto:support@agura.com');
     },
@@ -92,7 +92,7 @@ const FAQItemComponent: React.FC<FAQItemProps> = ({ item, isExpanded, onToggle }
       activeOpacity={0.7}
     >
       <Text style={styles.faqQuestionText}>{item.question}</Text>
-      <ChevronDown 
+      <Ionicons name="chevron-down" 
         size={20} 
         color={Colors.textSecondary} 
         style={[styles.chevron, isExpanded && styles.chevronExpanded]} 
@@ -123,7 +123,7 @@ const ContactOptionComponent: React.FC<ContactOptionProps> = ({ option }) => (
       <Text style={styles.contactTitle}>{option.title}</Text>
       <Text style={styles.contactSubtitle}>{option.subtitle}</Text>
     </View>
-    <ExternalLink size={20} color={Colors.textSecondary} />
+    <Ionicons name="open" size={20} color={Colors.textSecondary} />
   </TouchableOpacity>
  );
 
@@ -151,7 +151,7 @@ export default function HelpSupportScreen() {
       
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <ChevronLeft size={24} color={Colors.text} />
+          <Ionicons name="chevron-back" size={24} color={Colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Help & Support</Text>
         <View style={styles.headerRight} />
@@ -190,24 +190,24 @@ export default function HelpSupportScreen() {
             <View style={styles.resourcesContainer}>
               <TouchableOpacity style={styles.resourceItem} activeOpacity={0.7}>
                 <View style={styles.resourceIconContainer}>
-                  <FileText size={24} color={Colors.text} />
+                  <Ionicons name="document-text" size={24} color={Colors.text} />
                 </View>
                 <View style={styles.resourceContent}>
                   <Text style={styles.resourceTitle}>Terms of Service</Text>
                   <Text style={styles.resourceSubtitle}>Read our terms and conditions</Text>
                 </View>
-                <ExternalLink size={20} color={Colors.textSecondary} />
+                <Ionicons name="open" size={20} color={Colors.textSecondary} />
               </TouchableOpacity>
 
               <TouchableOpacity style={styles.resourceItem} activeOpacity={0.7}>
                 <View style={styles.resourceIconContainer}>
-                  <FileText size={24} color={Colors.text} />
+                  <Ionicons name="document-text" size={24} color={Colors.text} />
                 </View>
                 <View style={styles.resourceContent}>
                   <Text style={styles.resourceTitle}>Privacy Policy</Text>
                   <Text style={styles.resourceSubtitle}>Learn about data protection</Text>
                 </View>
-                <ExternalLink size={20} color={Colors.textSecondary} />
+                <Ionicons name="open" size={20} color={Colors.textSecondary} />
               </TouchableOpacity>
             </View>
           </View>

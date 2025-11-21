@@ -1,10 +1,9 @@
 import Header from '@/components/Header';
-import Colors from '@/constants/Colors';
+import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { CheckCircle } from 'lucide-react-native';
 import React, { useEffect, useMemo } from 'react';
-import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function FoodPaymentSuccessScreen() {
@@ -31,36 +30,36 @@ export default function FoodPaymentSuccessScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView className="flex-1 bg-background" edges={['top']}>
       <StatusBar style="light" />
       <Header
         showLogo
         showProfile
         showSearch
-        onSearchPress={() => {}}
+        onSearchPress={() => { }}
       />
-      
-      <View style={styles.content}>
-        <View style={styles.successContainer}>
-          <Animated.View style={[styles.iconContainer, { transform: [{ scale: scaleValue }] }]}>
-            <CheckCircle size={80} color="#4CAF50" />
+
+      <View className="flex-1 px-5 justify-center">
+        <View className="items-center py-10">
+          <Animated.View className="mb-8" style={{ transform: [{ scale: scaleValue }] }}>
+            <Ionicons name="checkmark-circle" size={80} color="#4CAF50" />
           </Animated.View>
-          
-          <Text style={styles.successTitle}>Order Successful!</Text>
-          <Text style={styles.successMessage}>
+
+          <Text className="text-text text-3xl font-bold text-center mb-4">Order Successful!</Text>
+          <Text className="text-text-secondary text-base text-center leading-6 mb-8 px-5">
             Your food order has been placed successfully and linked to your ticket.
           </Text>
-          
+
           {ticketId && (
-            <View style={styles.orderDetails}>
-              <Text style={styles.detailLabel}>Linked to Ticket:</Text>
-              <Text style={styles.detailValue}>{ticketId}</Text>
+            <View className="bg-card rounded-2xl p-5 mb-8 w-full items-center">
+              <Text className="text-text-secondary text-sm mb-2">Linked to Ticket:</Text>
+              <Text className="text-text text-lg font-bold">{ticketId}</Text>
             </View>
           )}
-          
-          <View style={styles.nextSteps}>
-            <Text style={styles.nextStepsTitle}>What&apos;s Next?</Text>
-            <Text style={styles.nextStepsText}>
+
+          <View className="bg-[#4CAF50]/10 rounded-2xl p-5 w-full border border-[#4CAF50]/20">
+            <Text className="text-text text-base font-bold mb-3 text-center">What&apos;s Next?</Text>
+            <Text className="text-text-secondary text-sm leading-5">
               • Your order will be prepared for pickup at the event
               {'\n'}• Check your order status in the Orders section
               {'\n'}• Show your ticket ID when collecting your food
@@ -68,122 +67,22 @@ export default function FoodPaymentSuccessScreen() {
           </View>
         </View>
 
-        <View style={styles.actionButtons}>
-          <TouchableOpacity 
-            style={styles.secondaryButton}
+        <View className="pb-8 gap-4">
+          <TouchableOpacity
+            className="bg-transparent border-2 border-primary rounded-full py-4 items-center"
             onPress={handleViewOrders}
           >
-            <Text style={styles.secondaryButtonText}>View My Orders</Text>
+            <Text className="text-primary text-base font-semibold">View My Orders</Text>
           </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={styles.primaryButton}
+
+          <TouchableOpacity
+            className="bg-primary rounded-full py-4 items-center"
             onPress={handleBackToMenu}
           >
-            <Text style={styles.primaryButtonText}>Order More Food</Text>
+            <Text className="text-text text-base font-semibold">Order More Food</Text>
           </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 20,
-    justifyContent: 'center',
-  },
-  successContainer: {
-    alignItems: 'center',
-    paddingVertical: 40,
-  },
-  iconContainer: {
-    marginBottom: 32,
-  },
-  successTitle: {
-    color: Colors.text,
-    fontSize: 28,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 16,
-  },
-  successMessage: {
-    color: Colors.textSecondary,
-    fontSize: 16,
-    textAlign: 'center',
-    lineHeight: 24,
-    marginBottom: 32,
-    paddingHorizontal: 20,
-  },
-  orderDetails: {
-    backgroundColor: Colors.card,
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 32,
-    width: '100%',
-    alignItems: 'center',
-  },
-  detailLabel: {
-    color: Colors.textSecondary,
-    fontSize: 14,
-    marginBottom: 8,
-  },
-  detailValue: {
-    color: Colors.text,
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  nextSteps: {
-    backgroundColor: 'rgba(76, 175, 80, 0.1)',
-    borderRadius: 16,
-    padding: 20,
-    width: '100%',
-    borderWidth: 1,
-    borderColor: 'rgba(76, 175, 80, 0.2)',
-  },
-  nextStepsTitle: {
-    color: Colors.text,
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  nextStepsText: {
-    color: Colors.textSecondary,
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  actionButtons: {
-    paddingBottom: 32,
-    gap: 16,
-  },
-  primaryButton: {
-    backgroundColor: Colors.primary,
-    borderRadius: 25,
-    paddingVertical: 16,
-    alignItems: 'center',
-  },
-  primaryButtonText: {
-    color: Colors.text,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  secondaryButton: {
-    backgroundColor: 'transparent',
-    borderWidth: 2,
-    borderColor: Colors.primary,
-    borderRadius: 25,
-    paddingVertical: 16,
-    alignItems: 'center',
-  },
-  secondaryButtonText: {
-    color: Colors.primary,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-});

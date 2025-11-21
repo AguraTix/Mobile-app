@@ -1,13 +1,11 @@
 import React from 'react';
 import {
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-  ViewStyle,
   Image,
+  Text,
+  TouchableOpacity,
   View,
+  ViewStyle,
 } from 'react-native';
-import Colors from '../constants/Colors';
 
 type SocialProvider = 'apple' | 'google' | 'gmail' | 'phone';
 
@@ -43,49 +41,17 @@ const SocialLoginButton: React.FC<SocialLoginButtonProps> = ({
 
   return (
     <TouchableOpacity
-      style={[styles.button, style]}
+      className="flex-row items-center justify-start bg-card rounded-full py-[14px] px-5 my-2"
+      style={style}
       onPress={onPress}
       activeOpacity={0.85}
     >
-      <View style={styles.iconWrapper}>
-        <Image source={iconSource} style={styles.icon} resizeMode="cover" />
+      <View className="w-10 h-10 rounded-full bg-white items-center justify-center">
+        <Image source={iconSource} className="w-[22px] h-[22px] rounded-[11px]" resizeMode="cover" />
       </View>
-      {showText && <Text style={styles.text}>{buttonText}</Text>}
+      {showText && <Text className="font-medium ml-3 text-base text-black">{buttonText}</Text>}
     </TouchableOpacity>
   );
 };
-
-const styles = StyleSheet.create({
-  button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    backgroundColor: Colors.card,
-    borderRadius: 50,
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    marginVertical: 8,
-  },
-  iconWrapper: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  icon: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-  },
-  text: {
-  fontWeight: '500',
-  marginLeft: 12,
-  fontSize: 16,
-  color: '#000', 
-},
-
-});
 
 export default SocialLoginButton;

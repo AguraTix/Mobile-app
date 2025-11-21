@@ -1,31 +1,32 @@
-import AuthLayout from '@/components/AuthLayout';
-import Button from '@/components/Button';
-import Header from '@/components/Header';
-import Input from '@/components/Input';
-import SocialLoginButton from '@/components/SocialLoginButton';
-import Colors from '@/constants/Colors';
-import { commonValidations, useFormValidation } from '@/hooks/useFormValidation';
-import { useAuthStore } from '@/store/auth-store';
-import { useRouter } from 'expo-router';
-import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Button from '@/components/Button'
+import Header from '@/components/Header'
+import Input from '@/components/Input'
+import SocialLoginButton from '@/components/SocialLoginButton'
+import Colors from '@/constants/Colors'
+import { useAuth } from '@/contexts'
+import { commonValidations, useFormValidation } from '@/hooks/useFormValidation'
+import { useRouter } from 'expo-router'
+import React from 'react'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 interface RegisterFormValues {
-  email: string;
-  phone: string;
-  password: string;
+  name: string
+  email: string
+  phone: string
+  password: string
 }
 
 const registerValidationSchema = {
+
+  name: commonValidations.name,
   email: commonValidations.email,
   phone: commonValidations.phone,
   password: commonValidations.password,
-};
+}
 
 export default function RegisterEmailScreen() {
-  const router = useRouter();
-  const { register, isLoading } = useAuthStore();
-
+  const router = useRouter()
+  const { register } = useAuth()
   const {
     formik,
     getFieldError,
@@ -35,6 +36,7 @@ export default function RegisterEmailScreen() {
     isSubmitting,
   } = useFormValidation<RegisterFormValues>(
     {
+      name: '',
       email: '',
       phone: '',
       password: '',
@@ -42,38 +44,51 @@ export default function RegisterEmailScreen() {
     registerValidationSchema,
     async (values) => {
       try {
-        await register({ 
-          email: values.email, 
-          phone: values.phone, 
-          password: values.password, 
-          username: values.email
+        console.log('Registering with:', values);
+        const response = await register({
+          name: values.name,
+          email: values.email.trim(),
+          phone_number: values.phone.trim(),
+          password: values.password,
         });
-        // Registration successful, user will be automatically logged in and redirected
-        router.replace('/(tabs)');
-      } catch {
-        // Error handled in the store
+        console.log('Registration response:', response);
+
+        router.replace('/home');
+
+      } catch (error) {
+        console.error('Registration error:', error);
+        // Error handled
       }
     }
-  );
+  )
 
   const handleLogin = () => {
-    router.push('/auth/login');
-  };
+    router.push('/auth/login')
+  }
 
   const handleSocialLogin = (provider: string) => {
-    // Implement social auth later
-    router.push('/profile/setup');
-  };
+    router.push('/profile/setup')
+  }
 
   const handleSubmit = () => {
-    formik.handleSubmit();
-  };
+    formik.handleSubmit()
+  }
 
   return (
-    <AuthLayout>
+    <>
       <Header title="Register with Gmail" showBack />
       <View style={styles.content}>
         <View style={styles.inputContainer}>
+
+          <Input
+            label="Full Name"
+            placeholder="Full Name"
+            value={getFieldValue('name')}
+            onChangeText={(text) => setFieldValue('name', text)}
+            onBlur={() => setFieldTouched('name')}
+            error={getFieldError('name')}
+          />
+
           <Input
             label="Email"
             placeholder="Email"
@@ -109,7 +124,7 @@ export default function RegisterEmailScreen() {
         <Button
           title="Sign Up"
           onPress={handleSubmit}
-          loading={isSubmitting || isLoading}
+          loading={isSubmitting}
           style={styles.signUpButton}
           fullWidth
           size="large"
@@ -146,8 +161,8 @@ export default function RegisterEmailScreen() {
           </TouchableOpacity>
         </View>
       </View>
-    </AuthLayout>
-  );
+    </>
+  )
 }
 
 const styles = StyleSheet.create({
@@ -206,4 +221,4 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
   },
-});
+})

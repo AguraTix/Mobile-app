@@ -1,22 +1,25 @@
 import Colors from "@/constants/Colors";
-import { LucideIcon } from "lucide-react-native";
+import { clsx, type ClassValue } from "clsx";
 import React, { useRef } from "react";
 import {
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    TouchableOpacityProps,
-    View,
-    Animated,
-    ActivityIndicator,
-    Platform,
+  ActivityIndicator,
+  Animated,
+  Text,
+  TouchableOpacity,
+  TouchableOpacityProps,
+  View,
 } from "react-native";
+import { twMerge } from "tailwind-merge";
+
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 interface ButtonProps extends TouchableOpacityProps {
   title: string;
   variant?: "primary" | "secondary" | "outline" | "ghost" | "danger" | "success" | "warning" | "gradient";
   size?: "small" | "medium" | "large" | "xl";
-  icon?: LucideIcon;
+  icon?: React.ComponentType<any>;
   iconPosition?: "left" | "right";
   loading?: boolean;
   fullWidth?: boolean;
@@ -38,12 +41,11 @@ export default function Button({
   disabled = false,
   ripple = true,
   gradientColors,
-  style,
+  className,
   ...props
-}: ButtonProps) {
+}: ButtonProps & { className?: string }) {
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const opacityAnim = useRef(new Animated.Value(1)).current;
-  const rippleAnim = useRef(new Animated.Value(0)).current;
 
   const handlePressIn = () => {
     if (ripple && !disabled && !loading) {
@@ -77,291 +79,127 @@ export default function Button({
     }
   };
 
-  const buttonStyles = [
-    styles.base,
-    styles[variant],
-    styles[size],
-    fullWidth && styles.fullWidth,
-    rounded && styles.rounded,
-    disabled && styles.disabled,
-    style,
-  ];
+  // Base styles
+  const baseStyles = "flex-row items-center justify-center rounded-xl shadow-sm";
 
-  const textStyles = [
-    styles.text,
-    styles[`${variant}Text`],
-    styles[`${size}Text`],
-    disabled && styles.disabledText,
-  ];
+  // Variant styles
+  const variantStyles = {
+    primary: "bg-primary",
+    secondary: "bg-card border border-border",
+    outline: "bg-transparent border-2 border-primary",
+    ghost: "bg-transparent",
+    danger: "bg-error",
+    success: "bg-success",
+    warning: "bg-warning",
+    gradient: "bg-primary", // Fallback for now
+  };
 
-  const iconStyles = [
-    styles.icon,
-    styles[`${size}Icon`],
-    iconPosition === "right" && styles.iconRight,
-  ];
+  // Size styles
+  const sizeStyles = {
+    small: "px-4 py-2 min-h-[36px]",
+    medium: "px-5 py-3 min-h-[48px]",
+    large: "px-6 py-4 min-h-[56px]",
+    xl: "px-8 py-5 min-h-[64px]",
+  };
 
-  const getButtonContent = () => {
-    if (loading) {
-      return (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator 
-            size={getSpinnerSize(size)} 
-            color={getSpinnerColor(variant, disabled)} 
-          />
-          <Text style={[textStyles, styles.loadingText]}>Loading...</Text>
-        </View>
-      );
+  // Text styles
+  const textBaseStyles = "font-semibold text-center";
+
+  const textSizeStyles = {
+    small: "text-sm",
+    medium: "text-base",
+    large: "text-lg",
+    xl: "text-xl",
+  };
+
+  const textVariantStyles = {
+    primary: "text-white",
+    secondary: "text-text",
+    outline: "text-primary",
+    ghost: "text-primary",
+    danger: "text-white",
+    success: "text-white",
+    warning: "text-white",
+    gradient: "text-white",
+  };
+
+  // Icon sizes
+  const iconSizes = {
+    small: 16,
+    medium: 20,
+    large: 22,
+    xl: 24,
+  };
+
+  // Spinner sizes
+  const spinnerSizes = {
+    small: 16,
+    medium: 18,
+    large: 20,
+    xl: 24,
+  };
+
+  const getIconColor = () => {
+    if (disabled) return "#999999";
+    switch (variant) {
+      case "outline":
+      case "ghost":
+        return Colors.primary;
+      case "secondary":
+        return Colors.text;
+      default:
+        return "#ffffff";
     }
-
-    return (
-      <View style={styles.content}>
-        {Icon && iconPosition === "left" && (
-          <Icon 
-            style={iconStyles} 
-            size={getIconSize(size)} 
-            color={getIconColor(variant, disabled)} 
-          />
-        )}
-        <Text style={textStyles}>{title}</Text>
-        {Icon && iconPosition === "right" && (
-          <Icon 
-            style={iconStyles} 
-            size={getIconSize(size)} 
-            color={getIconColor(variant, disabled)} 
-          />
-        )}
-      </View>
-    );
   };
 
   return (
-    <Animated.View style={{ transform: [{ scale: scaleAnim }], opacity: opacityAnim }}>
+    <Animated.View style={{ transform: [{ scale: scaleAnim }], opacity: opacityAnim, width: fullWidth ? '100%' : 'auto' }}>
       <TouchableOpacity
-        style={buttonStyles}
+        className={cn(
+          baseStyles,
+          variantStyles[variant],
+          sizeStyles[size],
+          fullWidth && "w-full",
+          rounded && "rounded-full",
+          (disabled || loading) && "opacity-60 bg-border",
+          className
+        )}
         disabled={disabled || loading}
         activeOpacity={ripple ? 1 : 0.8}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
         {...props}
       >
-        {getButtonContent()}
+        {loading ? (
+          <View className="flex-row items-center justify-center gap-2">
+            <ActivityIndicator
+              size={spinnerSizes[size]}
+              color={getIconColor()}
+            />
+            <Text className={cn(textBaseStyles, textSizeStyles[size], textVariantStyles[variant], disabled && "text-[#999999]", "ml-2")}>
+              Loading...
+            </Text>
+          </View>
+        ) : (
+          <View className="flex-row items-center justify-center gap-2">
+            {Icon && iconPosition === "left" && (
+              <Icon
+                size={iconSizes[size]}
+                color={getIconColor()}
+              />
+            )}
+            <Text className={cn(textBaseStyles, textSizeStyles[size], textVariantStyles[variant], disabled && "text-[#999999]")}>
+              {title}
+            </Text>
+            {Icon && iconPosition === "right" && (
+              <Icon
+                size={iconSizes[size]}
+                color={getIconColor()}
+              />
+            )}
+          </View>
+        )}
       </TouchableOpacity>
     </Animated.View>
   );
 }
-
-function getIconSize(size: string): number {
-  switch (size) {
-    case "small": return 16;
-    case "large": return 22;
-    case "xl": return 24;
-    default: return 20;
-  }
-}
-
-function getSpinnerSize(size: string): number {
-  switch (size) {
-    case "small": return 16;
-    case "large": return 20;
-    case "xl": return 24;
-    default: return 18;
-  }
-}
-
-function getIconColor(variant: string, disabled: boolean): string {
-  if (disabled) return "#999999";
-  
-  switch (variant) {
-    case "primary": return "#ffffff";
-    case "secondary": return "#ffffff";
-    case "outline": return Colors.primary;
-    case "ghost": return Colors.primary;
-    case "danger": return "#ffffff";
-    case "success": return "#ffffff";
-    case "warning": return "#ffffff";
-    case "gradient": return "#ffffff";
-    default: return "#ffffff";
-  }
-}
-
-function getSpinnerColor(variant: string, disabled: boolean): string {
-  if (disabled) return "#999999";
-  
-  switch (variant) {
-    case "primary": return "#ffffff";
-    case "secondary": return "#ffffff";
-    case "outline": return Colors.primary;
-    case "ghost": return Colors.primary;
-    case "danger": return "#ffffff";
-    case "success": return "#ffffff";
-    case "warning": return "#ffffff";
-    case "gradient": return "#ffffff";
-    default: return "#ffffff";
-  }
-}
-
-const styles = StyleSheet.create({
-  base: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 12,
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  
-  // Variants
-  primary: {
-    backgroundColor: Colors.primary,
-  },
-  secondary: {
-    backgroundColor: Colors.card,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  outline: {
-    backgroundColor: "transparent",
-    borderWidth: 2,
-    borderColor: Colors.primary,
-  },
-  ghost: {
-    backgroundColor: "transparent",
-  },
-  danger: {
-    backgroundColor: Colors.error,
-  },
-  success: {
-    backgroundColor: Colors.success,
-  },
-  warning: {
-    backgroundColor: Colors.warning,
-  },
-  gradient: {
-    backgroundColor: Colors.primary,
-  },
-  
-  // Sizes
-  small: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    minHeight: 36,
-  },
-  medium: {
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    minHeight: 48,
-  },
-  large: {
-    paddingHorizontal: 24,
-    paddingVertical: 16,
-    minHeight: 56,
-  },
-  xl: {
-    paddingHorizontal: 32,
-    paddingVertical: 20,
-    minHeight: 64,
-  },
-  
-  // Modifiers
-  fullWidth: {
-    width: "100%",
-  },
-  rounded: {
-    borderRadius: 50,
-  },
-  disabled: {
-    opacity: 0.6,
-    backgroundColor: Colors.border,
-  },
-  
-  // Content
-  content: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-  },
-  loadingContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-  },
-  loadingText: {
-    marginLeft: 8,
-  },
-  
-  // Text styles
-  text: {
-    fontSize: 16,
-    fontWeight: "600",
-    textAlign: "center",
-  },
-  smallText: {
-    fontSize: 14,
-  },
-  mediumText: {
-    fontSize: 16,
-  },
-  largeText: {
-    fontSize: 18,
-  },
-  xlText: {
-    fontSize: 20,
-  },
-  
-  // Variant text colors
-  primaryText: {
-    color: "#ffffff",
-  },
-  secondaryText: {
-    color: Colors.text,
-  },
-  outlineText: {
-    color: Colors.primary,
-  },
-  ghostText: {
-    color: Colors.primary,
-  },
-  dangerText: {
-    color: "#ffffff",
-  },
-  successText: {
-    color: "#ffffff",
-  },
-  warningText: {
-    color: "#ffffff",
-  },
-  gradientText: {
-    color: "#ffffff",
-  },
-  
-  // Disabled text
-  disabledText: {
-    color: "#999999",
-  },
-  
-  // Icon styles
-  icon: {
-    marginHorizontal: 0,
-  },
-  smallIcon: {
-    marginHorizontal: 0,
-  },
-  mediumIcon: {
-    marginHorizontal: 0,
-  },
-  largeIcon: {
-    marginHorizontal: 0,
-  },
-  xlIcon: {
-    marginHorizontal: 0,
-  },
-  iconRight: {
-    marginLeft: 8,
-    marginRight: 0,
-  },
-});

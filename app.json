@@ -27,6 +27,7 @@
     },
     "plugins": [
       "expo-router",
+      "expo-secure-store",
       "expo-web-browser"
     ],
     "experiments": {
@@ -35,7 +36,12 @@
     "extra": {
       "apiUrl": "https://agurabackend.onrender.com",
       "EXPO_PUBLIC_API_URL": "https://agurabackend.onrender.com",
-      "EXPO_PUBLIC_GOOGLE_CLIENT_ID": "547461485128-k5brbqjl0klrkn331plsjb5rjmuvqja0.apps.googleusercontent.com"
-    }
+      "EXPO_PUBLIC_GOOGLE_CLIENT_ID": "547461485128-k5brbqjl0klrkn331plsjb5rjmuvqja0.apps.googleusercontent.com",
+      "router": {},
+      "eas": {
+        "projectId": "914a9e08-4b0c-4700-b2d6-503c10bb1346"
+      }
+    },
+    "owner": "contribution"
   }
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { Animated, Easing, StyleSheet, View, ViewStyle, type DimensionValue } from "react-native";
+import { Animated, Easing, View, ViewStyle, type DimensionValue } from "react-native";
 
 interface SkeletonProps {
   width?: DimensionValue;
@@ -30,11 +30,14 @@ export default function Skeleton({ width = "100%", height = 16, radius = 8, styl
   });
 
   return (
-    <View style={[styles.container, { width, height, borderRadius: radius }, style]}> 
+    <View
+      className="bg-gray-200 overflow-hidden"
+      style={[{ width, height, borderRadius: radius }, style]}
+    >
       <Animated.View
         pointerEvents="none"
+        className="absolute left-0 top-0 w-[200px] bg-gray-100 opacity-70"
         style={[
-          styles.shimmer,
           {
             transform: [{ translateX }],
             height: typeof height === "number" ? height : undefined,
@@ -44,20 +47,3 @@ export default function Skeleton({ width = "100%", height = 16, radius = 8, styl
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#E5E7EB",
-    overflow: "hidden",
-  },
-  shimmer: {
-    position: "absolute",
-    left: 0,
-    top: 0,
-    width: 200,
-    backgroundColor: "#F3F4F6",
-    opacity: 0.7,
-  },
-});
-
-

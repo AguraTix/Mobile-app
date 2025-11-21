@@ -2,7 +2,7 @@ import Header from '@/components/Header';
 import Colors from '@/constants/Colors';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import { ChevronLeft, CreditCard, Edit, Plus, Trash2 } from 'lucide-react-native';
+import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -61,14 +61,14 @@ const PaymentMethodCard: React.FC<PaymentMethodCardProps> = ({
           onPress={() => onEdit(method)}
           activeOpacity={0.7}
         >
-          <Edit size={16} color={Colors.textSecondary} />
+          <Ionicons name="create" size={16} color={Colors.textSecondary} />
         </TouchableOpacity>
         <TouchableOpacity 
           style={styles.actionButton} 
           onPress={() => onDelete(method)}
           activeOpacity={0.7}
         >
-          <Trash2 size={16} color={Colors.error} />
+          <Ionicons name="trash" size={16} color={Colors.error} />
         </TouchableOpacity>
       </View>
     </View>
@@ -136,7 +136,7 @@ export default function PaymentMethodsScreen() {
       
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <ChevronLeft size={24} color={Colors.text} />
+          <Ionicons name="chevron-back" size={24} color={Colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Payment Methods</Text>
         <View style={styles.headerRight} />
@@ -150,7 +150,7 @@ export default function PaymentMethodsScreen() {
             onPress={handleAddPaymentMethod}
             activeOpacity={0.7}
           >
-            <Plus size={24} color={Colors.primary} />
+            <Ionicons name="add" size={24} color={Colors.primary} />
             <Text style={styles.addButtonText}>Add Payment Method</Text>
           </TouchableOpacity>
 
@@ -159,7 +159,7 @@ export default function PaymentMethodsScreen() {
             <Text style={styles.sectionTitle}>Your Payment Methods</Text>
             {paymentMethods.length === 0 ? (
               <View style={styles.emptyState}>
-                <CreditCard size={48} color={Colors.textSecondary} />
+                <Ionicons name="card" size={48} color={Colors.textSecondary} />
                 <Text style={styles.emptyStateTitle}>No Payment Methods</Text>
                 <Text style={styles.emptyStateSubtitle}>
                   Add a payment method to make purchases faster

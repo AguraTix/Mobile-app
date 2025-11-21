@@ -1,12 +1,11 @@
 import Colors from '@/constants/Colors';
 import React, { useEffect, useRef, useState } from 'react';
 import {
-    Keyboard,
-    NativeSyntheticEvent,
-    StyleSheet,
-    TextInput,
-    TextInputKeyPressEventData,
-    View,
+  Keyboard,
+  NativeSyntheticEvent,
+  TextInput,
+  TextInputKeyPressEventData,
+  View,
 } from 'react-native';
 
 interface VerificationInputProps {
@@ -19,7 +18,6 @@ const VerificationInput: React.FC<VerificationInputProps> = ({ length = 5, onCod
   const inputRefs = useRef<(TextInput | null)[]>([]);
 
   useEffect(() => {
-    
     inputRefs.current = inputRefs.current.slice(0, length);
   }, [length]);
 
@@ -28,7 +26,6 @@ const VerificationInput: React.FC<VerificationInputProps> = ({ length = 5, onCod
     newCode[index] = text;
     setCode(newCode);
 
-   
     if (text && index < length - 1) {
       inputRefs.current[index + 1]?.focus();
     }
@@ -48,7 +45,7 @@ const VerificationInput: React.FC<VerificationInputProps> = ({ length = 5, onCod
   };
 
   return (
-    <View style={styles.container}>
+    <View className="flex-row justify-between w-full my-5">
       {Array(length)
         .fill(0)
         .map((_, index) => (
@@ -57,7 +54,7 @@ const VerificationInput: React.FC<VerificationInputProps> = ({ length = 5, onCod
             ref={(ref) => {
               inputRefs.current[index] = ref;
             }}
-            style={styles.input}
+            className="w-[50px] h-[50px] rounded-lg bg-input-background text-text text-xl text-center font-bold"
             maxLength={1}
             keyboardType="number-pad"
             value={code[index]}
@@ -69,24 +66,5 @@ const VerificationInput: React.FC<VerificationInputProps> = ({ length = 5, onCod
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    marginVertical: 20,
-  },
-  input: {
-    width: 50,
-    height: 50,
-    borderRadius: 8,
-    backgroundColor: Colors.inputBackground,
-    color: Colors.text,
-    fontSize: 20,
-    textAlign: 'center',
-    fontWeight: 'bold',
-  },
-});
 
 export default VerificationInput;

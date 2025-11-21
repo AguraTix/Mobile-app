@@ -1,14 +1,12 @@
 import Header from '@/components/Header';
 import Colors from '@/constants/Colors';
-import { useEventsStore } from "@/store/events-store";
-import { useTicketsStore } from "@/store/tickets-store";
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { useEvent, useTicket } from '@/contexts';
+import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
 import * as Print from 'expo-print';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as Sharing from 'expo-sharing';
-import { ChevronLeft } from 'lucide-react-native';
 import React from 'react';
 import { Alert, Dimensions, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
@@ -23,26 +21,26 @@ export default function TicketPreviewScreen() {
   if (Array.isArray(eventId)) eventId = eventId[0];
   let ticketId = params.ticketId;
   if (Array.isArray(ticketId)) ticketId = ticketId[0];
-  
-  const { userTickets } = useTicketsStore();
-  const { allEvents } = useEventsStore();
-  
+
+  const { myTickets } = useTicket();
+  const { events } = useEvent();
+
   // Find the specific ticket
-  const ticket = userTickets.find(t => t.ticket_id === ticketId || t.id === ticketId) || userTickets[0];
-  const event = allEvents.find(e => e.id === eventId);
-  
-  const ticketType = ticket?.category_name || 'Standard';
+  const ticket = myTickets.find(t => t.ticket_id === ticketId) || myTickets[0];
+  const event = events.find(e => e.event_id === eventId);
+
+  const ticketType = ticket?.sectionName || 'Standard';
   const amount = ticket?.price || 0;
-  const holderName = ticket?.holder_name || 'Guest';
+  const holderName = ticket?.User?.name || 'Guest';
 
   // Use real data from backend
   const eventName = event?.title || 'Event';
-  const venue = event?.location || 'Venue TBD';
-  const boughtAt = ticket?.purchase_date ? new Date(ticket.purchase_date).toLocaleTimeString() : 'N/A';
+  const venue = event?.Venue?.location || 'Venue TBD';
+  const boughtAt = ticket?.purchaseDate ? new Date(ticket.purchaseDate).toLocaleTimeString() : 'N/A';
   const date = event?.date ? new Date(event.date).toLocaleDateString() : 'TBD';
 
   // Generate a unique QR code value from ticket data
-  const qrValue = ticket?.qr_code || JSON.stringify({
+  const qrValue = ticket?.qrCodeUrl || JSON.stringify({
     ticketId: ticket?.ticket_id || ticketId,
     eventId,
     holderName,
@@ -101,17 +99,17 @@ export default function TicketPreviewScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView className="flex-1 bg-background" edges={['top']}>
       <Header showLogo showProfile showSearch />
-      <View style={styles.content}>
-        <View style={styles.titleRow}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-            <ChevronLeft size={24} color={Colors.text} />
+      <View className="flex-1 items-center px-0 pt-0">
+        <View className="flex-row items-center w-full mt-4 mb-6 px-4">
+          <TouchableOpacity onPress={() => router.back()} className="mr-2 p-1">
+            <Ionicons name="chevron-back" size={24} color={Colors.text} />
           </TouchableOpacity>
-          <Text style={styles.pageTitle}>Ticket Preview</Text>
+          <Text className="text-lg font-bold text-text ml-2">Ticket Preview</Text>
         </View>
-        <View style={styles.cardWrap}>
-          <View style={styles.qrWrap}>
+        <View className="bg-card rounded-3xl p-6 items-center w-[70%] self-center mb-10" style={styles.shadow}>
+          <View className="bg-background rounded-2xl p-[9px] mb-[18px]">
             <QRCode
               value={qrValue}
               size={width * 0.55}
@@ -119,30 +117,30 @@ export default function TicketPreviewScreen() {
               backgroundColor={Colors.background}
             />
           </View>
-          <View style={styles.ticketInfo}>
-            <Text style={styles.eventName}>{eventName}</Text>
-                                    <Text style={styles.ticketType}>{ticketType}</Text>
-                        <Text style={styles.ticketType}>Holder: {holderName}</Text>
-                        <Text style={styles.venue}>{venue}</Text>
-                        <Text style={styles.amount}>Amount: {amount.toLocaleString()} RWF</Text>
-            <Text style={styles.meta}>Bought at: {boughtAt}</Text>
-            <Text style={styles.meta}>Date: {date}</Text>
+          <View className="items-start w-full self-center mt-1.5">
+            <Text className="text-primary font-bold text-xl mb-1.5">{eventName}</Text>
+            <Text className="text-text text-base font-medium mb-0.5">{ticketType}</Text>
+            <Text className="text-text text-base font-medium mb-0.5">Holder: {holderName}</Text>
+            <Text className="text-text text-[15px] mb-0.5">{venue}</Text>
+            <Text className="text-text text-[15px] font-bold mb-0.5">Amount: {amount.toLocaleString()} RWF</Text>
+            <Text className="text-text text-sm mb-0.5">Bought at: {boughtAt}</Text>
+            <Text className="text-text text-sm">Date: {date}</Text>
           </View>
         </View>
-        <View style={styles.quickActionWrap}>
-          <Text style={styles.quickActionTitle}>Quick Action</Text>
-          <View style={styles.quickActionRow}>
-            <TouchableOpacity style={styles.quickActionBtn} onPress={() => router.push(`/event/${eventId}/menu`)}>
-              <View style={styles.quickActionIconWrap}>
+        <View className="bg-card rounded-t-[32px] py-2.5 px-6 w-full absolute bottom-0 left-0 right-0" style={styles.shadowTop}>
+          <Text className="text-text font-bold text-[17px] mb-[18px]">Quick Action</Text>
+          <View className="flex-row justify-between items-start w-full">
+            <TouchableOpacity className="flex-1 items-center mx-2" onPress={() => router.push(`/event/${eventId}/menu`)}>
+              <View className="bg-white rounded-2xl w-12 h-12 items-center justify-center mb-2 shadow-sm">
                 <MaterialCommunityIcons name="food-fork-drink" size={28} color={Colors.primary} />
               </View>
-              <Text style={styles.quickActionText}>Place foods and drinks order</Text>
+              <Text className="text-text text-[13px] text-center mt-0.5">Place foods and drinks order</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.quickActionBtn} onPress={handleDownloadTicket}>
-              <View style={[styles.quickActionIconWrap, styles.downloadIconWrap]}>
+            <TouchableOpacity className="flex-1 items-center mx-2" onPress={handleDownloadTicket}>
+              <View className="bg-primary rounded-2xl w-12 h-12 items-center justify-center mb-2 shadow-sm">
                 <Feather name="download" size={28} color="#fff" />
               </View>
-              <Text style={styles.quickActionText}>Download Ticket</Text>
+              <Text className="text-text text-[13px] text-center mt-0.5">Download Ticket</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -152,145 +150,18 @@ export default function TicketPreviewScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  content: {
-    flex: 1,
-    alignItems: 'center',
-    paddingHorizontal: 0,
-    paddingTop: 0,
-  },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '100%',
-    marginTop: 16,
-    marginBottom: 24,
-    paddingHorizontal: 16,
-  },
-  backBtn: {
-    marginRight: 8,
-    padding: 4,
-  },
-  pageTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: Colors.text,
-    marginLeft: 8,
-  },
-  cardWrap: {
-    backgroundColor: Colors.card,
-    borderRadius: 24,
-    padding: 24,
-    alignItems: 'center',
-    width: width * 0.70,
-    alignSelf: 'center',
-    marginBottom: 40,
+  shadow: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 6,
     elevation: 2,
   },
-  qrWrap: {
-    backgroundColor: Colors.background,
-    borderRadius: 16,
-    padding: 9,
-    marginBottom: 18,
-  },
-  ticketInfo: {
-    alignItems: 'flex-start',
-      width: '100%',
-      alignSelf: 'center',
-    marginTop: 6,
-  },
-  eventName: {
-    color: Colors.primary,
-    fontWeight: 'bold',
-    fontSize: 20,
-    marginBottom: 6,
-  },
-  ticketType: {
-    color: Colors.text,
-    fontSize: 16,
-    fontWeight: '500',
-    marginBottom: 2,
-  },
-  venue: {
-    color: Colors.text,
-    fontSize: 15,
-    marginBottom: 2,
-  },
-  amount: {
-    color: Colors.text,
-    fontSize: 15,
-    fontWeight: 'bold',
-    marginBottom: 2,
-  },
-  meta: {
-    color: Colors.text,
-    fontSize: 14,
-    marginBottom: 2,
-  },
-  quickActionWrap: {
-    backgroundColor: Colors.card,
-    borderTopLeftRadius: 32,
-    borderTopRightRadius: 32,
-    paddingTop: 10,
-    paddingBottom: 10,
-    paddingHorizontal: 24,
-    width: '100%',
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    elevation: 8,
+  shadowTop: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.08,
     shadowRadius: 6,
-  },
-  quickActionTitle: {
-    color: Colors.text,
-    fontWeight: 'bold',
-    fontSize: 17,
-    marginBottom: 18,
-  },
-  quickActionRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    width: '100%',
-  },
-  quickActionBtn: {
-    flex: 1,
-    alignItems: 'center',
-    marginHorizontal: 8,
-  },
-  quickActionIconWrap: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    width: 48,
-    height: 48,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 8,
-    elevation: 2,
-  },
-  downloadIconWrap: {
-    backgroundColor: '#e6007e',
-  },
-  quickActionIcon: {
-    width: 28,
-    height: 28,
-    resizeMode: 'contain',
-  },
-  quickActionText: {
-    color: Colors.text,
-    fontSize: 13,
-    textAlign: 'center',
-    marginTop: 2,
+    elevation: 8,
   },
 });

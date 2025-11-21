@@ -1,20 +1,18 @@
-import AuthGuard from "@/components/AuthGuard";
 import Button from "@/components/Button";
 import Header from "@/components/Header";
 import Input from "@/components/Input";
 import NetworkError from "@/components/NetworkError";
-import { API_BASE_URL } from "@/config/api";
-import { useToast } from "@/components/ToastProvider";
 import Colors from "@/constants/Colors";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNotification } from "@/contexts/NotificationContext";
 import { commonValidations, useFormValidation } from "@/hooks/useFormValidation";
-import { login, validateEmail, validatePhone } from "@/lib/api/auth";
-import { setToken } from "@/lib/authToken";
 import * as Linking from "expo-linking";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import * as WebBrowser from "expo-web-browser";
-import React, { useState } from "react";
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 interface LoginFormValues {
   identifier: string;
@@ -22,20 +20,24 @@ interface LoginFormValues {
 }
 
 const loginValidationSchema = {
-  identifier: (value: string) => {
-    if (!value) return 'Email or phone number is required';
-    if (validateEmail(value) || validatePhone(value)) return null;
-    return 'Please enter a valid email or phone number';
-  },
+  identifier: commonValidations.required('Email or phone number'),
   password: commonValidations.required('Password'),
 };
 
 export default function LoginScreen() {
   const router = useRouter();
-  const { showToast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { login, isLoading: authLoading, error: authError, user } = useAuth();
+  const { addNotification } = useNotification();
   const [networkError, setNetworkError] = useState(false);
+  const [localError, setLocalError] = useState<string | null>(null);
+
+  // Handle auth errors
+  useEffect(() => {
+    if (authError) {
+      setLocalError(authError);
+      addNotification(authError, 'error', 5000);
+    }
+  }, [authError]);
 
   const {
     formik,
@@ -52,45 +54,28 @@ export default function LoginScreen() {
     loginValidationSchema,
     async (values) => {
       try {
-        setIsLoading(true);
-        setError(null);
+        setLocalError(null);
         setNetworkError(false);
-        
-        const response = await login(values);
-        
-        if (response.success && response.token) {
-          await setToken(response.token);
-          showToast("Welcome back!", { type: 'success' });
-          router.replace("/(tabs)");
-        } else {
-          setError(response.message || "Login failed. Please try again.");
-        }
+        await login({
+          identifier: values.identifier,
+          password: values.password,
+        });
+
       } catch (error: any) {
         console.error('Login error:', error);
-        
-        // Check if it's a network error
-        if (error?.message?.includes('Network Error') || 
-            error?.message?.includes('timeout') ||
-            error?.code === 'NETWORK_ERROR') {
-          setNetworkError(true);
-        } else {
-          setError(error?.message || "Login failed. Please check your credentials and try again.");
-        }
-      } finally {
-        setIsLoading(false);
       }
     }
   );
 
   const handleGoogleLogin = async () => {
     try {
-      setIsLoading(true);
-      setError(null);
       setNetworkError(false);
-      
+      setLocalError(null);
+
       const redirectUrl = Linking.createURL("/auth/login");
-      const authUrl = `${API_BASE_URL}/api/users/google?redirect_uri=${encodeURIComponent(redirectUrl)}`;
-      
+      console.log(redirectUrl)
+      const authUrl = `http://10.12.74.188:3000/api/auth/google?redirect_uri=${encodeURIComponent(redirectUrl)}`;
+
       const result = await WebBrowser.openAuthSessionAsync(
         authUrl,
         redirectUrl
@@ -99,35 +84,19 @@ export default function LoginScreen() {
       if (result.type === "success" && result.url) {
         const parsed = Linking.parse(result.url);
         const query = parsed.queryParams || {};
-        const token = String(query.token || "");
-        const email = String(query.email || "");
-        const name = String(query.name || "");
-        
-        if (token) {
-          await setToken(token);
-          router.replace("/(tabs)");
-          return;
-        }
+        addNotification("Google login successful!", 'success', 3000);
+        router.replace("/home");
+        return;
       }
-      
-      setError("Google login was cancelled or failed. Please try again.");
     } catch (error: any) {
       console.error('Google login error:', error);
-      
-      if (error?.message?.includes('Network Error') || 
-          error?.message?.includes('timeout')) {
-        setNetworkError(true);
-      } else {
-        setError("Google login failed. Please try again.");
-      }
-    } finally {
-      setIsLoading(false);
+      addNotification('Google login failed', 'error', 5000);
     }
   };
 
   const handleRetry = () => {
     setNetworkError(false);
-    setError(null);
+    setLocalError(null);
   };
 
   const handleSubmit = () => {
@@ -140,7 +109,7 @@ export default function LoginScreen() {
       <SafeAreaView style={styles.container}>
         <StatusBar style="light" />
         <Header title="Login" showBack />
-        <NetworkError 
+        <NetworkError
           message="Unable to connect to our servers. Please check your internet connection."
           onRetry={handleRetry}
         />
@@ -149,7 +118,7 @@ export default function LoginScreen() {
   }
 
   return (
-    <AuthGuard requireGuest redirectTo="/(tabs)">
+    <>
       <SafeAreaView style={styles.container}>
         <StatusBar style="light" />
         <Header title="Login" showBack />
@@ -181,16 +150,16 @@ export default function LoginScreen() {
           </View>
 
           <View style={styles.bottomSection}>
-            {error && <Text style={styles.errorText}>{error}</Text>}
+            {localError && <Text style={styles.errorText}>{localError}</Text>}
 
             <Button
               title="Login"
               onPress={handleSubmit}
-              loading={isSubmitting || isLoading}
+              loading={isSubmitting || authLoading}
               style={styles.loginButton}
               fullWidth
               size="large"
-              disabled={!formik.isValid || !formik.dirty}
+              disabled={!formik.isValid || !formik.dirty || authLoading}
             />
 
             <Button
@@ -199,19 +168,19 @@ export default function LoginScreen() {
               style={styles.googleButton}
               fullWidth
               size="large"
-              disabled={isLoading}
+              disabled={authLoading || isSubmitting}
             />
 
             <View style={styles.signupContainer}>
-              <Text style={styles.signupText}>Don't have an account? </Text>
-              <TouchableOpacity onPress={() => router.push("/auth/register")}>
+              <Text style={styles.signupText}>Don&rsquo;t have an account? </Text>
+              <TouchableOpacity onPress={() => router.push("/events-user")}>
                 <Text style={styles.signupLink}>Sign up</Text>
               </TouchableOpacity>
             </View>
           </View>
         </View>
       </SafeAreaView>
-    </AuthGuard>
+    </>
   );
 }
 
@@ -223,7 +192,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 24,
-    paddingTop: 32,
+    padding: 32,
     justifyContent: "space-between",
   },
   inputContainer: {

@@ -1,10 +1,8 @@
 import { Stack } from 'expo-router';
 import React from 'react';
-import AuthGuard from '@/components/AuthGuard';
 
 export default function EventLayout() {
   return (
-    <AuthGuard>
       <Stack
         screenOptions={{
           headerShown: false,
@@ -25,6 +23,5 @@ export default function EventLayout() {
         <Stack.Screen name="[id]/ticket-names" />
         <Stack.Screen name="[id]/ticket-preview" />
       </Stack>
-    </AuthGuard>
   );
 }

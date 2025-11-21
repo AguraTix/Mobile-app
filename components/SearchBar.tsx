@@ -1,15 +1,15 @@
 import Colors from "@/constants/Colors";
-import { Filter, Search, X, Mic, Clock, TrendingUp } from "lucide-react-native";
-import React, { useState, useEffect, useRef } from "react";
+import { Ionicons } from "@expo/vector-icons";
+import React, { useRef, useState } from "react";
 import {
-    StyleSheet,
-    TextInput,
-    TouchableOpacity,
-    View,
-    Text,
-    Animated,
-    FlatList,
-    Keyboard
+  Animated,
+  FlatList,
+  Keyboard,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from "react-native";
 
 interface SearchBarProps {
@@ -96,19 +96,16 @@ export default function SearchBar({
 
   const renderSuggestionItem = ({ item, type }: { item: string; type: 'recent' | 'popular' }) => (
     <TouchableOpacity
-      style={styles.suggestionItem}
+      className="flex-row items-center px-4 py-3 gap-3"
       onPress={() => handleSearch(item)}
       activeOpacity={0.7}
     >
       {type === 'recent' ? (
-        <Clock size={16} color={Colors.textSecondary} />
+        <Ionicons name="time" size={16} color={Colors.textSecondary} />
       ) : (
-        <TrendingUp size={16} color={Colors.primary} />
+        <Ionicons name="trending-up" size={16} color={Colors.primary} />
       )}
-      <Text style={[
-        styles.suggestionText,
-        type === 'popular' && styles.popularSuggestionText
-      ]}>
+      <Text className={`text-base flex-1 ${type === 'popular' ? 'text-primary font-medium' : 'text-text'}`}>
         {item}
       </Text>
     </TouchableOpacity>
@@ -120,21 +117,18 @@ export default function SearchBar({
   ];
 
   return (
-    <View style={styles.container}>
-      <View style={[
-        styles.searchContainer,
-        isFocused && styles.searchContainerFocused,
-        disabled && styles.searchContainerDisabled
-      ]}>
-        <View style={styles.searchIconContainer}>
-          <Search 
-            size={20} 
-            color={isFocused ? Colors.primary : Colors.textSecondary} 
-          />
+    <View className="mb-5 z-50">
+      <View
+        className={`flex-row items-center bg-card rounded-2xl px-4 py-3 border ${isFocused ? 'border-primary bg-input-background' : 'border-border'
+          } ${disabled ? 'opacity-60' : ''}`}
+        style={isFocused ? styles.shadowFocused : styles.shadow}
+      >
+        <View className="mr-3">
+          <Ionicons name="search" size={20} color={isFocused ? Colors.primary : Colors.textSecondary} />
         </View>
-        
+
         <TextInput
-          style={styles.input}
+          className="flex-1 text-base text-text p-0"
           placeholder={placeholder}
           placeholderTextColor={Colors.textSecondary}
           value={value}
@@ -154,46 +148,51 @@ export default function SearchBar({
           autoCorrect={false}
           onSubmitEditing={() => onSearch?.(value)}
         />
-        
+
         {value.length > 0 && (
           <TouchableOpacity
-            style={styles.clearButton}
+            className="p-1 ml-2"
             onPress={handleClear}
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
           >
-            <X size={18} color={Colors.textSecondary} />
+            <Ionicons name="close" size={18} color={Colors.textSecondary} />
           </TouchableOpacity>
         )}
-        
+
         <TouchableOpacity
-          style={[styles.voiceButton, isListening && styles.voiceButtonActive]}
+          className={`p-1 ml-2 rounded-[20px] px-2 py-1 ${isListening ? 'bg-primary/20' : ''}`}
           onPress={handleVoiceSearch}
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
         >
-          <Mic size={18} color={isListening ? Colors.primary : Colors.textSecondary} />
+          <Ionicons name="mic" size={18} color={isListening ? Colors.primary : Colors.textSecondary} />
         </TouchableOpacity>
-        
+
         {showFilter && (
           <TouchableOpacity
-            style={styles.filterButton}
+            className="p-1 ml-2 rounded-[20px] px-2 py-1 bg-primary/20"
             onPress={onFilter}
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
           >
-            <Filter size={20} color={Colors.primary} />
+            <Ionicons name="filter" size={20} color={Colors.primary} />
           </TouchableOpacity>
         )}
       </View>
 
       {/* Search Suggestions */}
       {showSuggestionsList && showSuggestions && (
-        <Animated.View style={[styles.suggestionsContainer, { opacity: fadeAnim }]}>
+        <Animated.View
+          className="absolute top-full left-0 right-0 bg-card rounded-2xl mt-2 max-h-[300px] border border-border overflow-hidden"
+          style={[{ opacity: fadeAnim }, styles.suggestionsShadow]}
+        >
           <FlatList
             data={suggestionsData}
             keyExtractor={(item, index) => `${item.title}-${index}`}
             renderItem={({ item }) => (
-              <View style={styles.suggestionSection}>
-                <Text style={styles.suggestionSectionTitle}>{item.title}</Text>
-                {item.data.map((searchTerm, index) => 
+              <View className="py-3">
+                <Text className="text-xs font-semibold text-text-secondary uppercase tracking-widest mx-4 mb-2">
+                  {item.title}
+                </Text>
+                {item.data.map((searchTerm, index) =>
                   renderSuggestionItem({ item: searchTerm, type: item.type })
                 )}
               </View>
@@ -208,108 +207,25 @@ export default function SearchBar({
 }
 
 const styles = StyleSheet.create({
-  container: {
-    marginBottom: 20,
-    zIndex: 1000,
-  },
-  searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: Colors.card,
-    borderRadius: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderWidth: 1,
-    borderColor: Colors.border,
+  shadow: {
+    elevation: 3,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
-    elevation: 3,
   },
-  searchContainerFocused: {
-    borderColor: Colors.primary,
-    backgroundColor: Colors.inputBackground,
+  shadowFocused: {
+    elevation: 4,
     shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
+    shadowRadius: 12,
   },
-  searchContainerDisabled: {
-    opacity: 0.6,
-  },
-  searchIconContainer: {
-    marginRight: 12,
-  },
-  input: {
-    flex: 1,
-    fontSize: 16,
-    color: Colors.text,
-    paddingVertical: 0,
-  },
-  clearButton: {
-    padding: 4,
-    marginLeft: 8,
-  },
-  voiceButton: {
-    padding: 4,
-    marginLeft: 8,
-    borderRadius: 20,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  voiceButtonActive: {
-    backgroundColor: Colors.primary + '20',
-  },
-  filterButton: {
-    padding: 4,
-    marginLeft: 8,
-    borderRadius: 20,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    backgroundColor: Colors.primary + '20',
-  },
-  suggestionsContainer: {
-    position: 'absolute',
-    top: '100%',
-    left: 0,
-    right: 0,
-    backgroundColor: Colors.card,
-    borderRadius: 16,
-    marginTop: 8,
-    maxHeight: 300,
+  suggestionsShadow: {
+    elevation: 8,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
     shadowRadius: 12,
-    elevation: 8,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  suggestionSection: {
-    paddingVertical: 12,
-  },
-  suggestionSectionTitle: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: Colors.textSecondary,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginHorizontal: 16,
-    marginBottom: 8,
-  },
-  suggestionItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    gap: 12,
-  },
-  suggestionText: {
-    fontSize: 16,
-    color: Colors.text,
-    flex: 1,
-  },
-  popularSuggestionText: {
-    color: Colors.primary,
-    fontWeight: '500',
   },
 });

@@ -1,6 +1,6 @@
 import Colors from '@/constants/Colors';
 import React, { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react';
-import { Animated, Easing, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Animated, Easing, Text, TouchableOpacity } from 'react-native';
 
 type ToastType = 'success' | 'error' | 'info';
 
@@ -53,8 +53,17 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const value = useMemo(() => ({ showToast }), [showToast]);
 
-  const bg = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : Colors.card;
-  const fg = type === 'info' ? Colors.text : '#ffffff';
+  const getBackgroundColor = () => {
+    switch (type) {
+      case 'success': return '#10b981';
+      case 'error': return '#ef4444';
+      default: return Colors.card;
+    }
+  };
+
+  const getTextColor = () => {
+    return type === 'info' ? Colors.text : '#ffffff';
+  };
 
   return (
     <ToastContext.Provider value={value}>
@@ -62,37 +71,19 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       {message && (
         <Animated.View
           pointerEvents="box-none"
-          style={[styles.container, { opacity, transform: [{ translateY }] }]}
+          className="absolute top-4 left-0 right-0 items-center z-[1000]"
+          style={{ opacity, transform: [{ translateY }] }}
         >
-          <TouchableOpacity activeOpacity={0.9} onPress={hide} style={[styles.toast, { backgroundColor: bg }]}> 
-            <Text style={[styles.text, { color: fg }]}>{message}</Text>
+          <TouchableOpacity
+            activeOpacity={0.9}
+            onPress={hide}
+            className="px-4 py-3 rounded-xl shadow-sm"
+            style={{ backgroundColor: getBackgroundColor() }}
+          >
+            <Text className="text-sm font-semibold" style={{ color: getTextColor() }}>{message}</Text>
           </TouchableOpacity>
         </Animated.View>
       )}
     </ToastContext.Provider>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    top: 16,
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-    zIndex: 1000,
-  },
-  toast: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 12,
-    elevation: 3,
-  },
-  text: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
-});
-
-
-

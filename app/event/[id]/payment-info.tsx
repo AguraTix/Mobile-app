@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Image } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import Header from '@/components/Header';
+import Colors from '@/constants/Colors';
+import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { ChevronLeft } from 'lucide-react-native';
-import Colors from '@/constants/Colors';
-import Header from '@/components/Header';
+import React, { useState } from 'react';
+import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function PaymentInfoScreen() {
   const router = useRouter();
@@ -54,11 +54,11 @@ export default function PaymentInfoScreen() {
     }
 
     setIsLoading(true);
-    
+
     try {
       // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       // Navigate to order success screen
       router.push(`/event/${id}/order-success`);
     } catch (error) {
@@ -69,97 +69,95 @@ export default function PaymentInfoScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView className="flex-1 bg-background" edges={['top']}>
       <StatusBar style="light" />
       <Header
         showLogo
         showProfile
         showSearch
-        onSearchPress={() => {}}
+        onSearchPress={() => { }}
       />
-      
-      <View style={styles.content}>
-        <View style={styles.titleRow}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-            <ChevronLeft size={24} color={Colors.text} />
+
+      <View className="flex-1">
+        <View className="flex-row items-center px-5 mb-8">
+          <TouchableOpacity onPress={() => router.back()} className="mr-3 p-1">
+            <Ionicons name="chevron-back" size={24} color={Colors.text} />
           </TouchableOpacity>
-          <Text style={styles.screenTitle}>Payment Information</Text>
+          <Text className="text-text text-lg font-bold">Payment Information</Text>
         </View>
 
-        <ScrollView 
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 120 }}
           showsVerticalScrollIndicator={false}
         >
           {/* Address Section */}
-          <View style={styles.section}>
-            <View style={styles.addressRow}>
+          <View className="mb-8">
+            <View className="flex-row items-start mb-4">
               <TextInput
-                style={styles.addressInput}
+                className="flex-1 text-text text-base mr-4"
                 value={address}
                 onChangeText={setAddress}
                 multiline
                 textAlignVertical="top"
+                style={{ lineHeight: 22 }}
               />
-              <TouchableOpacity style={styles.changeButton}>
-                <Text style={styles.changeButtonText}>Change</Text>
+              <TouchableOpacity className="py-1">
+                <Text className="text-primary text-sm font-semibold">Change</Text>
               </TouchableOpacity>
             </View>
-            
-            <View style={styles.phoneRow}>
+
+            <View className="flex-row items-center">
               <TextInput
-                style={styles.phoneInput}
+                className="flex-1 text-text text-base mr-4"
                 value={phone}
                 onChangeText={setPhone}
                 keyboardType="phone-pad"
               />
-              <TouchableOpacity style={styles.changeButton}>
-                <Text style={styles.changeButtonText}>Change</Text>
+              <TouchableOpacity className="py-1">
+                <Text className="text-primary text-sm font-semibold">Change</Text>
               </TouchableOpacity>
             </View>
           </View>
 
           {/* Payment Methods Section */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Payment</Text>
-            <View style={styles.paymentMethods}>
+          <View className="mb-8">
+            <Text className="text-text text-lg font-bold mb-5">Payment</Text>
+            <View className="flex-row justify-between px-2.5">
               {paymentMethods.map((method) => (
                 <TouchableOpacity
                   key={method.id}
-                  style={[
-                    styles.paymentMethod,
-                    selectedPayment === method.id && styles.paymentMethodSelected
-                  ]}
+                  className={`w-[60px] h-[60px] rounded-[30px] bg-[#2C2C2E] items-center justify-center border-2 ${selectedPayment === method.id ? 'border-primary' : 'border-transparent'}`}
                   onPress={() => setSelectedPayment(method.id)}
                 >
-                  <Image source={method.icon} style={styles.paymentIcon} />
+                  <Image source={method.icon} className="w-8 h-8" resizeMode="contain" />
                 </TouchableOpacity>
               ))}
             </View>
           </View>
 
           {/* Order Summary */}
-          <View style={styles.orderSummary}>
-            <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>Subtotal</Text>
-              <Text style={styles.summaryValue}>{subtotal.toLocaleString()} RWF</Text>
+          <View className="bg-card rounded-2xl p-5 mt-3">
+            <View className="flex-row justify-between items-center py-2">
+              <Text className="text-text-secondary text-base">Subtotal</Text>
+              <Text className="text-text text-base">{subtotal.toLocaleString()} RWF</Text>
             </View>
-            <View style={styles.summaryDivider} />
-            <View style={styles.summaryRow}>
-              <Text style={styles.totalLabel}>Total</Text>
-              <Text style={styles.totalValue}>{total.toLocaleString()} RWF</Text>
+            <View className="h-[1px] bg-[#3C3C3E] my-2" />
+            <View className="flex-row justify-between items-center py-2">
+              <Text className="text-text text-lg font-bold">Total</Text>
+              <Text className="text-text text-lg font-bold">{total.toLocaleString()} RWF</Text>
             </View>
           </View>
         </ScrollView>
 
         {/* Payment Footer */}
-        <View style={styles.paymentFooter}>
-          <TouchableOpacity 
-            style={[styles.proceedButton, (!selectedPayment || selectedPayment === 'add' || isLoading) && styles.proceedButtonDisabled]}
+        <View className="absolute bottom-0 left-0 right-0 bg-card rounded-t-3xl p-5 pb-8" style={styles.shadow}>
+          <TouchableOpacity
+            className={`bg-primary rounded-full py-4 items-center ${(!selectedPayment || selectedPayment === 'add' || isLoading) ? 'bg-[#666] opacity-60' : ''}`}
             onPress={handleProceedToPayment}
             disabled={!selectedPayment || selectedPayment === 'add' || isLoading}
           >
-            <Text style={styles.proceedButtonText}>
+            <Text className="text-text text-base font-semibold">
               {isLoading ? 'Processing...' : 'Proceed to Payment'}
             </Text>
           </TouchableOpacity>
@@ -170,161 +168,11 @@ export default function PaymentInfoScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  content: {
-    flex: 1,
-  },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    marginBottom: 32,
-  },
-  backBtn: {
-    marginRight: 12,
-    padding: 4,
-  },
-  screenTitle: {
-    color: Colors.text,
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 20,
-    paddingBottom: 120, // Space for footer
-  },
-  section: {
-    marginBottom: 32,
-  },
-  addressRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 16,
-  },
-  addressInput: {
-    flex: 1,
-    color: Colors.text,
-    fontSize: 16,
-    lineHeight: 22,
-    marginRight: 16,
-  },
-  phoneRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  phoneInput: {
-    flex: 1,
-    color: Colors.text,
-    fontSize: 16,
-    marginRight: 16,
-  },
-  changeButton: {
-    paddingVertical: 4,
-  },
-  changeButtonText: {
-    color: Colors.primary,
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  sectionTitle: {
-    color: Colors.text,
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  paymentMethods: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 10,
-  },
-  paymentMethod: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: '#2C2C2E',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  paymentMethodSelected: {
-    borderColor: Colors.primary,
-  },
-  paymentIcon: {
-    width: 32,
-    height: 32,
-    resizeMode: 'contain',
-  },
-  orderSummary: {
-    backgroundColor: Colors.card,
-    borderRadius: 16,
-    padding: 20,
-    marginTop: 12,
-  },
-  summaryRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 8,
-  },
-  summaryLabel: {
-    color: Colors.textSecondary,
-    fontSize: 16,
-  },
-  summaryValue: {
-    color: Colors.text,
-    fontSize: 16,
-  },
-  summaryDivider: {
-    height: 1,
-    backgroundColor: '#3C3C3E',
-    marginVertical: 8,
-  },
-  totalLabel: {
-    color: Colors.text,
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  totalValue: {
-    color: Colors.text,
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  paymentFooter: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: Colors.card,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    padding: 20,
-    paddingBottom: 32,
+  shadow: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 8,
-  },
-  proceedButton: {
-    backgroundColor: Colors.primary,
-    borderRadius: 25,
-    paddingVertical: 16,
-    alignItems: 'center',
-  },
-  proceedButtonDisabled: {
-    backgroundColor: '#666',
-    opacity: 0.6,
-  },
-  proceedButtonText: {
-    color: Colors.text,
-    fontSize: 16,
-    fontWeight: '600',
   },
 });

@@ -1,7 +1,6 @@
-import React, { ReactNode } from 'react';
-import { View, StyleSheet, StatusBar, SafeAreaView } from 'react-native';
 import Colors from '@/constants/Colors';
-import AuthGuard from './AuthGuard';
+import React, { ReactNode } from 'react';
+import { SafeAreaView, StatusBar, View } from 'react-native';
 
 interface AuthLayoutProps {
   children: ReactNode;
@@ -9,28 +8,13 @@ interface AuthLayoutProps {
 
 export default function AuthLayout({ children }: AuthLayoutProps) {
   return (
-    <AuthGuard requireGuest={true} redirectTo="/(tabs)">
-      <SafeAreaView style={styles.safeArea}>
-        <StatusBar
-          barStyle="dark-content"
-          backgroundColor={Colors.background}
-          translucent={false}
-        />
-        <View style={styles.container}>{children}</View>
-      </SafeAreaView>
-    </AuthGuard>
+    <SafeAreaView className="flex-1 bg-background">
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor={Colors.background}
+        translucent={false}
+      />
+      <View className="flex-1 px-6 pt-8 pb-10">{children}</View>
+    </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: 24,
-    paddingTop: 32,
-    paddingBottom: 40,
-  },
-});

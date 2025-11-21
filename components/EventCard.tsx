@@ -1,10 +1,10 @@
 import Colors from "@/constants/Colors";
-import { Bookmark, Calendar, Clock, Heart, MapPin, Share2, Star, Users } from "lucide-react-native";
+import { Event } from "@/types/backend";
+import { Ionicons } from "@expo/vector-icons";
 import React, { useRef, useState } from "react";
 import {
   ActivityIndicator,
   Animated,
-  Dimensions,
   Image,
   StyleSheet,
   Text,
@@ -13,21 +13,7 @@ import {
 } from "react-native";
 
 interface EventCardProps {
-  event: {
-    id: string;
-    title: string;
-    location?: string;
-    image?: any;
-    price?: number;
-    booked?: boolean;
-    category?: string;
-    date?: string;
-    time?: string;
-    attendees?: number;
-    rating?: number;
-    description?: string;
-    organizer?: string;
-  };
+  event: Event
   onPress?: () => void;
   onFavorite?: () => void;
   onShare?: () => void;
@@ -38,11 +24,9 @@ interface EventCardProps {
   isBookmarked?: boolean;
 }
 
-const { width } = Dimensions.get('window');
-
-export default function EventCard({ 
-  event, 
-  onPress, 
+export default function EventCard({
+  event,
+  onPress,
   onFavorite,
   onShare,
   onBookmark,
@@ -64,7 +48,7 @@ export default function EventCard({
         useNativeDriver: true,
       }).start();
     }
-  }, [loading]);
+  }, [loading, opacityAnim]);
 
   const handlePressIn = () => {
     Animated.spring(scaleAnim, {
@@ -100,32 +84,20 @@ export default function EventCard({
     });
   };
 
-  const getCategoryColor = (category: string) => {
-    const colors: { [key: string]: string } = {
-      music: "#e6007e",
-      sports: "#3b82f6",
-      food: "#f59e0b",
-      tech: "#10b981",
-      art: "#8b5cf6",
-      business: "#6b7280",
-      entertainment: "#ec4899",
-      education: "#06b6d4",
-    };
-    return colors[category?.toLowerCase()] || Colors.primary;
+  const getImageSource = () => {
+    if (event.image_url) {
+      return { uri: event.image_url };
+    }
+    if (event.event_images && event.event_images.length > 0) {
+      return { uri: event.event_images[0].path };
+    }
+    return require('../assets/images/m1.png');
   };
 
-  const getCategoryIcon = (category: string) => {
-    const icons: { [key: string]: string } = {
-      music: "🎵",
-      sports: "⚽",
-      food: "🍕",
-      tech: "💻",
-      art: "🎨",
-      business: "💼",
-      entertainment: "🎭",
-      education: "📚",
-    };
-    return icons[category?.toLowerCase()] || "🎪";
+  const getMinPrice = () => {
+    if (!event.tickets || event.tickets.length === 0) return null;
+    const prices = event.tickets.map(t => t.price);
+    return Math.min(...prices);
   };
 
   if (loading) {
@@ -135,31 +107,32 @@ export default function EventCard({
   if (variant === "compact") {
     return (
       <Animated.View style={{ opacity: opacityAnim }}>
-        <TouchableOpacity 
-          style={styles.compactCard} 
-          onPress={onPress} 
+        <TouchableOpacity
+          className="bg-card rounded-xl mb-4 flex-row p-4 shadow-sm"
+          style={styles.compactShadow}
+          onPress={onPress}
           activeOpacity={0.8}
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}
         >
-          <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-            <Image source={event.image} style={styles.compactImage} />
-            <View style={styles.compactContent}>
-              <Text style={styles.compactTitle} numberOfLines={1}>
+          <Animated.View style={{ transform: [{ scale: scaleAnim }], flexDirection: 'row', flex: 1 }}>
+            <Image source={getImageSource()} className="w-20 h-20 rounded-lg mr-4 bg-border" />
+            <View className="flex-1 justify-center">
+              <Text className="text-base font-semibold text-text mb-2" numberOfLines={1}>
                 {event.title}
               </Text>
-              <View style={styles.compactMeta}>
-                <View style={styles.compactMetaItem}>
-                  <Calendar size={14} color={Colors.textSecondary} />
-                  <Text style={styles.compactMetaText}>
+              <View className="gap-2">
+                <View className="flex-row items-center gap-1.5">
+                  <Ionicons name="calendar" size={14} color={Colors.textSecondary} />
+                  <Text className="text-[13px] text-text-secondary font-medium flex-1">
                     {formatDate(event.date || "")}
                   </Text>
                 </View>
-                {event.location && (
-                  <View style={styles.compactMetaItem}>
-                    <MapPin size={14} color={Colors.textSecondary} />
-                    <Text style={styles.compactMetaText} numberOfLines={1}>
-                      {event.location}
+                {event.Venue && (
+                  <View className="flex-row items-center gap-1.5">
+                    <Ionicons name="location" size={14} color={Colors.textSecondary} />
+                    <Text className="text-[13px] text-text-secondary font-medium flex-1" numberOfLines={1}>
+                      {event.Venue.location}
                     </Text>
                   </View>
                 )}
@@ -172,152 +145,117 @@ export default function EventCard({
   }
 
   if (variant === "detailed") {
+    const minPrice = getMinPrice();
     return (
-      <Animated.View style={[styles.detailedCard, { opacity: opacityAnim }]}>
-        <TouchableOpacity 
-          style={styles.detailedCardTouchable} 
-          onPress={onPress} 
+      <Animated.View style={[{ opacity: opacityAnim }, styles.detailedShadow]} className="bg-card rounded-[20px] mb-5 overflow-hidden">
+        <TouchableOpacity
+          className="bg-card rounded-[20px] overflow-hidden"
+          onPress={onPress}
           activeOpacity={0.8}
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}
         >
           <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-            <View style={styles.detailedImageContainer}>
-              <Image 
-                source={event.image} 
-                style={styles.detailedImage}
+            <View className="relative h-[250px]">
+              <Image
+                source={getImageSource()}
+                className="w-full h-full"
+                resizeMode="cover"
                 onLoad={() => setImageLoaded(true)}
                 onError={() => setImageError(true)}
               />
               {!imageLoaded && !imageError && (
-                <View style={styles.imageLoadingContainer}>
+                <View className="absolute inset-0 bg-card justify-center items-center">
                   <ActivityIndicator color={Colors.primary} />
                 </View>
               )}
               {imageError && (
-                <View style={styles.imageErrorContainer}>
-                  <Text style={styles.imageErrorText}>Image unavailable</Text>
-                </View>
-              )}
-              
-              {/* Category Badge */}
-              {event.category && (
-                <View style={[styles.categoryBadge, { backgroundColor: getCategoryColor(event.category) }]}>
-                  <Text style={styles.categoryBadgeText}>
-                    {getCategoryIcon(event.category)} {event.category}
-                  </Text>
+                <View className="absolute inset-0 bg-card justify-center items-center">
+                  <Text className="text-text-secondary text-sm">Image unavailable</Text>
                 </View>
               )}
 
               {/* Action Buttons */}
-              <View style={styles.actionButtonsContainer}>
+              <View className="absolute top-[50px] right-3 flex-col gap-2.5 items-center justify-start">
                 {onFavorite && (
-                  <TouchableOpacity 
-                    style={[styles.actionButton, isFavorite && styles.actionButtonActive]} 
+                  <TouchableOpacity
+                    className={`p-2.5 rounded-3xl justify-center items-center w-11 h-11 ${isFavorite ? 'bg-primary' : 'bg-black/50'}`}
                     onPress={onFavorite}
                   >
-                    <Heart 
-                      size={18} 
-                      color={isFavorite ? Colors.primary : Colors.text} 
-                      fill={isFavorite ? Colors.primary : 'transparent'} 
-                    />
+                    <Ionicons name="heart" size={20} color={isFavorite ? '#ffffff' : Colors.text} />
                   </TouchableOpacity>
                 )}
                 {onShare && (
-                  <TouchableOpacity style={styles.actionButton} onPress={onShare}>
-                    <Share2 size={18} color={Colors.text} />
+                  <TouchableOpacity className="bg-black/50 p-2.5 rounded-3xl justify-center items-center w-11 h-11" onPress={onShare}>
+                    <Ionicons name="share-social" size={20} color={Colors.text} />
                   </TouchableOpacity>
                 )}
                 {onBookmark && (
-                  <TouchableOpacity 
-                    style={[styles.actionButton, isBookmarked && styles.actionButtonActive]} 
+                  <TouchableOpacity
+                    className={`p-2.5 rounded-3xl justify-center items-center w-11 h-11 ${isBookmarked ? 'bg-primary' : 'bg-black/50'}`}
                     onPress={onBookmark}
                   >
-                    <Bookmark 
-                      size={18} 
-                      color={isBookmarked ? Colors.primary : Colors.text} 
-                      fill={isBookmarked ? Colors.primary : 'transparent'} 
-                    />
+                    <Ionicons name="bookmark" size={20} color={isBookmarked ? '#ffffff' : Colors.text} />
                   </TouchableOpacity>
                 )}
               </View>
 
               {/* Price Badge */}
-              {event.price !== undefined && (
-                <View style={styles.priceBadge}>
-                  <Text style={styles.priceBadgeText}>
-                    {event.price === 0 ? 'Free' : `$${event.price}`}
+              {minPrice !== null && (
+                <View className="absolute bottom-3 left-3 bg-primary px-4 py-2 rounded-[20px]">
+                  <Text className="text-white text-sm font-semibold">
+                    {minPrice === 0 ? 'Free' : `$${minPrice} `}
                   </Text>
                 </View>
               )}
             </View>
 
-            <View style={styles.detailedContent}>
-              <View style={styles.detailedHeader}>
-                <Text style={styles.detailedTitle} numberOfLines={2}>
+            <View className="p-5">
+              <View className="mb-3">
+                <Text className="text-[22px] font-bold text-text leading-7" numberOfLines={2}>
                   {event.title}
                 </Text>
               </View>
 
               {event.description && (
-                <Text style={styles.detailedDescription} numberOfLines={2}>
+                <Text className="text-base text-text-secondary leading-6 mb-4" numberOfLines={2}>
                   {event.description}
                 </Text>
               )}
 
-              <View style={styles.detailedMeta}>
-                <View style={styles.metaRow}>
-                  <View style={styles.metaItem}>
-                    <Calendar size={16} color={Colors.textSecondary} />
-                    <Text style={styles.metaText}>
+              <View className="gap-3">
+                <View className="flex-row justify-between">
+                  <View className="flex-row items-center gap-3">
+                    <Ionicons name="calendar" size={16} color={Colors.textSecondary} />
+                    <Text className="text-sm text-text-secondary font-medium flex-1">
                       {formatDate(event.date || "")}
                     </Text>
                   </View>
-                  <View style={styles.metaItem}>
-                    <Clock size={16} color={Colors.textSecondary} />
-                    <Text style={styles.metaText}>
+                  <View className="flex-row items-center gap-3">
+                    <Ionicons name="time" size={16} color={Colors.textSecondary} />
+                    <Text className="text-sm text-text-secondary font-medium flex-1">
                       {formatTime(event.date || "")}
                     </Text>
                   </View>
                 </View>
 
-                {event.location && (
-                  <View style={styles.metaItem}>
-                    <MapPin size={16} color={Colors.textSecondary} />
-                    <Text style={styles.metaText} numberOfLines={1}>
-                      {event.location}
+                {event.Venue && (
+                  <View className="flex-row items-center gap-3">
+                    <Ionicons name="location" size={16} color={Colors.textSecondary} />
+                    <Text className="text-sm text-text-secondary font-medium flex-1" numberOfLines={1}>
+                      {event.Venue.location}
                     </Text>
                   </View>
                 )}
 
-                {event.organizer && (
-                  <View style={styles.metaItem}>
-                    <Users size={16} color={Colors.textSecondary} />
-                    <Text style={styles.metaText} numberOfLines={1}>
-                      {event.organizer}
+                {event.artist_lineup && event.artist_lineup.length > 0 && (
+                  <View className="flex-row items-center gap-3">
+                    <Ionicons name="people" size={16} color={Colors.textSecondary} />
+                    <Text className="text-sm text-text-secondary font-medium flex-1" numberOfLines={1}>
+                      {event.artist_lineup.join(', ')}
                     </Text>
                   </View>
                 )}
-
-                <View style={styles.bottomMeta}>
-                  {event.attendees && (
-                    <View style={styles.attendeesContainer}>
-                      <Users size={14} color={Colors.textSecondary} />
-                      <Text style={styles.attendeesText}>
-                        {event.attendees} attending
-                      </Text>
-                    </View>
-                  )}
-                  
-                  {event.rating && (
-                    <View style={styles.ratingContainer}>
-                      <Star size={14} color="#FFD700" fill="#FFD700" />
-                      <Text style={styles.ratingText}>
-                        {event.rating}
-                      </Text>
-                    </View>
-                  )}
-                </View>
               </View>
             </View>
           </Animated.View>
@@ -326,133 +264,94 @@ export default function EventCard({
     );
   }
 
+  const minPrice = getMinPrice();
   return (
-    <Animated.View style={[styles.card, { opacity: opacityAnim }]}>
-      <TouchableOpacity 
-        style={[
-          styles.cardTouchable, 
-          variant === "featured" && styles.featuredCard
-        ]} 
+    <Animated.View style={[{ opacity: opacityAnim }, styles.cardShadow]} className="bg-card rounded-2xl mb-5 overflow-hidden">
+      <TouchableOpacity
+        className={`bg-card rounded-2xl overflow-hidden ${variant === 'featured' ? 'border-2 border-primary' : ''}`}
+        style={variant === 'featured' ? styles.featuredShadow : {}}
         onPress={onPress}
         activeOpacity={0.8}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
       >
         <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-          <View style={styles.imageContainer}>
-            <Image 
-              source={event.image} 
-              style={styles.image}
+          <View className="relative h-[200px]">
+            <Image
+              source={getImageSource()}
+              className="w-full h-full"
+              resizeMode="cover"
               onLoad={() => setImageLoaded(true)}
               onError={() => setImageError(true)}
             />
             {!imageLoaded && !imageError && (
-              <View style={styles.imageLoadingContainer}>
+              <View className="absolute inset-0 bg-card justify-center items-center">
                 <ActivityIndicator color={Colors.primary} />
               </View>
             )}
             {imageError && (
-              <View style={styles.imageErrorContainer}>
-                <Text style={styles.imageErrorText}>Image unavailable</Text>
+              <View className="absolute inset-0 bg-card justify-center items-center">
+                <Text className="text-text-secondary text-sm">Image unavailable</Text>
               </View>
             )}
-            
+
             {variant === "featured" && (
-              <View style={styles.featuredBadge}>
-                <Star size={16} color="#ffffff" fill="#ffffff" />
-                <Text style={styles.featuredText}>Featured</Text>
-              </View>
-            )}
-            
-            {event.category && (
-              <View style={[
-                styles.categoryBadge, 
-                { backgroundColor: getCategoryColor(event.category) }
-              ]}>
-                <Text style={styles.categoryText}>
-                  {getCategoryIcon(event.category)} {event.category}
-                </Text>
-              </View>
-            )}
-            
-            {event.booked && (
-              <View style={styles.bookedBadge}>
-                <Text style={styles.bookedText}>Booked</Text>
+              <View className="absolute top-4 left-4 bg-primary flex-row items-center px-3 py-1.5 rounded-[20px] gap-1">
+                <Ionicons name="star" size={16} color="#ffffff" />
+                <Text className="text-white text-xs font-semibold">Featured</Text>
               </View>
             )}
 
             {/* Action Buttons for default variant */}
-            <View style={styles.defaultActionButtons}>
+            <View className="absolute top-3 right-3">
               {onFavorite && (
-                <TouchableOpacity 
-                  style={[styles.defaultActionButton, isFavorite && styles.defaultActionButtonActive]} 
+                <TouchableOpacity
+                  className={`p-2 rounded-[20px] justify-center items-center ${isFavorite ? 'bg-primary/50' : 'bg-black/60'}`}
                   onPress={onFavorite}
                 >
-                  <Heart 
-                    size={16} 
-                    color={isFavorite ? Colors.primary : Colors.text} 
-                    fill={isFavorite ? Colors.primary : 'transparent'} 
-                  />
+                  <Ionicons name="heart" size={16} color={isFavorite ? Colors.primary : Colors.text} />
                 </TouchableOpacity>
               )}
             </View>
           </View>
 
-          <View style={styles.content}>
-            <Text style={styles.title} numberOfLines={2}>
+          <View className="p-5">
+            <Text className="text-lg font-bold text-text mb-4 leading-6" numberOfLines={2}>
               {event.title}
             </Text>
-            
-            <View style={styles.metaContainer}>
-              <View style={styles.metaItem}>
-                <Calendar size={18} color={Colors.textSecondary} />
-                <Text style={styles.metaText}>
+
+            <View className="gap-3 mb-5">
+              <View className="flex-row items-center gap-3">
+                <Ionicons name="calendar" size={18} color={Colors.textSecondary} />
+                <Text className="text-sm text-text-secondary font-medium flex-1">
                   {formatDate(event.date || "")}
                 </Text>
               </View>
-              
-              {event.time && (
-                <View style={styles.metaItem}>
-                  <Clock size={18} color={Colors.textSecondary} />
-                  <Text style={styles.metaText}>
-                    {formatTime(event.date || "")}
-                  </Text>
-                </View>
-              )}
-              
-              {event.location && (
-                <View style={styles.metaItem}>
-                  <MapPin size={18} color={Colors.textSecondary} />
-                  <Text style={styles.metaText} numberOfLines={1}>
-                    {event.location}
-                  </Text>
-                </View>
-              )}
-              
-              {event.attendees && (
-                <View style={styles.metaItem}>
-                  <Users size={18} color={Colors.textSecondary} />
-                  <Text style={styles.metaText}>
-                    {event.attendees} attending
+
+              <View className="flex-row items-center gap-3">
+                <Ionicons name="time" size={18} color={Colors.textSecondary} />
+                <Text className="text-sm text-text-secondary font-medium flex-1">
+                  {formatTime(event.date || "")}
+                </Text>
+              </View>
+
+              {event.Venue && (
+                <View className="flex-row items-center gap-3">
+                  <Ionicons name="location" size={18} color={Colors.textSecondary} />
+                  <Text className="text-sm text-text-secondary font-medium flex-1" numberOfLines={1}>
+                    {event.Venue.location}
                   </Text>
                 </View>
               )}
             </View>
 
-            <View style={styles.footer}>
-              {event.price !== undefined && (
-                <View style={styles.priceContainer}>
-                  <Text style={styles.priceLabel}>Price:</Text>
-                  <Text style={styles.price}>
-                    ${event.price === 0 ? "Free" : event.price}
+            <View className="flex-row justify-between items-center pt-4 border-t border-black/10">
+              {minPrice !== null && (
+                <View className="flex-row items-center gap-2">
+                  <Text className="text-sm text-text-secondary font-medium">From:</Text>
+                  <Text className="text-base font-bold text-primary">
+                    {minPrice === 0 ? "Free" : `$${minPrice} `}
                   </Text>
-                </View>
-              )}
-              
-              {event.rating && (
-                <View style={styles.ratingContainer}>
-                  <Star size={16} color="#fbbf24" fill="#fbbf24" />
-                  <Text style={styles.rating}>{event.rating}</Text>
                 </View>
               )}
             </View>
@@ -466,17 +365,17 @@ export default function EventCard({
 // Skeleton Loading Component
 function EventCardSkeleton({ variant }: { variant: string }) {
   const renderSkeleton = () => (
-    <View style={styles.skeletonContainer}>
-      <View style={styles.skeletonImage} />
-      <View style={styles.skeletonContent}>
-        <View style={styles.skeletonTitle} />
-        <View style={styles.skeletonMeta}>
-          <View style={styles.skeletonMetaItem} />
-          <View style={styles.skeletonMetaItem} />
+    <View className="bg-card rounded-2xl mb-4 overflow-hidden">
+      <View className="h-[200px] bg-border" />
+      <View className="p-4">
+        <View className="h-5 bg-border rounded mb-3 w-4/5" />
+        <View className="gap-2 mb-3">
+          <View className="h-4 bg-border rounded w-3/5" />
+          <View className="h-4 bg-border rounded w-3/5" />
         </View>
-        <View style={styles.skeletonFooter}>
-          <View style={styles.skeletonFooterItem} />
-          <View style={styles.skeletonFooterItem} />
+        <View className="flex-row justify-between">
+          <View className="h-4 bg-border rounded w-[30%]" />
+          <View className="h-4 bg-border rounded w-[30%]" />
         </View>
       </View>
     </View>
@@ -484,13 +383,13 @@ function EventCardSkeleton({ variant }: { variant: string }) {
 
   if (variant === "compact") {
     return (
-      <View style={styles.compactCard}>
-        <View style={styles.compactImage} />
-        <View style={styles.compactContent}>
-          <View style={styles.skeletonTitle} />
-          <View style={styles.skeletonMeta}>
-            <View style={styles.skeletonMetaItem} />
-            <View style={styles.skeletonMetaItem} />
+      <View className="bg-card rounded-xl mb-4 flex-row p-4 shadow-sm" style={styles.compactShadow}>
+        <View className="w-20 h-20 rounded-lg mr-4 bg-border" />
+        <View className="flex-1 justify-center">
+          <View className="h-5 bg-border rounded mb-2 w-4/5" />
+          <View className="gap-2">
+            <View className="h-4 bg-border rounded w-3/5" />
+            <View className="h-4 bg-border rounded w-3/5" />
           </View>
         </View>
       </View>
@@ -501,369 +400,29 @@ function EventCardSkeleton({ variant }: { variant: string }) {
 }
 
 const styles = StyleSheet.create({
-  card: {
-    backgroundColor: Colors.card,
-    borderRadius: 16,
-    marginBottom: 20,
+  cardShadow: {
+    elevation: 8,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 12,
-    elevation: 8,
-    overflow: 'hidden',
   },
-  cardTouchable: {
-    backgroundColor: Colors.card,
-    borderRadius: 16,
-    overflow: 'hidden',
-  },
-  featuredCard: {
-    borderWidth: 2,
-    borderColor: Colors.primary,
+  featuredShadow: {
     shadowColor: Colors.primary,
     shadowOpacity: 0.3,
   },
-  imageContainer: {
-    position: "relative",
-    height: 200,
-  },
-  image: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "cover",
-  },
-  imageLoadingContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: Colors.card,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  imageErrorContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: Colors.card,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  imageErrorText: {
-    color: Colors.textSecondary,
-    fontSize: 14,
-  },
-  compactCard: {
-    backgroundColor: Colors.card,
-    borderRadius: 12,
-    marginBottom: 16,
-    flexDirection: "row",
-    padding: 16,
+  compactShadow: {
     elevation: 2,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
   },
-  compactImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 8,
-    marginRight: 16,
-    backgroundColor: Colors.border,
-  },
-  compactContent: {
-    flex: 1,
-    justifyContent: "center",
-  },
-  compactTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: Colors.text,
-    marginBottom: 8,
-  },
-  compactMeta: {
-    gap: 8,
-  },
-  compactMetaItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  compactMetaText: {
-    fontSize: 13,
-    color: Colors.textSecondary,
-    fontWeight: "500",
-    flex: 1,
-  },
-  featuredBadge: {
-    position: "absolute",
-    top: 16,
-    left: 16,
-    backgroundColor: Colors.primary,
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    gap: 4,
-  },
-  featuredText: {
-    color: "#ffffff",
-    fontSize: 12,
-    fontWeight: "600",
-  },
-  categoryBadge: {
-    position: "absolute",
-    top: 16,
-    right: 16,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-  },
-  categoryText: {
-    color: "#ffffff",
-    fontSize: 12,
-    fontWeight: "600",
-    textTransform: "capitalize",
-  },
-  categoryBadgeText: {
-    color: "#ffffff",
-    fontSize: 12,
-    fontWeight: "600",
-  },
-  bookedBadge: {
-    position: "absolute",
-    bottom: 16,
-    right: 16,
-    backgroundColor: "#10b981",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-  },
-  bookedText: {
-    color: "#ffffff",
-    fontSize: 12,
-    fontWeight: "600",
-  },
-  defaultActionButtons: {
-    position: 'absolute',
-    top: 12,
-    right: 12,
-  },
-  defaultActionButton: {
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    padding: 8,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  defaultActionButtonActive: {
-    backgroundColor: Colors.primary + '80',
-  },
-  content: {
-    padding: 20,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: Colors.text,
-    marginBottom: 16,
-    lineHeight: 24,
-  },
-  metaContainer: {
-    gap: 12,
-    marginBottom: 20,
-  },
-  metaItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  metaText: {
-    fontSize: 14,
-    color: Colors.textSecondary,
-    fontWeight: "500",
-    flex: 1,
-  },
-  footer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: "rgba(0, 0, 0, 0.1)",
-  },
-  priceContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  priceLabel: {
-    fontSize: 14,
-    color: Colors.textSecondary,
-    fontWeight: "500",
-  },
-  price: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: Colors.primary,
-  },
-  ratingContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  rating: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: Colors.text,
-  },
-
-  // Detailed variant styles
-  detailedCard: {
-    backgroundColor: Colors.card,
-    borderRadius: 20,
-    marginBottom: 20,
+  detailedShadow: {
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.15,
     shadowRadius: 16,
     elevation: 12,
-    overflow: 'hidden',
-  },
-  detailedCardTouchable: {
-    backgroundColor: Colors.card,
-    borderRadius: 20,
-    overflow: 'hidden',
-  },
-  detailedImageContainer: {
-    position: 'relative',
-    height: 250,
-  },
-  detailedImage: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
-  },
-  actionButtonsContainer: {
-    position: 'absolute',
-    top: 12,
-    right: 12,
-    gap: 8,
-  },
-  actionButton: {
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    padding: 8,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  actionButtonActive: {
-    backgroundColor: Colors.primary + '80',
-  },
-  priceBadge: {
-    position: 'absolute',
-    bottom: 12,
-    left: 12,
-    backgroundColor: Colors.primary,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-  },
-  priceBadgeText: {
-    color: Colors.text,
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  detailedContent: {
-    padding: 20,
-  },
-  detailedHeader: {
-    marginBottom: 12,
-  },
-  detailedTitle: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: Colors.text,
-    lineHeight: 28,
-  },
-  detailedDescription: {
-    fontSize: 16,
-    color: Colors.textSecondary,
-    lineHeight: 24,
-    marginBottom: 16,
-  },
-  detailedMeta: {
-    gap: 12,
-  },
-  metaRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  bottomMeta: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  attendeesContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  attendeesText: {
-    fontSize: 14,
-    color: Colors.textSecondary,
-  },
-  ratingText: {
-    fontSize: 14,
-    color: Colors.textSecondary,
-    fontWeight: '500',
-  },
-
-  // Skeleton styles
-  skeletonContainer: {
-    backgroundColor: Colors.card,
-    borderRadius: 16,
-    marginBottom: 16,
-    overflow: 'hidden',
-  },
-  skeletonImage: {
-    height: 200,
-    backgroundColor: Colors.border,
-  },
-  skeletonContent: {
-    padding: 16,
-  },
-  skeletonTitle: {
-    height: 20,
-    backgroundColor: Colors.border,
-    borderRadius: 4,
-    marginBottom: 12,
-    width: '80%',
-  },
-  skeletonMeta: {
-    gap: 8,
-    marginBottom: 12,
-  },
-  skeletonMetaItem: {
-    height: 16,
-    backgroundColor: Colors.border,
-    borderRadius: 4,
-    width: '60%',
-  },
-  skeletonFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  skeletonFooterItem: {
-    height: 16,
-    backgroundColor: Colors.border,
-    borderRadius: 4,
-    width: '30%',
   },
 });

@@ -1,9 +1,9 @@
 import Colors from "@/constants/Colors";
-import { Event } from "@/store/events-store";
+import { Event } from "@/types/backend";
+import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { Calendar, MapPin } from "lucide-react-native";
 import React, { memo } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 
 type Props = {
   event: Event;
@@ -13,44 +13,50 @@ type Props = {
 const ListEventCardBase = ({ event, isBooked }: Props) => {
   const router = useRouter();
 
+  const getImageSource = () => {
+    if (event.image_url) {
+      return { uri: event.image_url };
+    }
+    if (event.event_images && event.event_images.length > 0) {
+      return { uri: event.event_images[0].path };
+    }
+    return require('../../assets/images/m1.png');
+  };
+
   return (
-    <View style={styles.listEventCard}>
-      {!!event.image && (
-        <Image
-          source={
-            typeof event.image === "string"
-              ? { uri: event.image }
-              : (event.image as any)
-          }
-          style={styles.listEventImage}
-        />
-      )}
-      <View style={styles.listEventInfo}>
+    <View className="flex-row bg-[#1C1C1E] rounded-3xl mx-5 mb-4 p-3 h-[200px]">
+      <Image
+        source={getImageSource()}
+        className="w-[200px] h-full rounded-2xl mr-5"
+      />
+      <View className="flex-1 justify-between py-1">
         <View>
-          <Text style={styles.listEventTitle} numberOfLines={1}>
+          <Text className="text-text font-bold text-[17px]" numberOfLines={1}>
             {event.title}
           </Text>
-          <View style={styles.listEventMeta}>
-            <Calendar size={14} color={Colors.textSecondary} />
-            <Text style={styles.listEventMetaText}>{event.date}</Text>
+          <View className="flex-row items-center mt-2">
+            <Ionicons name="calendar" size={14} color={Colors.textSecondary} />
+            <Text className="text-text-secondary text-[13px] ml-2.5">{event.date}</Text>
           </View>
-          <View style={styles.listEventMeta}>
-            <MapPin size={14} color={Colors.textSecondary} />
-            <Text style={styles.listEventMetaText}>{event.location}</Text>
-          </View>
+          {event.Venue && (
+            <View className="flex-row items-center mt-2">
+              <Ionicons name="location" size={14} color={Colors.textSecondary} />
+              <Text className="text-text-secondary text-[13px] ml-2.5">{event.Venue.location}</Text>
+            </View>
+          )}
         </View>
         <TouchableOpacity
-          style={styles.listDetailsButton}
+          className="flex-row items-center justify-center bg-[#2C2C2E] rounded-2xl py-2"
           onPress={() =>
             router.push({
-              pathname: `/event/${event.id}` as any,
+              pathname: `/event/${event.event_id}` as any,
               params: { booked: isBooked ? "1" : undefined },
             })
           }
           accessibilityRole="button"
           accessibilityLabel="View event details"
         >
-          <Text style={styles.listDetailsButtonText}>View Details</Text>
+          <Text className="text-text text-[15px] font-medium ml-2">View Details</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -63,55 +69,3 @@ const ListEventCard = memo(ListEventCardBase);
 ListEventCard.displayName = "ListEventCard";
 
 export default ListEventCard;
-
-const styles = StyleSheet.create({
-  listEventCard: {
-    flexDirection: "row",
-    backgroundColor: "#1C1C1E",
-    borderRadius: 24,
-    marginHorizontal: 20,
-    marginBottom: 16,
-    padding: 12,
-    height: 200,
-  },
-  listEventImage: {
-    width: 200,
-    height: "100%",
-    borderRadius: 16,
-    marginRight: 19,
-  },
-  listEventInfo: {
-    flex: 1,
-    justifyContent: "space-between",
-    paddingVertical: 4,
-  },
-  listEventTitle: {
-    color: Colors.text,
-    fontWeight: "bold",
-    fontSize: 17,
-  },
-  listEventMeta: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 8,
-  },
-  listEventMetaText: {
-    color: Colors.textSecondary,
-    fontSize: 13,
-    marginLeft: 9,
-  },
-  listDetailsButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#2C2C2E",
-    borderRadius: 16,
-    paddingVertical: 7,
-  },
-  listDetailsButtonText: {
-    color: Colors.text,
-    fontSize: 15,
-    fontWeight: "500",
-    marginLeft: 8,
-  },
-});

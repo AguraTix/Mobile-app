@@ -3,7 +3,7 @@ import Header from '@/components/Header';
 import Input from '@/components/Input';
 import Colors from '@/constants/Colors';
 import { useRouter } from 'expo-router';
-import { ChevronLeft, Eye, EyeOff, Lock } from 'lucide-react-native';
+import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -108,7 +108,7 @@ export default function ChangePasswordScreen() {
       
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <ChevronLeft size={24} color={Colors.text} />
+          <Ionicons name="chevron-back" size={24} color={Colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Change Password</Text>
         <View style={styles.headerRight} />
@@ -118,7 +118,7 @@ export default function ChangePasswordScreen() {
         <View style={styles.content}>
           {/* Security Notice */}
           <View style={styles.securityNotice}>
-            <Lock size={20} color={Colors.primary} />
+            <Ionicons name="lock-closed" size={20} color={Colors.primary} />
             <Text style={styles.securityText}>
               For security reasons, you&apos;ll need to enter your current password to change it.
             </Text>
@@ -141,9 +141,9 @@ export default function ChangePasswordScreen() {
                 onPress={() => setShowCurrentPassword(!showCurrentPassword)}
               >
                 {showCurrentPassword ? (
-                  <EyeOff size={20} color={Colors.textSecondary} />
+                  <Ionicons name="eye-off" size={20} color={Colors.textSecondary} />
                 ) : (
-                  <Eye size={20} color={Colors.textSecondary} />
+                  <Ionicons name="eye" size={20} color={Colors.textSecondary} />
                 )}
               </TouchableOpacity>
             </View>
@@ -166,9 +166,9 @@ export default function ChangePasswordScreen() {
                 onPress={() => setShowNewPassword(!showNewPassword)}
               >
                 {showNewPassword ? (
-                  <EyeOff size={20} color={Colors.textSecondary} />
+                  <Ionicons name="eye-off" size={20} color={Colors.textSecondary} />
                 ) : (
-                  <Eye size={20} color={Colors.textSecondary} />
+                  <Ionicons name="eye" size={20} color={Colors.textSecondary} />
                 )}
               </TouchableOpacity>
             </View>
@@ -215,9 +215,9 @@ export default function ChangePasswordScreen() {
                 onPress={() => setShowConfirmPassword(!showConfirmPassword)}
               >
                 {showConfirmPassword ? (
-                  <EyeOff size={20} color={Colors.textSecondary} />
+                  <Ionicons name="eye-off" size={20} color={Colors.textSecondary} />
                 ) : (
-                  <Eye size={20} color={Colors.textSecondary} />
+                  <Ionicons name="eye" size={20} color={Colors.textSecondary} />
                 )}
               </TouchableOpacity>
             </View>

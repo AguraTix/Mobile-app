@@ -1,13 +1,13 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import Header from '@/components/Header';
+import Colors from '@/constants/Colors';
+import { useAuth } from '@/contexts';
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { User, Settings, HelpCircle, Phone } from 'lucide-react-native';
-import { Image } from 'expo-image';
-import Colors from '@/constants/Colors';
-import Header from '@/components/Header';
-import { useAuthStore } from '@/store/auth-store';
+import { Ionicons } from "@expo/vector-icons";
+import React from 'react';
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface ProfileOptionProps {
   icon: React.ReactNode;
@@ -17,12 +17,12 @@ interface ProfileOptionProps {
   destructive?: boolean;
 }
 
-const ProfileOption: React.FC<ProfileOptionProps> = ({ 
-  icon, 
-  title, 
-  onPress, 
+const ProfileOption: React.FC<ProfileOptionProps> = ({
+  icon,
+  title,
+  onPress,
   showChevron = true,
-  destructive = false 
+  destructive = false
 }) => (
   <TouchableOpacity style={styles.optionContainer} onPress={onPress} activeOpacity={0.7}>
     <View style={[styles.optionIconContainer, destructive && styles.destructiveIconContainer]}>
@@ -35,14 +35,7 @@ const ProfileOption: React.FC<ProfileOptionProps> = ({
 
 export default function ProfileWithLogoutScreen() {
   const router = useRouter();
-  const { user, logout } = useAuthStore();
-
-  // Mock user data (would come from backend)
-  const userData = {
-    name: user?.username || 'Donye Collins',
-    email: user?.email || 'iamcollinsdonye@gmail.com',
-    profileImage: user?.profileImage || require('@/assets/images/profile.jpg'),
-  };
+  const { user, logout } = useAuth();
 
   const handleLogout = () => {
     Alert.alert(
@@ -92,36 +85,36 @@ export default function ProfileWithLogoutScreen() {
 
         <View style={styles.profileCard}>
           <Image
-            source={userData.profileImage}
+            source={user?.profile_photo ? { uri: user.profile_photo } : require('@/assets/images/profile.jpg')}
             style={styles.profileImage}
           />
           <View style={styles.profileInfo}>
-            <Text style={styles.profileName}>{userData.name}</Text>
-            <Text style={styles.profileEmail}>{userData.email}</Text>
+            <Text style={styles.profileName}>{user?.name || 'User'}</Text>
+            <Text style={styles.profileEmail}>{user?.email || 'No email'}</Text>
           </View>
         </View>
 
         <View style={styles.optionsContainer}>
           <ProfileOption
-            icon={<User size={24} color={Colors.text} />}
+            icon={<Ionicons name="person" size={24} color={Colors.text} />}
             title="My Account"
             onPress={handleMyAccount}
           />
 
           <ProfileOption
-            icon={<Settings size={24} color={Colors.text} />}
+            icon={<Ionicons name="settings" size={24} color={Colors.text} />}
             title="Settings"
             onPress={handleSettings}
           />
 
           <ProfileOption
-            icon={<HelpCircle size={24} color={Colors.text} />}
+            icon={<Ionicons name="help-circle" size={24} color={Colors.text} />}
             title="Help Center"
             onPress={handleHelpCenter}
           />
 
           <ProfileOption
-            icon={<Phone size={24} color={Colors.text} />}
+            icon={<Ionicons name="call" size={24} color={Colors.text} />}
             title="Contact"
             onPress={handleContact}
           />

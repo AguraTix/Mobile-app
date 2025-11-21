@@ -1,11 +1,9 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import {
     Dimensions,
     NativeScrollEvent,
     NativeSyntheticEvent,
     ScrollView,
-    StyleSheet,
     View,
 } from 'react-native';
 
@@ -48,37 +46,15 @@ export default function Carousel({ children }: { children: React.ReactNode[] }) 
                 ))}
             </ScrollView>
 
-            <View style={styles.pagination}>
+            <View className="flex-row justify-center mt-3">
                 {children.map((_, index) => (
                     <View
                         key={index}
-                        style={[
-                            styles.dot,
-                            index === activeIndex ? styles.activeDot : styles.inactiveDot,
-                        ]}
+                        className={`w-2 h-2 rounded-full mx-[5px] ${index === activeIndex ? 'bg-white' : 'bg-white/40'
+                            }`}
                     />
                 ))}
             </View>
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    pagination: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        marginTop: 12,
-    },
-    dot: {
-        width: 8,
-        height: 8,
-        borderRadius: 4,
-        marginHorizontal: 5,
-    },
-    activeDot: {
-        backgroundColor: '#fff',
-    },
-    inactiveDot: {
-        backgroundColor: 'rgba(255,255,255,0.4)',
-    },
-});

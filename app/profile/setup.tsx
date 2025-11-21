@@ -1,30 +1,32 @@
+import Header from "@/components/Header";
+import Colors from "@/constants/Colors";
+import { useAuth } from "@/contexts";
+import { Image } from "expo-image";
+import * as ImagePicker from "expo-image-picker";
+import { useRouter } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
+  Alert,
   SafeAreaView,
+  StyleSheet,
+  Text,
   TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { Image } from "expo-image";
-import { useRouter } from "expo-router";
-import { ChevronLeft } from "lucide-react-native";
-import * as ImagePicker from "expo-image-picker";
-import { useAuthStore } from "@/store/auth-store";
-import Colors from "@/constants/Colors";
-import Header from "@/components/Header";
-import { StatusBar } from "expo-status-bar";
+
 
 export default function MyAccountScreen() {
   const router = useRouter();
-  const { user, updateUser } = useAuthStore();
+  const { user } = useAuth()
 
-  const [name, setName] = useState(user?.username || "Donye Collins");
-  const [email, setEmail] = useState(user?.email || "Louis04real@gmail.com");
-  const [phoneNumber, setPhoneNumber] = useState(user?.phone || "+23408146186693");
+  const [name, setName] = useState(user?.name || "");
+  const [email, setEmail] = useState(user?.email || "");
+  const [phoneNumber, setPhoneNumber] = useState(user?.phone_number || "");
   const [profileImage, setProfileImage] = useState<string | null>(
-    user?.profileImage || null
+    user?.profile_photo || null
   );
 
   const pickImage = async () => {
@@ -42,15 +44,18 @@ export default function MyAccountScreen() {
 
   const handleSave = async () => {
     try {
-      await updateUser({
-        username: name,
-        email: email,
-        phone: phoneNumber,
-        profileImage: profileImage || undefined,
-      });
+      // TODO: Add updateProfile method to authService
+      // await authService.updateProfile({
+      //   name,
+      //   email,
+      //   phone_number: phoneNumber,
+      //   profile_photo: profileImage || undefined,
+      // });
+      Alert.alert('Info', 'Profile update feature will be available soon. Changes saved locally.');
       router.back();
     } catch (error) {
       console.error('Failed to update profile:', error);
+      Alert.alert('Error', 'Failed to update profile. Please try again.');
     }
   };
 
@@ -58,11 +63,11 @@ export default function MyAccountScreen() {
     <SafeAreaView style={styles.container}>
       <StatusBar style="light" />
       <Header showLogo showProfile showSearch />
-      
+
       <View style={styles.content}>
         <View style={styles.titleRow}>
           <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-            <ChevronLeft size={24} color={Colors.text} />
+            <Ionicons name="chevron-back" size={24} color={Colors.text} />
           </TouchableOpacity>
           <Text style={styles.screenTitle}>My Account</Text>
         </View>
@@ -71,6 +76,8 @@ export default function MyAccountScreen() {
           <TouchableOpacity style={styles.profileImageContainer} onPress={pickImage}>
             {profileImage ? (
               <Image source={{ uri: profileImage }} style={styles.profileImage} />
+            ) : user?.profile_photo ? (
+              <Image source={{ uri: user.profile_photo }} style={styles.profileImage} />
             ) : (
               <Image source={require('@/assets/images/profile.jpg')} style={styles.profileImage} />
             )}
