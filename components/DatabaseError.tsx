@@ -1,7 +1,7 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Text, TouchableOpacity, View } from 'react-native';
 
 interface DatabaseErrorProps {
   error?: string;
@@ -10,13 +10,13 @@ interface DatabaseErrorProps {
   showRetry?: boolean;
 }
 
-export default function DatabaseError({ 
+export default function DatabaseError({
   error = "Section is associated to TicketCategory using an alias. You must use the 'as' keyword to specify the alias within your include statement.",
-  onRetry, 
+  onRetry,
   onContactSupport,
-  showRetry = true 
+  showRetry = true
 }: DatabaseErrorProps) {
-  
+
   const handleContactSupport = () => {
     if (onContactSupport) {
       onContactSupport();
@@ -40,41 +40,47 @@ export default function DatabaseError({
   };
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1">
       <LinearGradient
         colors={['#1a1a1a', '#2d2d2d', '#1a1a1a']}
-        style={styles.background}
+        className="flex-1 justify-center items-center"
       >
-        <View style={styles.content}>
-          <View style={styles.iconContainer}>
-            <Database size={48} color="#e6007e" />
+        <View className="p-5 items-center max-w-[350px]">
+          <View className="mb-6">
+            <Ionicons name="server" size={48} color="#e6007e" />
           </View>
-          
-          <Text style={styles.title}>Database Error</Text>
-          <Text style={styles.message}>{getErrorMessage(error)}</Text>
-          
-          <View style={styles.buttonContainer}>
+
+          <Text className="text-2xl font-bold text-white text-center mb-4">Database Error</Text>
+          <Text className="text-base text-[#cccccc] text-center mb-8 leading-[22px]">{getErrorMessage(error)}</Text>
+
+          <View className="flex-row gap-4 mb-6">
             {showRetry && onRetry && (
-              <TouchableOpacity style={styles.retryButton} onPress={onRetry}>
-                <RefreshCw size={20} color="#ffffff" />
-                <Text style={styles.retryButtonText}>Try Again</Text>
+              <TouchableOpacity
+                className="bg-[#e6007e] flex-row items-center px-6 py-3 rounded-lg gap-2 min-w-[120px]"
+                onPress={onRetry}
+              >
+                <Ionicons name="refresh" size={20} color="#ffffff" />
+                <Text className="text-white text-base font-semibold">Try Again</Text>
               </TouchableOpacity>
             )}
-            
-            <TouchableOpacity style={styles.supportButton} onPress={handleContactSupport}>
-              <AlertTriangle size={20} color="#ffffff" />
-              <Text style={styles.supportButtonText}>Report Issue</Text>
+
+            <TouchableOpacity
+              className="bg-white/20 flex-row items-center px-6 py-3 rounded-lg gap-2 min-w-[120px] border border-white"
+              onPress={handleContactSupport}
+            >
+              <Ionicons name="warning" size={20} color="#ffffff" />
+              <Text className="text-white text-base font-semibold">Report Issue</Text>
             </TouchableOpacity>
           </View>
-          
-          <Text style={styles.helpText}>
+
+          <Text className="text-sm text-[#999999] text-center leading-5 mb-6">
             This error has been automatically logged for our technical team
           </Text>
-          
+
           {__DEV__ && (
-            <View style={styles.debugInfo}>
-              <Text style={styles.debugTitle}>Technical Details:</Text>
-              <Text style={styles.debugText}>{error}</Text>
+            <View className="p-4 bg-black/30 rounded-lg w-full">
+              <Text className="text-sm font-semibold text-white mb-2">Technical Details:</Text>
+              <Text className="text-xs text-white/80 leading-4">{error}</Text>
             </View>
           )}
         </View>
@@ -82,98 +88,3 @@ export default function DatabaseError({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  background: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  content: {
-    padding: 20,
-    alignItems: 'center',
-    maxWidth: 350,
-  },
-  iconContainer: {
-    marginBottom: 24,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    textAlign: 'center',
-    marginBottom: 16,
-  },
-  message: {
-    fontSize: 16,
-    color: '#cccccc',
-    textAlign: 'center',
-    marginBottom: 32,
-    lineHeight: 22,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    gap: 16,
-    marginBottom: 24,
-  },
-  retryButton: {
-    backgroundColor: '#e6007e',
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
-    gap: 8,
-    minWidth: 120,
-  },
-  retryButtonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  supportButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
-    gap: 8,
-    minWidth: 120,
-    borderWidth: 1,
-    borderColor: '#ffffff',
-  },
-  supportButtonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  helpText: {
-    fontSize: 14,
-    color: '#999999',
-    textAlign: 'center',
-    lineHeight: 20,
-    marginBottom: 24,
-  },
-  debugInfo: {
-    padding: 16,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    borderRadius: 8,
-    width: '100%',
-  },
-  debugTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#ffffff',
-    marginBottom: 8,
-  },
-  debugText: {
-    fontSize: 12,
-    color: '#ffffff',
-    opacity: 0.8,
-    lineHeight: 16,
-  },
-});

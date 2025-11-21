@@ -43,7 +43,7 @@ export default function BottomNav() {
     ];
 
     return (
-        <View style={styles.tabBarContainer}>
+        <View className="flex-row justify-between items-center bg-card rounded-[40px] mx-4 mb-10 mt-2 px-0 py-2.5 shadow-lg" style={styles.shadow}>
             {navItems.map((item) => {
                 const isFocused = pathname === item.path;
                 return (
@@ -52,10 +52,10 @@ export default function BottomNav() {
                         accessibilityRole="button"
                         accessibilityState={isFocused ? { selected: true } : {}}
                         onPress={() => router.push(item.path as any)}
-                        style={styles.tabButton}
+                        className="items-center justify-center px-3"
                         activeOpacity={0.8}
                     >
-                        <View style={[styles.iconWrap, isFocused && styles.iconWrapActive]}>
+                        <View className={`p-2 rounded-3xl justify-center items-center ${isFocused ? 'bg-input-background border-2 border-primary' : 'bg-transparent'}`}>
                             {item.icon}
                         </View>
                     </TouchableOpacity>
@@ -65,40 +65,19 @@ export default function BottomNav() {
     );
 }
 
+// Keep only platform-specific shadow styles that Tailwind can't handle well
 const styles = StyleSheet.create({
-    tabBarContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        backgroundColor: Colors.card,
-        borderRadius: 40,
-        marginHorizontal: 16,
-        marginBottom: Platform.OS === 'ios' ? 24 : 40,
-        marginTop: 8,
-        paddingHorizontal: 0,
-        paddingVertical: 10,
-        elevation: 10,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.15,
-        shadowRadius: 10,
-    },
-    tabButton: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingHorizontal: 12,
-    },
-    iconWrap: {
-        padding: 8,
-        borderRadius: 24,
-        backgroundColor: 'transparent',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    iconWrapActive: {
-        backgroundColor: Colors.inputBackground,
-        borderWidth: 2,
-        borderColor: Colors.primary,
-        borderRadius: 40,
+    shadow: {
+        ...Platform.select({
+            ios: {
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.15,
+                shadowRadius: 10,
+            },
+            android: {
+                elevation: 10,
+            },
+        }),
     },
 });

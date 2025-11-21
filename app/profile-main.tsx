@@ -3,9 +3,9 @@ import Button from "@/components/Button";
 import Header from "@/components/Header";
 import Colors from "@/constants/Colors";
 import { useAuth } from "@/contexts";
+import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useRef } from "react";
 import {
   Animated,
@@ -81,12 +81,12 @@ export default function ProfileScreen() {
 
   // Mock recent activity
   const recentActivity = [
-    { id: "1", type: "ticket", title: "Purchased ticket for Summer Music Festival", time: "2 hours ago", icon: FileText },
-    { id: "2", type: "event", title: "Attended Tech Startup Meetup", time: "1 day ago", icon: Calendar },
-    { id: "3", type: "favorite", title: "Added Food & Wine Expo to favorites", time: "2 days ago", icon: Heart },
-    { id: "4", type: "share", title: "Shared Agura Launch Event", time: "3 days ago", icon: Share2 },
-    { id: "5", type: "review", title: "Rated Jazz Night 5 stars", time: "4 days ago", icon: Star },
-    { id: "6", type: "payment", title: "Updated payment method", time: "1 week ago", icon: CreditCard },
+    { id: "1", type: "ticket", title: "Purchased ticket for Summer Music Festival", time: "2 hours ago", icon: () => <Ionicons name="document-text" size={20} /> },
+    { id: "2", type: "event", title: "Attended Tech Startup Meetup", time: "1 day ago", icon: () => <Ionicons name="calendar" size={20} /> },
+    { id: "3", type: "favorite", title: "Added Food & Wine Expo to favorites", time: "2 days ago", icon: () => <Ionicons name="heart" size={20} /> },
+    { id: "4", type: "share", title: "Shared Agura Launch Event", time: "3 days ago", icon: () => <Ionicons name="share-social" size={20} /> },
+    { id: "5", type: "review", title: "Rated Jazz Night 5 stars", time: "4 days ago", icon: () => <Ionicons name="star" size={20} /> },
+    { id: "6", type: "payment", title: "Updated payment method", time: "1 week ago", icon: () => <Ionicons name="card" size={20} /> },
   ];
 
   const profileMenuItems = [
@@ -94,7 +94,7 @@ export default function ProfileScreen() {
       id: "profile",
       title: "Edit Profile",
       subtitle: "Update your personal information",
-      icon: Edit3,
+      icon: () => <Ionicons name="create" size={20} />,
       onPress: () => router.push("/profile/setup"),
       color: Colors.primary,
       badge: null,
@@ -103,7 +103,7 @@ export default function ProfileScreen() {
       id: "notifications",
       title: "Notifications",
       subtitle: "Manage your notification preferences",
-      icon: Bell,
+      icon: () => <Ionicons name="notifications" size={20} />,
       onPress: () => router.push("/profile/notifications"),
       color: "#10b981",
       badge: 3,
@@ -112,7 +112,7 @@ export default function ProfileScreen() {
       id: "payment",
       title: "Payment Methods",
       subtitle: "Manage your payment options",
-      icon: CreditCard,
+      icon: () => <Ionicons name="card" size={20} />,
       onPress: () => router.push("/profile/payment-methods"),
       color: "#f59e0b",
       badge: null,
@@ -121,7 +121,7 @@ export default function ProfileScreen() {
       id: "tickets",
       title: "My Tickets",
       subtitle: "View and manage your tickets",
-      icon: FileText,
+      icon: () => <Ionicons name="document-text" size={20} />,
       onPress: () => router.push("/tickets"),
       color: "#8b5cf6",
       badge: 2,
@@ -130,7 +130,7 @@ export default function ProfileScreen() {
       id: "favorites",
       title: "Favorites",
       subtitle: "Events you've saved",
-      icon: Heart,
+      icon: () => <Ionicons name="heart" size={20} />,
       onPress: () => {
         // For now, just log since we don't have a dedicated favorites screen
         console.log('Navigate to favorites');
@@ -142,7 +142,7 @@ export default function ProfileScreen() {
       id: "settings",
       title: "Settings",
       subtitle: "App preferences and configuration",
-      icon: Settings,
+      icon: () => <Ionicons name="settings" size={20} />,
       onPress: () => router.push("/profile/settings"),
       color: "#6b7280",
       badge: null,
@@ -151,7 +151,7 @@ export default function ProfileScreen() {
       id: "help",
       title: "Help & Support",
       subtitle: "Get help and contact support",
-      icon: HelpCircle,
+      icon: () => <Ionicons name="help-circle" size={20} />,
       onPress: () => router.push("/profile/help-support"),
       color: "#3b82f6",
       badge: null,
@@ -160,7 +160,7 @@ export default function ProfileScreen() {
       id: "privacy",
       title: "Privacy & Security",
       subtitle: "Manage your privacy settings",
-      icon: Shield,
+      icon: () => <Ionicons name="shield-checkmark" size={20} />,
       onPress: () => {
         // For now, just log since we don't have a dedicated privacy screen
         console.log('Navigate to privacy settings');
@@ -172,7 +172,7 @@ export default function ProfileScreen() {
       id: "categories",
       title: "Favorite Categories",
       subtitle: "Manage your event preferences",
-      icon: Grid3X3,
+      icon: () => <Ionicons name="grid" size={20} />,
       onPress: () => router.push("/profile/categories"),
       color: "#ec4899",
       badge: 3,
@@ -181,7 +181,7 @@ export default function ProfileScreen() {
       id: "contact",
       title: "Contact Us",
       subtitle: "Get in touch with our team",
-      icon: MessageCircle,
+      icon: () => <Ionicons name="chatbubble" size={20} />,
       onPress: () => router.push("/profile/contact"),
       color: "#06b6d4",
       badge: null,
@@ -201,21 +201,21 @@ export default function ProfileScreen() {
         </View>
         <View style={styles.statItem}>
           <View style={[styles.statIcon, { backgroundColor: "#10b98115" }]}>
-            <FileText size={20} color="#10b981" />
+            <Ionicons name="document-text" size={20} color="#10b981" />
           </View>
           <Text style={styles.statNumber}>{userStats.ticketsPurchased}</Text>
           <Text style={styles.statLabel}>Tickets</Text>
         </View>
         <View style={styles.statItem}>
           <View style={[styles.statIcon, { backgroundColor: "#f59e0b15" }]}>
-            <DollarSign size={20} color="#f59e0b" />
+            <Ionicons name="cash" size={20} color="#f59e0b" />
           </View>
           <Text style={styles.statNumber}>${userStats.totalSpent}</Text>
           <Text style={styles.statLabel}>Spent</Text>
         </View>
         <View style={styles.statItem}>
           <View style={[styles.statIcon, { backgroundColor: "#8b5cf615" }]}>
-            <Star size={20} color="#8b5cf6" />
+            <Ionicons name="star" size={20} color="#8b5cf6" />
           </View>
           <Text style={styles.statNumber}>{userStats.averageRating}</Text>
           <Text style={styles.statLabel}>Rating</Text>
@@ -293,7 +293,7 @@ export default function ProfileScreen() {
             activeOpacity={0.7}
           >
             <View style={[styles.activityIcon, { backgroundColor: `${Colors.primary}15` }]}>
-              <activity.icon size={16} color={Colors.primary} />
+              <Ionicons name="document-text" size={16} color={Colors.primary} />
             </View>
             <View style={styles.activityContent}>
               <Text style={styles.activityTitle}>{activity.title}</Text>
@@ -322,7 +322,7 @@ export default function ProfileScreen() {
               style={styles.avatar}
             />
             <TouchableOpacity style={styles.editAvatarButton} onPress={handleEditAvatar}>
-              <Edit3 size={16} color="#ffffff" />
+              <Ionicons name="create" size={16} color="#ffffff" />
             </TouchableOpacity>
           </View>
 
@@ -333,18 +333,18 @@ export default function ProfileScreen() {
               onPress={() => router.push("/profile/setup")}
               activeOpacity={0.7}
             >
-              <Edit3 size={16} color="#ffffff" />
+              <Ionicons name="create" size={16} color="#ffffff" />
             </TouchableOpacity>
           </View>
           <Text style={styles.userEmail}>{user?.email || "user@example.com"}</Text>
 
           <View style={styles.userMeta}>
             <View style={styles.metaItem}>
-              <MapPin size={16} color="rgba(255, 255, 255, 0.8)" />
+              <Ionicons name="location" size={16} color="rgba(255, 255, 255, 0.8)" />
               <Text style={styles.metaText}>Member since {userStats.memberSince}</Text>
             </View>
             <View style={styles.metaItem}>
-              <Star size={16} color="rgba(255, 255, 255, 0.8)" />
+              <Ionicons name="star" size={16} color="rgba(255, 255, 255, 0.8)" />
               <Text style={styles.metaText}>{userStats.averageRating} average rating</Text>
             </View>
           </View>
@@ -353,7 +353,7 @@ export default function ProfileScreen() {
             title="Edit Profile"
             variant="outline"
             size="small"
-            icon={Edit3}
+            icon={() => <Ionicons name="create" size={20} />}
             onPress={() => router.push("/profile/setup")}
             style={styles.editProfileButton}
           />
@@ -380,7 +380,7 @@ export default function ProfileScreen() {
             >
               <View style={styles.menuItemLeft}>
                 <View style={[styles.menuIcon, { backgroundColor: `${item.color}15` }]}>
-                  <item.icon size={20} color={item.color} />
+                  <Ionicons name="settings" size={20} color={item.color} />
                 </View>
                 <View style={styles.menuItemText}>
                   <Text style={styles.menuItemTitle}>{item.title}</Text>
@@ -405,7 +405,7 @@ export default function ProfileScreen() {
             title="Logout"
             variant="ghost"
             size="large"
-            icon={LogOut}
+            icon={() => <Ionicons name="log-out" size={20} />}
             onPress={handleLogout}
             style={styles.logoutButton}
           />

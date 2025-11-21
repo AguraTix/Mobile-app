@@ -18,31 +18,25 @@ export default function SectionHeader({
   onSeeAllPress,
   variant = "default",
 }: SectionHeaderProps) {
-  const titleStyles = [
-    styles.title,
-    styles[`${variant}Title`],
-  ];
-
-  const subtitleStyles = [
-    styles.subtitle,
-    styles[`${variant}Subtitle`],
-  ];
+  const titleSizeClass = variant === "large" ? "text-2xl" : variant === "compact" ? "text-lg" : "text-xl";
+  const subtitleSizeClass = variant === "large" ? "text-base" : variant === "compact" ? "text-[13px]" : "text-sm";
 
   return (
-    <View style={styles.container}>
-      <View style={styles.textContainer}>
-        <Text style={titleStyles}>{title}</Text>
-        {subtitle && <Text style={subtitleStyles}>{subtitle}</Text>}
+    <View className="flex-row items-center justify-between mb-5 px-1">
+      <View className="flex-1">
+        <Text className={`font-bold text-text mb-1 ${titleSizeClass}`}>{title}</Text>
+        {subtitle && <Text className={`text-text-secondary font-medium ${subtitleSizeClass}`}>{subtitle}</Text>}
       </View>
 
       {showSeeAll && (
         <TouchableOpacity
+          className="flex-row items-center px-4 py-2 rounded-[20px] gap-1"
           style={styles.seeAllButton}
           onPress={onSeeAllPress}
           activeOpacity={0.7}
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
         >
-          <Text style={styles.seeAllText}>See All</Text>
+          <Text className="text-sm font-semibold text-primary">See All</Text>
           <Ionicons name="chevron-forward" size={16} color={Colors.primary} />
         </TouchableOpacity>
       )}
@@ -50,56 +44,9 @@ export default function SectionHeader({
   );
 }
 
+// Keep only the background color with opacity that Tailwind can't handle as elegantly
 const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 20,
-    paddingHorizontal: 4,
-  },
-  textContainer: {
-    flex: 1,
-  },
-  title: {
-    fontWeight: "700",
-    color: Colors.text,
-    marginBottom: 4,
-  },
-  defaultTitle: {
-    fontSize: 20,
-  },
-  largeTitle: {
-    fontSize: 24,
-  },
-  compactTitle: {
-    fontSize: 18,
-  },
-  subtitle: {
-    color: Colors.textSecondary,
-    fontWeight: "500",
-  },
-  defaultSubtitle: {
-    fontSize: 14,
-  },
-  largeSubtitle: {
-    fontSize: 16,
-  },
-  compactSubtitle: {
-    fontSize: 13,
-  },
   seeAllButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
     backgroundColor: "rgba(230, 0, 126, 0.1)",
-    gap: 4,
-  },
-  seeAllText: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: Colors.primary,
   },
 });

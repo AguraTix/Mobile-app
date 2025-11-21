@@ -1,7 +1,7 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Ionicons } from "@expo/vector-icons";
 import Colors from '@/constants/Colors';
+import { Ionicons } from "@expo/vector-icons";
+import React from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
 
 interface NetworkErrorProps {
   message?: string;
@@ -9,97 +9,36 @@ interface NetworkErrorProps {
   showRetry?: boolean;
 }
 
-export default function NetworkError({ 
-  message = "Network connection issue", 
-  onRetry, 
-  showRetry = true 
+export default function NetworkError({
+  message = "Network connection issue",
+  onRetry,
+  showRetry = true
 }: NetworkErrorProps) {
   return (
-    <View style={styles.container}>
-      <View style={styles.iconContainer}>
+    <View className="flex-1 justify-center items-center bg-background px-6">
+      <View className="mb-6 p-4 rounded-full bg-primary/10">
         <Ionicons name="wifi" size={48} color={Colors.primary} />
       </View>
-      
-      <Text style={styles.title}>Connection Error</Text>
-      <Text style={styles.message}>{message}</Text>
-      
+
+      <Text className="text-2xl font-bold text-text mb-3 text-center">Connection Error</Text>
+      <Text className="text-base text-text-secondary mb-8 text-center leading-6">{message}</Text>
+
       {showRetry && onRetry && (
-        <TouchableOpacity style={styles.retryButton} onPress={onRetry}>
-          <RefreshCw size={20} color="#FFFFFF" />
-          <Text style={styles.retryText}>Try Again</Text>
+        <TouchableOpacity
+          className="flex-row items-center bg-primary px-6 py-3 rounded-[25px] mb-8"
+          onPress={onRetry}
+        >
+          <Ionicons name="refresh" size={20} color="#FFFFFF" />
+          <Text className="text-white text-base font-semibold ml-2">Try Again</Text>
         </TouchableOpacity>
       )}
-      
-      <View style={styles.tipsContainer}>
-        <Text style={styles.tipsTitle}>Quick Tips:</Text>
-        <Text style={styles.tip}>• Check your internet connection</Text>
-        <Text style={styles.tip}>• Try switching between WiFi and mobile data</Text>
-        <Text style={styles.tip}>• Restart the app if the problem persists</Text>
+
+      <View className="bg-white/5 p-5 rounded-2xl border border-white/10 w-full">
+        <Text className="text-base font-semibold text-text mb-3">Quick Tips:</Text>
+        <Text className="text-sm text-text-secondary mb-2 leading-5">• Check your internet connection</Text>
+        <Text className="text-sm text-text-secondary mb-2 leading-5">• Try switching between WiFi and mobile data</Text>
+        <Text className="text-sm text-text-secondary leading-5">• Restart the app if the problem persists</Text>
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: Colors.background,
-    paddingHorizontal: 24,
-  },
-  iconContainer: {
-    marginBottom: 24,
-    padding: 16,
-    borderRadius: 50,
-    backgroundColor: 'rgba(230, 0, 126, 0.1)',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: Colors.text,
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  message: {
-    fontSize: 16,
-    color: Colors.textSecondary,
-    marginBottom: 32,
-    textAlign: 'center',
-    lineHeight: 24,
-  },
-  retryButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.primary,
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 25,
-    marginBottom: 32,
-  },
-  retryText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
-    marginLeft: 8,
-  },
-  tipsContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    padding: 20,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  tipsTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: Colors.text,
-    marginBottom: 12,
-  },
-  tip: {
-    fontSize: 14,
-    color: Colors.textSecondary,
-    marginBottom: 8,
-    lineHeight: 20,
-  },
-});

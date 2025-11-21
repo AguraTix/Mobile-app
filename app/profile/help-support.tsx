@@ -92,7 +92,7 @@ const FAQItemComponent: React.FC<FAQItemProps> = ({ item, isExpanded, onToggle }
       activeOpacity={0.7}
     >
       <Text style={styles.faqQuestionText}>{item.question}</Text>
-      <ChevronDown 
+      <Ionicons name="chevron-down" 
         size={20} 
         color={Colors.textSecondary} 
         style={[styles.chevron, isExpanded && styles.chevronExpanded]} 

@@ -2,12 +2,12 @@ import Colors from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
-    StyleSheet,
-    Text,
-    TextInput,
-    TextInputProps,
-    TouchableOpacity,
-    View,
+  StyleSheet,
+  Text,
+  TextInput,
+  TextInputProps,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 interface InputProps extends TextInputProps {
@@ -48,43 +48,34 @@ export default function Input({
     props.onBlur?.(undefined as any);
   };
 
-  const inputStyles = [
-    styles.input,
-    LeftIcon && styles.inputWithLeftIcon,
-    (RightIcon || secureTextEntry) && styles.inputWithRightIcon,
-    isFocused && styles.inputFocused,
-    error && styles.inputError,
-    style,
-  ];
-
-  const containerStyles = [
-    styles.container,
-    containerStyle,
-  ];
-
   return (
-    <View style={containerStyles}>
-      {label && <Text style={styles.label}>{label}</Text>}
-      
-      <View style={styles.inputContainer}>
+    <View className="mb-5" style={containerStyle}>
+      {label && <Text className="text-base font-semibold text-text mb-2 ml-1">{label}</Text>}
+
+      <View
+        className={`flex-row items-center bg-white rounded-xl border-2 ${error ? 'border-error bg-red-50' : isFocused ? 'border-primary bg-white' : 'border-transparent'
+          }`}
+        style={styles.shadow}
+      >
         {LeftIcon && (
-          <View style={styles.leftIconContainer}>
+          <View className="pl-5 pr-3 items-center justify-center">
             <LeftIcon size={20} color={isFocused ? Colors.primary : Colors.textSecondary} />
           </View>
         )}
-        
+
         <TextInput
-          style={inputStyles}
+          className={`flex-1 py-4 px-5 text-base text-black font-medium ${LeftIcon ? 'pl-4' : ''} ${RightIcon || secureTextEntry ? 'pr-4' : ''}`}
           placeholderTextColor={Colors.textSecondary}
           secureTextEntry={secureTextEntry && !isPasswordVisible}
           onFocus={handleFocus}
           onBlur={handleBlur}
+          style={style}
           {...props}
         />
-        
+
         {secureTextEntry && (
           <TouchableOpacity
-            style={styles.rightIconContainer}
+            className="pr-5 pl-3 items-center justify-center"
             onPress={togglePasswordVisibility}
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
           >
@@ -95,10 +86,10 @@ export default function Input({
             )}
           </TouchableOpacity>
         )}
-        
+
         {RightIcon && !secureTextEntry && (
           <TouchableOpacity
-            style={styles.rightIconContainer}
+            className="pr-5 pl-3 items-center justify-center"
             onPress={onRightIconPress}
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
           >
@@ -106,75 +97,19 @@ export default function Input({
           </TouchableOpacity>
         )}
       </View>
-      
-      {error && <Text style={styles.errorText}>{error}</Text>}
+
+      {error && <Text className="text-sm text-error mt-1.5 ml-1 font-medium">{error}</Text>}
     </View>
   );
 }
 
+// Keep shadow styles that are specific
 const styles = StyleSheet.create({
-  container: {
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: Colors.text,
-    marginBottom: 8,
-    marginLeft: 4,
-  },
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#ffffff",
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: "transparent",
+  shadow: {
     elevation: 2,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
-  },
-  input: {
-    flex: 1,
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    fontSize: 16,
-    color: "#000000",
-    fontWeight: "500",
-  },
-  inputWithLeftIcon: {
-    paddingLeft: 16,
-  },
-  inputWithRightIcon: {
-    paddingRight: 16,
-  },
-  inputFocused: {
-    borderColor: Colors.primary,
-    backgroundColor: "#ffffff",
-  },
-  inputError: {
-    borderColor: "#ef4444",
-    backgroundColor: "#fef2f2",
-  },
-  leftIconContainer: {
-    paddingLeft: 20,
-    paddingRight: 12,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  rightIconContainer: {
-    paddingRight: 20,
-    paddingLeft: 12,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  errorText: {
-    fontSize: 14,
-    color: "#ef4444",
-    marginTop: 6,
-    marginLeft: 4,
-    fontWeight: "500",
   },
 });

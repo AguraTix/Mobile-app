@@ -1,9 +1,9 @@
 import Colors from "@/constants/Colors";
 import { Event } from "@/types/backend";
-import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React, { memo } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 
 type Props = {
   event: Event;
@@ -24,29 +24,29 @@ const ListEventCardBase = ({ event, isBooked }: Props) => {
   };
 
   return (
-    <View style={styles.listEventCard}>
+    <View className="flex-row bg-[#1C1C1E] rounded-3xl mx-5 mb-4 p-3 h-[200px]">
       <Image
         source={getImageSource()}
-        style={styles.listEventImage}
+        className="w-[200px] h-full rounded-2xl mr-5"
       />
-      <View style={styles.listEventInfo}>
+      <View className="flex-1 justify-between py-1">
         <View>
-          <Text style={styles.listEventTitle} numberOfLines={1}>
+          <Text className="text-text font-bold text-[17px]" numberOfLines={1}>
             {event.title}
           </Text>
-          <View style={styles.listEventMeta}>
+          <View className="flex-row items-center mt-2">
             <Ionicons name="calendar" size={14} color={Colors.textSecondary} />
-            <Text style={styles.listEventMetaText}>{event.date}</Text>
+            <Text className="text-text-secondary text-[13px] ml-2.5">{event.date}</Text>
           </View>
           {event.Venue && (
-            <View style={styles.listEventMeta}>
+            <View className="flex-row items-center mt-2">
               <Ionicons name="location" size={14} color={Colors.textSecondary} />
-              <Text style={styles.listEventMetaText}>{event.Venue.location}</Text>
+              <Text className="text-text-secondary text-[13px] ml-2.5">{event.Venue.location}</Text>
             </View>
           )}
         </View>
         <TouchableOpacity
-          style={styles.listDetailsButton}
+          className="flex-row items-center justify-center bg-[#2C2C2E] rounded-2xl py-2"
           onPress={() =>
             router.push({
               pathname: `/event/${event.event_id}` as any,
@@ -56,7 +56,7 @@ const ListEventCardBase = ({ event, isBooked }: Props) => {
           accessibilityRole="button"
           accessibilityLabel="View event details"
         >
-          <Text style={styles.listDetailsButtonText}>View Details</Text>
+          <Text className="text-text text-[15px] font-medium ml-2">View Details</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -69,55 +69,3 @@ const ListEventCard = memo(ListEventCardBase);
 ListEventCard.displayName = "ListEventCard";
 
 export default ListEventCard;
-
-const styles = StyleSheet.create({
-  listEventCard: {
-    flexDirection: "row",
-    backgroundColor: "#1C1C1E",
-    borderRadius: 24,
-    marginHorizontal: 20,
-    marginBottom: 16,
-    padding: 12,
-    height: 200,
-  },
-  listEventImage: {
-    width: 200,
-    height: "100%",
-    borderRadius: 16,
-    marginRight: 19,
-  },
-  listEventInfo: {
-    flex: 1,
-    justifyContent: "space-between",
-    paddingVertical: 4,
-  },
-  listEventTitle: {
-    color: Colors.text,
-    fontWeight: "bold",
-    fontSize: 17,
-  },
-  listEventMeta: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 8,
-  },
-  listEventMetaText: {
-    color: Colors.textSecondary,
-    fontSize: 13,
-    marginLeft: 9,
-  },
-  listDetailsButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#2C2C2E",
-    borderRadius: 16,
-    paddingVertical: 7,
-  },
-  listDetailsButtonText: {
-    color: Colors.text,
-    fontSize: 15,
-    fontWeight: "500",
-    marginLeft: 8,
-  },
-});

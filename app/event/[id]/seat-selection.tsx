@@ -107,18 +107,18 @@ export default function SeatSelectionScreen() {
       {/* Custom Header matching the design */}
       <View style={styles.customHeader}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <ChevronLeft size={24} color="#FFFFFF" />
+          <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Choose Seat</Text>
         <View style={styles.headerRight}>
           <TouchableOpacity style={styles.headerIcon}>
-            <Search size={20} color="#FFFFFF" />
+            <Ionicons name="search" size={20} color="#FFFFFF" />
           </TouchableOpacity>
           <TouchableOpacity style={styles.headerIcon}>
-            <Bell size={20} color="#FFFFFF" />
+            <Ionicons name="notifications" size={20} color="#FFFFFF" />
           </TouchableOpacity>
           <TouchableOpacity style={styles.profileButton}>
-            <User size={20} color="#FFFFFF" />
+            <Ionicons name="person" size={20} color="#FFFFFF" />
           </TouchableOpacity>
         </View>
       </View>

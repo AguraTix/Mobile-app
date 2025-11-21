@@ -103,7 +103,7 @@ export default function TicketsScreen() {
         </View>
 
         <View style={styles.detailRow}>
-          <Clock3 size={16} color={Colors.textSecondary} />
+          <Ionicons name="time" size={16} color={Colors.textSecondary} />
           <Text style={styles.detailText}>
             {ticket.status === TicketStatus.AVAILABLE ? "Event hasn't started" : "Event has ended"}
           </Text>

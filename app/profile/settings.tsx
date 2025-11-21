@@ -45,7 +45,7 @@ export default function SettingsScreen() {
       <View style={styles.blueHeader}>
         <View style={styles.titleRow}>
           <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
-            <ChevronLeft size={24} color="#fff" />
+            <Ionicons name="chevron-back" size={24} color="#fff" />
           </TouchableOpacity>
           <Text style={[styles.screenTitle, { color: '#fff' }]}>Settings</Text>
         </View>

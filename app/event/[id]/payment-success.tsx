@@ -104,7 +104,7 @@ export default function PaymentSuccessScreen() {
         {/* Success Header */}
         <View style={styles.successHeader}>
           <View style={styles.successIconContainer}>
-            <CheckCircle size={64} color="#34C759" />
+            <Ionicons name="checkmark-circle" size={64} color="#34C759" />
           </View>
           <Text style={styles.successTitle}>Payment Successful!</Text>
           <Text style={styles.successMessage}>
@@ -245,9 +245,9 @@ export default function PaymentSuccessScreen() {
         
         <View style={styles.buttonRow}>
           <TouchableOpacity style={styles.primaryButton} onPress={handleViewTickets}>
-            <Ticket size={20} color="#FFFFFF" />
+            <Ionicons name="ticket" size={20} color="#FFFFFF" />
             <Text style={styles.primaryButtonText}>View My Tickets</Text>
-            <ArrowRight size={20} color="#FFFFFF" />
+            <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
           </TouchableOpacity>
         </View>
         

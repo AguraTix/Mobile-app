@@ -43,7 +43,7 @@ export default function FoodPaymentSuccessScreen() {
       <View style={styles.content}>
         <View style={styles.successContainer}>
           <Animated.View style={[styles.iconContainer, { transform: [{ scale: scaleValue }] }]}>
-            <CheckCircle size={80} color="#4CAF50" />
+            <Ionicons name="checkmark-circle" size={80} color="#4CAF50" />
           </Animated.View>
           
           <Text style={styles.successTitle}>Order Successful!</Text>

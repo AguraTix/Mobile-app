@@ -1,9 +1,8 @@
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
-import Colors from "@/constants/Colors";
 
 interface HeaderProps {
   title?: string;
@@ -38,66 +37,70 @@ export default function Header({
     if (router.canGoBack()) {
       router.back();
     } else {
-      router.push("/(tabs)");
+      router.push("/home");
     }
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={["top"]}>
-      <View style={styles.header}>
-        <View style={styles.leftSection}>
+    <SafeAreaView className="bg-black" edges={["top"]} style={styles.shadow}>
+      <View className="flex-row items-center justify-between px-5 py-4 min-h-[60px]">
+        <View className="flex-row items-center min-w-[60px]">
           {showBack && (
             <TouchableOpacity
+              className="w-11 h-11 rounded-[22px] items-center justify-center mx-1"
               style={styles.iconButton}
               onPress={handleBack}
               hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             >
-              <ChevronLeft size={24} color="#ffffff" strokeWidth={2.5} />
+              <Ionicons name="chevron-back" size={24} color="#ffffff" />
             </TouchableOpacity>
           )}
-          
+
           {showMenu && (
             <TouchableOpacity
+              className="w-11 h-11 rounded-[22px] items-center justify-center mx-1"
               style={styles.iconButton}
               onPress={onMenuPress}
               hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             >
-              <Menu size={24} color="#ffffff" strokeWidth={2.5} />
+              <Ionicons name="menu" size={24} color="#ffffff" />
             </TouchableOpacity>
           )}
         </View>
 
-        <View style={styles.titleSection}>
+        <View className="flex-1 items-center px-4">
           {showLogo ? (
-            <Text style={styles.logo}>AGURA</Text>
+            <Text className="text-2xl font-extrabold text-white text-center tracking-widest">AGURA</Text>
           ) : title ? (
-            <Text style={styles.title} numberOfLines={1}>
+            <Text className="text-xl font-bold text-white text-center tracking-wide" numberOfLines={1}>
               {title}
             </Text>
           ) : null}
         </View>
 
-        <View style={styles.rightSection}>
+        <View className="flex-row items-center min-w-[60px] justify-end">
           {showSearch && (
             <TouchableOpacity
+              className="w-11 h-11 rounded-[22px] items-center justify-center mx-1"
               style={styles.iconButton}
               onPress={onSearchPress}
               hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             >
-              <Search size={24} color="#ffffff" strokeWidth={2.5} />
+              <Ionicons name="search" size={24} color="#ffffff" />
             </TouchableOpacity>
           )}
-          
+
           {showBell && (
             <TouchableOpacity
+              className="w-11 h-11 rounded-[22px] items-center justify-center mx-1"
               style={styles.iconButton}
               onPress={onBellPress}
               hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             >
-              <Bell size={24} color="#ffffff" strokeWidth={2.5} />
+              <Ionicons name="notifications" size={24} color="#ffffff" />
             </TouchableOpacity>
           )}
-          
+
           {rightComponent}
         </View>
       </View>
@@ -105,60 +108,16 @@ export default function Header({
   );
 }
 
+// Keep only rgba background and shadow styles
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#000000",
+  shadow: {
     elevation: 4,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    minHeight: 60,
-  },
-  leftSection: {
-    flexDirection: "row",
-    alignItems: "center",
-    minWidth: 60,
-  },
-  titleSection: {
-    flex: 1,
-    alignItems: "center",
-    paddingHorizontal: 16,
-  },
-  rightSection: {
-    flexDirection: "row",
-    alignItems: "center",
-    minWidth: 60,
-    justifyContent: "flex-end",
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: "#ffffff",
-    textAlign: "center",
-    letterSpacing: 0.5,
-  },
-  logo: {
-    fontSize: 24,
-    fontWeight: "800",
-    color: "#ffffff",
-    textAlign: "center",
-    letterSpacing: 1,
-  },
   iconButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
     backgroundColor: "rgba(255, 255, 255, 0.15)",
-    alignItems: "center",
-    justifyContent: "center",
-    marginHorizontal: 4,
   },
 });

@@ -1,5 +1,5 @@
-import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   FlatList,
@@ -106,13 +106,13 @@ export default function EventsUserScreen() {
       id: "price_asc",
       label: "Price (Low to High)",
       value: "price_asc",
-      icon: <DollarSign size={18} color={Colors.text} />,
+      icon: <Ionicons name="cash" size={18} color={Colors.text} />,
     },
     {
       id: "price_desc",
       label: "Price (High to Low)",
       value: "price_desc",
-      icon: <DollarSign size={18} color={Colors.text} />,
+      icon: <Ionicons name="cash" size={18} color={Colors.text} />,
     },
     {
       id: "popularity",
@@ -216,7 +216,7 @@ export default function EventsUserScreen() {
                 ]}
                 onPress={() => setViewMode("list")}
               >
-                <List size={20} color={Colors.primary} />
+                <Ionicons name="list" size={20} color={Colors.primary} />
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -226,13 +226,13 @@ export default function EventsUserScreen() {
                 ]}
                 onPress={() => setViewMode("grid")}
               >
-                <Grid3X3 size={20} color={Colors.primary} />
+                <Ionicons name="grid" size={20} color={Colors.primary} />
               </TouchableOpacity>
             </View>
 
             <View style={styles.rightControls}>
               <TouchableOpacity style={styles.sortButton} onPress={handleSortPress}>
-                <Sliders size={20} color={Colors.text} />
+                <Ionicons name="options" size={20} color={Colors.text} />
                 <Text style={styles.sortButtonText}>Sort</Text>
                 <Ionicons name="chevron-down" size={16} color={Colors.text} />
               </TouchableOpacity>

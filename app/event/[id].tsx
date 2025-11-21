@@ -84,18 +84,18 @@ export default function EventDetailScreen() {
           onPress={() => router.back()}
           style={styles.backButton}
         >
-          <ChevronLeft size={24} color="#FFFFFF" />
+          <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{event.title}</Text>
         <View style={styles.headerRight}>
           <TouchableOpacity style={styles.headerIcon}>
-            <Search size={20} color="#FFFFFF" />
+            <Ionicons name="search" size={20} color="#FFFFFF" />
           </TouchableOpacity>
           <TouchableOpacity style={styles.headerIcon}>
-            <Bell size={20} color="#FFFFFF" />
+            <Ionicons name="notifications" size={20} color="#FFFFFF" />
           </TouchableOpacity>
           <TouchableOpacity style={styles.profileButton}>
-            <User size={20} color="#FFFFFF" />
+            <Ionicons name="person" size={20} color="#FFFFFF" />
           </TouchableOpacity>
         </View>
       </View>
@@ -124,7 +124,7 @@ export default function EventDetailScreen() {
           
           <View style={styles.infoRow}>
             <View style={styles.infoIconRow}>
-              <Calendar size={16} color="#FFFFFF" />
+              <Ionicons name="calendar" size={16} color="#FFFFFF" />
               <Text style={styles.infoLabel}>Date:</Text>
             </View>
             <Text style={styles.infoValue}>
@@ -138,7 +138,7 @@ export default function EventDetailScreen() {
           
           <View style={styles.infoRow}>
             <View style={styles.infoIconRow}>
-              <MapPin size={16} color="#FFFFFF" />
+              <Ionicons name="location" size={16} color="#FFFFFF" />
               <Text style={styles.infoLabel}>Venue:</Text>
             </View>
             <Text style={styles.infoValue}>{event.location || "Serena Hotel Kigali"}</Text>
