@@ -8,15 +8,7 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "lint": "expo lint",
-    "doctor": "expo doctor",
-    "clean": "rimraf node_modules package-lock.json",
-    "reset-project": "node ./scripts/reset-project.js",
-    "deploy-production": "node ./scripts/deploy-production.js",
-    "prebuild": "expo prebuild",
-    "build:android": "eas build -p android",
-    "build:ios": "eas build -p ios",
-    "build:web": "expo build:web"
+    "lint": "expo lint"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
