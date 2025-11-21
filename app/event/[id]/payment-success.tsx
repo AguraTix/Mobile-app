@@ -3,7 +3,7 @@ import { useOrder } from "@/contexts/OrderContext";
 import { usePayment } from "@/contexts/PaymentContext";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { ArrowRight, CheckCircle, Download, Home, Share2, Ticket } from "lucide-react-native";
+import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -169,7 +169,7 @@ export default function PaymentSuccessScreen() {
           {order.quantity && (
             <View style={styles.ticketItem}>
               <View style={styles.ticketHeader}>
-                <Ticket size={20} color={Colors.primary} />
+                <Ionicons name="ticket" size={20} color={Colors.primary} />
                 <Text style={styles.ticketTitle}>Food Order</Text>
               </View>
               
@@ -233,12 +233,12 @@ export default function PaymentSuccessScreen() {
       <View style={styles.bottomContainer}>
         <View style={styles.buttonRow}>
           <TouchableOpacity style={styles.secondaryButton} onPress={handleDownloadTickets}>
-            <Download size={20} color={Colors.primary} />
+            <Ionicons name="download" size={20} color={Colors.primary} />
             <Text style={styles.secondaryButtonText}>Download</Text>
           </TouchableOpacity>
           
           <TouchableOpacity style={styles.secondaryButton} onPress={handleShareOrder}>
-            <Share2 size={20} color={Colors.primary} />
+            <Ionicons name="share-social" size={20} color={Colors.primary} />
             <Text style={styles.secondaryButtonText}>Share</Text>
           </TouchableOpacity>
         </View>
@@ -252,7 +252,7 @@ export default function PaymentSuccessScreen() {
         </View>
         
         <TouchableOpacity style={styles.homeButton} onPress={handleGoHome}>
-          <Home size={20} color={Colors.textSecondary} />
+          <Ionicons name="home" size={20} color={Colors.textSecondary} />
           <Text style={styles.homeButtonText}>Back to Home</Text>
         </TouchableOpacity>
       </View>

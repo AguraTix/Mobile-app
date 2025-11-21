@@ -1,7 +1,7 @@
 import Colors from "@/constants/Colors";
 import { Event } from "@/types/backend";
 import { useRouter } from "expo-router";
-import { Calendar, MapPin } from "lucide-react-native";
+import { Ionicons } from "@expo/vector-icons";
 import React, { memo } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
@@ -35,12 +35,12 @@ const ListEventCardBase = ({ event, isBooked }: Props) => {
             {event.title}
           </Text>
           <View style={styles.listEventMeta}>
-            <Calendar size={14} color={Colors.textSecondary} />
+            <Ionicons name="calendar" size={14} color={Colors.textSecondary} />
             <Text style={styles.listEventMetaText}>{event.date}</Text>
           </View>
           {event.Venue && (
             <View style={styles.listEventMeta}>
-              <MapPin size={14} color={Colors.textSecondary} />
+              <Ionicons name="location" size={14} color={Colors.textSecondary} />
               <Text style={styles.listEventMetaText}>{event.Venue.location}</Text>
             </View>
           )}

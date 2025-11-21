@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { HelpCircle, Phone, Settings, User } from 'lucide-react-native';
+import { Ionicons } from "@expo/vector-icons";
 import React from 'react';
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -96,25 +96,25 @@ export default function ProfileWithLogoutScreen() {
 
         <View style={styles.optionsContainer}>
           <ProfileOption
-            icon={<User size={24} color={Colors.text} />}
+            icon={<Ionicons name="person" size={24} color={Colors.text} />}
             title="My Account"
             onPress={handleMyAccount}
           />
 
           <ProfileOption
-            icon={<Settings size={24} color={Colors.text} />}
+            icon={<Ionicons name="settings" size={24} color={Colors.text} />}
             title="Settings"
             onPress={handleSettings}
           />
 
           <ProfileOption
-            icon={<HelpCircle size={24} color={Colors.text} />}
+            icon={<Ionicons name="help-circle" size={24} color={Colors.text} />}
             title="Help Center"
             onPress={handleHelpCenter}
           />
 
           <ProfileOption
-            icon={<Phone size={24} color={Colors.text} />}
+            icon={<Ionicons name="call" size={24} color={Colors.text} />}
             title="Contact"
             onPress={handleContact}
           />

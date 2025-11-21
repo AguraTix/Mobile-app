@@ -1,15 +1,5 @@
 import { useRouter } from "expo-router";
-import {
-  Calendar,
-  ChevronDown,
-  DollarSign,
-  Filter,
-  Grid3X3,
-  List,
-  Sliders,
-  Users,
-  X,
-} from "lucide-react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   FlatList,
@@ -23,6 +13,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import BottomNav from "@/components/BottomNav";
 import EventCard from "@/components/EventCard";
 import SearchBar from "@/components/SearchBar";
 import Colors from "@/constants/Colors";
@@ -103,13 +94,13 @@ export default function EventsUserScreen() {
       id: "date_asc",
       label: "Date (Earliest)",
       value: "date_asc",
-      icon: <Calendar size={18} color={Colors.text} />,
+      icon: <Ionicons name="calendar" size={18} color={Colors.text} />,
     },
     {
       id: "date_desc",
       label: "Date (Latest)",
       value: "date_desc",
-      icon: <Calendar size={18} color={Colors.text} />,
+      icon: <Ionicons name="calendar" size={18} color={Colors.text} />,
     },
     {
       id: "price_asc",
@@ -127,7 +118,7 @@ export default function EventsUserScreen() {
       id: "popularity",
       label: "Most Popular",
       value: "popularity",
-      icon: <Users size={18} color={Colors.text} />,
+      icon: <Ionicons name="people" size={18} color={Colors.text} />,
     },
   ];
 
@@ -158,7 +149,7 @@ export default function EventsUserScreen() {
 
   const renderEmptyState = () => (
     <View style={styles.emptyState}>
-      <Calendar size={56} color={Colors.textSecondary} />
+      <Ionicons name="calendar" size={56} color={Colors.textSecondary} />
       <Text style={styles.emptyStateTitle}>No events found</Text>
       <Text style={styles.emptyStateText}>
         Try adjusting your search or filters
@@ -173,7 +164,7 @@ export default function EventsUserScreen() {
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>Sort By</Text>
             <TouchableOpacity onPress={() => setShowSortModal(false)}>
-              <X size={24} color={Colors.text} />
+              <Ionicons name="close" size={24} color={Colors.text} />
             </TouchableOpacity>
           </View>
 
@@ -243,14 +234,14 @@ export default function EventsUserScreen() {
               <TouchableOpacity style={styles.sortButton} onPress={handleSortPress}>
                 <Sliders size={20} color={Colors.text} />
                 <Text style={styles.sortButtonText}>Sort</Text>
-                <ChevronDown size={16} color={Colors.text} />
+                <Ionicons name="chevron-down" size={16} color={Colors.text} />
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={styles.filterButton}
                 onPress={handleFilterPress}
               >
-                <Filter size={20} color={Colors.text} />
+                <Ionicons name="filter" size={20} color={Colors.text} />
               </TouchableOpacity>
             </View>
           </View>
@@ -273,6 +264,7 @@ export default function EventsUserScreen() {
       </View>
 
       {renderSortModal()}
+      <BottomNav />
     </SafeAreaView>
   );
 }

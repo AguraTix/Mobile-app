@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import Header from '@/components/Header';
 import Colors from '@/constants/Colors';
-import { ChevronLeft } from 'lucide-react-native';
+import { Ionicons } from "@expo/vector-icons";
 import MapView, { Marker } from 'react-native-maps';
 
 const { width, height } = Dimensions.get('window');
@@ -26,7 +26,7 @@ export default function EventMapScreen() {
       <Header showLogo showProfile showSearch />
       <View style={styles.headerRow}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <ChevronLeft size={24} color={Colors.text} />
+          <Ionicons name="chevron-back" size={24} color={Colors.text} />
         </TouchableOpacity>
         <Text style={styles.venueTitle}>{event.venue}</Text>
       </View>

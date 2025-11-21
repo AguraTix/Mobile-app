@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Image 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { ChevronLeft } from 'lucide-react-native';
+import { Ionicons } from "@expo/vector-icons";
 import Colors from '@/constants/Colors';
 import Header from '@/components/Header';
 
@@ -81,7 +81,7 @@ export default function PaymentInfoScreen() {
       <View style={styles.content}>
         <View style={styles.titleRow}>
           <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-            <ChevronLeft size={24} color={Colors.text} />
+            <Ionicons name="chevron-back" size={24} color={Colors.text} />
           </TouchableOpacity>
           <Text style={styles.screenTitle}>Payment Information</Text>
         </View>

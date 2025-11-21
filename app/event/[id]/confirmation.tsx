@@ -45,19 +45,19 @@ export default function ConfirmationScreen() {
   }, [checkScale, checkOpacity]);
 
   const handleGoBack = () => {
-    router.push('/(tabs)');
+    router.push('/home');
   };
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <StatusBar style="light" />
-      
+
       <View style={styles.content}>
         {/* Success Message */}
         <Text style={styles.title}>
           You have successfully{'\n'}bought tickets
         </Text>
-        
+
         <Text style={styles.subtitle}>
           You have now bought {ticketCount} {categoryName} ticket{ticketCount > 1 ? 's' : ''}{'\n'}
           for {parseInt(amount).toLocaleString()} RWF.{'\n'}
@@ -65,7 +65,7 @@ export default function ConfirmationScreen() {
         </Text>
 
         {/* Animated Check Mark */}
-        <Animated.View 
+        <Animated.View
           style={[
             styles.checkContainer,
             {

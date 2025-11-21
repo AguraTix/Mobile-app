@@ -1,4 +1,5 @@
 import { authService } from "@/services/auth";
+import { ApiError } from "@/types";
 import { User, UserLoginInput, UserRegisterInput } from "@/types/backend";
 import { router } from "expo-router";
 import * as SecureStore from 'expo-secure-store';
@@ -35,9 +36,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await SecureStore.setItemAsync('auth_token', response.token);
       await SecureStore.setItemAsync('user', JSON.stringify(response.user));
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Login failed';
-      setError(message);
-      throw err;
+      const message = err as unknown as ApiError
+      setError(message.message);
     } finally {
       setIsLoading(false);
     }

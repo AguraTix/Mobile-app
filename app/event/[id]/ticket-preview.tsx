@@ -7,7 +7,7 @@ import * as MediaLibrary from 'expo-media-library';
 import * as Print from 'expo-print';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as Sharing from 'expo-sharing';
-import { ChevronLeft } from 'lucide-react-native';
+import { Ionicons } from "@expo/vector-icons";
 import React from 'react';
 import { Alert, Dimensions, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
@@ -105,7 +105,7 @@ export default function TicketPreviewScreen() {
       <View style={styles.content}>
         <View style={styles.titleRow}>
           <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-            <ChevronLeft size={24} color={Colors.text} />
+            <Ionicons name="chevron-back" size={24} color={Colors.text} />
           </TouchableOpacity>
           <Text style={styles.pageTitle}>Ticket Preview</Text>
         </View>

@@ -37,7 +37,7 @@ export default function RegisterPhoneScreen() {
     async (values) => {
       try {
         // Mock registration - just navigate to home
-        router.replace('/(tabs)');
+        router.replace('/home');
       } catch {
         // Error handled
       }

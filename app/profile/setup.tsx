@@ -5,7 +5,7 @@ import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { ChevronLeft } from "lucide-react-native";
+import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
   Alert,
@@ -67,7 +67,7 @@ export default function MyAccountScreen() {
       <View style={styles.content}>
         <View style={styles.titleRow}>
           <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-            <ChevronLeft size={24} color={Colors.text} />
+            <Ionicons name="chevron-back" size={24} color={Colors.text} />
           </TouchableOpacity>
           <Text style={styles.screenTitle}>My Account</Text>
         </View>

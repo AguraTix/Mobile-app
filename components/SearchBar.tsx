@@ -1,5 +1,5 @@
 import Colors from "@/constants/Colors";
-import { Filter, Search, X, Mic, Clock, TrendingUp } from "lucide-react-native";
+import { Ionicons } from "@expo/vector-icons";
 import React, { useState, useEffect, useRef } from "react";
 import {
     StyleSheet,
@@ -101,9 +101,9 @@ export default function SearchBar({
       activeOpacity={0.7}
     >
       {type === 'recent' ? (
-        <Clock size={16} color={Colors.textSecondary} />
+        <Ionicons name="time" size={16} color={Colors.textSecondary} />
       ) : (
-        <TrendingUp size={16} color={Colors.primary} />
+        <Ionicons name="trending-up" size={16} color={Colors.primary} />
       )}
       <Text style={[
         styles.suggestionText,
@@ -127,10 +127,7 @@ export default function SearchBar({
         disabled && styles.searchContainerDisabled
       ]}>
         <View style={styles.searchIconContainer}>
-          <Search 
-            size={20} 
-            color={isFocused ? Colors.primary : Colors.textSecondary} 
-          />
+          <Ionicons name="search" size={20} color={isFocused ? Colors.primary : Colors.textSecondary} />
         </View>
         
         <TextInput
@@ -161,7 +158,7 @@ export default function SearchBar({
             onPress={handleClear}
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
           >
-            <X size={18} color={Colors.textSecondary} />
+            <Ionicons name="close" size={18} color={Colors.textSecondary} />
           </TouchableOpacity>
         )}
         
@@ -170,7 +167,7 @@ export default function SearchBar({
           onPress={handleVoiceSearch}
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
         >
-          <Mic size={18} color={isListening ? Colors.primary : Colors.textSecondary} />
+          <Ionicons name="mic" size={18} color={isListening ? Colors.primary : Colors.textSecondary} />
         </TouchableOpacity>
         
         {showFilter && (
@@ -179,7 +176,7 @@ export default function SearchBar({
             onPress={onFilter}
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
           >
-            <Filter size={20} color={Colors.primary} />
+            <Ionicons name="filter" size={20} color={Colors.primary} />
           </TouchableOpacity>
         )}
       </View>

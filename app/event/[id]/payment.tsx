@@ -1,7 +1,7 @@
 import Colors from "@/constants/Colors";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { Bell, ChevronLeft, CreditCard, Search, Smartphone, User } from "lucide-react-native";
+import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
     Alert,
@@ -257,7 +257,7 @@ export default function PaymentScreen() {
                 style={[styles.methodButton, selectedMethod === 'mobile_money' && styles.methodButtonActive]}
                 onPress={() => setSelectedMethod('mobile_money')}
               >
-                <Smartphone size={24} color={selectedMethod === 'mobile_money' ? '#FFFFFF' : Colors.primary} />
+                <Ionicons name="phone-portrait" size={24} color={selectedMethod === 'mobile_money' ? '#FFFFFF' : Colors.primary} />
                 <Text style={[styles.methodButtonText, selectedMethod === 'mobile_money' && styles.methodButtonTextActive]}>
                   Mobile Money
                 </Text>
@@ -267,7 +267,7 @@ export default function PaymentScreen() {
                 style={[styles.methodButton, selectedMethod === 'card' && styles.methodButtonActive]}
                 onPress={() => setSelectedMethod('card')}
               >
-                <CreditCard size={24} color={selectedMethod === 'card' ? '#FFFFFF' : Colors.primary} />
+                <Ionicons name="card" size={24} color={selectedMethod === 'card' ? '#FFFFFF' : Colors.primary} />
                 <Text style={[styles.methodButtonText, selectedMethod === 'card' && styles.methodButtonTextActive]}>
                   Credit/Debit Card
                 </Text>

@@ -1,5 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { AlertTriangle, Database, RefreshCw } from 'lucide-react-native';
+import { Ionicons } from "@expo/vector-icons";
 import React from 'react';
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 

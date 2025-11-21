@@ -1,5 +1,5 @@
 import Colors from "@/constants/Colors";
-import { ChevronRight } from "lucide-react-native";
+import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
@@ -34,7 +34,7 @@ export default function SectionHeader({
         <Text style={titleStyles}>{title}</Text>
         {subtitle && <Text style={subtitleStyles}>{subtitle}</Text>}
       </View>
-      
+
       {showSeeAll && (
         <TouchableOpacity
           style={styles.seeAllButton}
@@ -43,7 +43,7 @@ export default function SectionHeader({
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
         >
           <Text style={styles.seeAllText}>See All</Text>
-          <ChevronRight size={16} color={Colors.primary} />
+          <Ionicons name="chevron-forward" size={16} color={Colors.primary} />
         </TouchableOpacity>
       )}
     </View>

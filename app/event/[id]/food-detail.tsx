@@ -2,7 +2,7 @@ import Header from '@/components/Header';
 import Colors from '@/constants/Colors';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { ChevronLeft, Minus, Plus } from 'lucide-react-native';
+import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -76,7 +76,7 @@ export default function FoodDetailScreen() {
       <View style={styles.content}>
         <View style={styles.titleRow}>
           <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-            <ChevronLeft size={24} color={Colors.text} />
+            <Ionicons name="chevron-back" size={24} color={Colors.text} />
           </TouchableOpacity>
           <Text style={styles.screenTitle}>Food Detail</Text>
         </View>
@@ -147,13 +147,13 @@ export default function FoodDetailScreen() {
                       onPress={decrementQuantity}
                       disabled={quantity === 1}
                     >
-                      <Minus size={20} color={quantity === 1 ? Colors.textSecondary : Colors.text} />
+                      <Ionicons name="remove" size={20} color={quantity === 1 ? Colors.textSecondary : Colors.text} />
                     </TouchableOpacity>
                     
                     <Text style={styles.quantityText}>{quantity}</Text>
                     
                     <TouchableOpacity style={styles.quantityButton} onPress={incrementQuantity}>
-                      <Plus size={20} color={Colors.text} />
+                      <Ionicons name="add" size={20} color={Colors.text} />
                     </TouchableOpacity>
                   </View>
                 </View>

@@ -2,7 +2,7 @@ import Header from '@/components/Header';
 import Colors from '@/constants/Colors';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { CheckCircle } from 'lucide-react-native';
+import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useMemo } from 'react';
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';

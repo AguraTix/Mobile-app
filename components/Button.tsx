@@ -1,22 +1,20 @@
 import Colors from "@/constants/Colors";
-import { LucideIcon } from "lucide-react-native";
 import React, { useRef } from "react";
 import {
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    TouchableOpacityProps,
-    View,
-    Animated,
-    ActivityIndicator,
-    Platform,
+  ActivityIndicator,
+  Animated,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableOpacityProps,
+  View,
 } from "react-native";
 
 interface ButtonProps extends TouchableOpacityProps {
   title: string;
   variant?: "primary" | "secondary" | "outline" | "ghost" | "danger" | "success" | "warning" | "gradient";
   size?: "small" | "medium" | "large" | "xl";
-  icon?: LucideIcon;
+  icon?: React.ComponentType<any>;
   iconPosition?: "left" | "right";
   loading?: boolean;
   fullWidth?: boolean;
@@ -104,9 +102,9 @@ export default function Button({
     if (loading) {
       return (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator 
-            size={getSpinnerSize(size)} 
-            color={getSpinnerColor(variant, disabled)} 
+          <ActivityIndicator
+            size={getSpinnerSize(size)}
+            color={getSpinnerColor(variant, disabled)}
           />
           <Text style={[textStyles, styles.loadingText]}>Loading...</Text>
         </View>
@@ -116,18 +114,18 @@ export default function Button({
     return (
       <View style={styles.content}>
         {Icon && iconPosition === "left" && (
-          <Icon 
-            style={iconStyles} 
-            size={getIconSize(size)} 
-            color={getIconColor(variant, disabled)} 
+          <Icon
+            style={iconStyles}
+            size={getIconSize(size)}
+            color={getIconColor(variant, disabled)}
           />
         )}
         <Text style={textStyles}>{title}</Text>
         {Icon && iconPosition === "right" && (
-          <Icon 
-            style={iconStyles} 
-            size={getIconSize(size)} 
-            color={getIconColor(variant, disabled)} 
+          <Icon
+            style={iconStyles}
+            size={getIconSize(size)}
+            color={getIconColor(variant, disabled)}
           />
         )}
       </View>
@@ -170,7 +168,7 @@ function getSpinnerSize(size: string): number {
 
 function getIconColor(variant: string, disabled: boolean): string {
   if (disabled) return "#999999";
-  
+
   switch (variant) {
     case "primary": return "#ffffff";
     case "secondary": return "#ffffff";
@@ -186,7 +184,7 @@ function getIconColor(variant: string, disabled: boolean): string {
 
 function getSpinnerColor(variant: string, disabled: boolean): string {
   if (disabled) return "#999999";
-  
+
   switch (variant) {
     case "primary": return "#ffffff";
     case "secondary": return "#ffffff";
@@ -212,7 +210,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
-  
+
   // Variants
   primary: {
     backgroundColor: Colors.primary,
@@ -242,7 +240,7 @@ const styles = StyleSheet.create({
   gradient: {
     backgroundColor: Colors.primary,
   },
-  
+
   // Sizes
   small: {
     paddingHorizontal: 16,
@@ -264,7 +262,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     minHeight: 64,
   },
-  
+
   // Modifiers
   fullWidth: {
     width: "100%",
@@ -276,7 +274,7 @@ const styles = StyleSheet.create({
     opacity: 0.6,
     backgroundColor: Colors.border,
   },
-  
+
   // Content
   content: {
     flexDirection: "row",
@@ -293,7 +291,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginLeft: 8,
   },
-  
+
   // Text styles
   text: {
     fontSize: 16,
@@ -312,7 +310,7 @@ const styles = StyleSheet.create({
   xlText: {
     fontSize: 20,
   },
-  
+
   // Variant text colors
   primaryText: {
     color: "#ffffff",
@@ -338,12 +336,12 @@ const styles = StyleSheet.create({
   gradientText: {
     color: "#ffffff",
   },
-  
+
   // Disabled text
   disabledText: {
     color: "#999999",
   },
-  
+
   // Icon styles
   icon: {
     marginHorizontal: 0,

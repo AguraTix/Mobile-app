@@ -1,3 +1,4 @@
+import BottomNav from "@/components/BottomNav";
 import EventCard from "@/components/EventCard";
 import SearchBar from "@/components/SearchBar";
 import SectionHeader from "@/components/SectionHeader";
@@ -7,9 +8,7 @@ import { radius, spacing } from "@/constants/spacing";
 import { typeScale } from "@/constants/typography";
 import { useAuth, useEvent } from "@/contexts";
 import { useRouter } from "expo-router";
-import {
-  Bell
-} from "lucide-react-native";
+import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Alert,
@@ -87,21 +86,21 @@ export default function HomeScreen() {
       title: "My Tickets",
       icon: "🎫",
       color: Colors.primary,
-      onPress: () => router.push("/(tabs)/tickets")
+      onPress: () => router.push("/tickets")
     },
     {
       id: "2",
       title: "Book Event",
       icon: "📅",
       color: "#3b82f6",
-      onPress: () => router.push("/(tabs)/events-user")
+      onPress: () => router.push("/events-user")
     },
     {
       id: "3",
       title: "Food & Drinks",
       icon: "🍔",
       color: "#f59e0b",
-      onPress: () => router.push("/(tabs)/events-user")
+      onPress: () => router.push("/events-user")
     },
     {
       id: "4",
@@ -137,11 +136,11 @@ export default function HomeScreen() {
   };
 
   const handleViewAllEvents = () => {
-    router.push("/(tabs)/events-user");
+    router.push("/events-user");
   };
 
   const handleViewAllUpcoming = () => {
-    router.push("/(tabs)/events/upcoming");
+    router.push("/events/upcoming");
   };
 
   const handleQuickAction = (action: any) => {
@@ -179,7 +178,7 @@ export default function HomeScreen() {
             onPress={handleNotificationPress}
             activeOpacity={0.8}
           >
-            <Bell size={24} color={Colors.text} />
+            <Ionicons name="notifications" size={24} color={Colors.text} />
             <View style={styles.notificationBadge} />
           </TouchableOpacity>
         </View>
@@ -304,6 +303,7 @@ export default function HomeScreen() {
         {/* Bottom Spacing */}
         <View style={styles.bottomSpacing} />
       </ScrollView>
+      <BottomNav />
     </SafeAreaView>
   );
 }

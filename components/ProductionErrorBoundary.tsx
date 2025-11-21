@@ -1,5 +1,5 @@
 import Colors from '@/constants/Colors';
-import { AlertTriangle, RefreshCw } from 'lucide-react-native';
+import { Ionicons } from "@expo/vector-icons";
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -56,7 +56,7 @@ export class ProductionErrorBoundary extends Component<Props, State> {
         <View style={styles.container}>
           <View style={styles.content}>
             <View style={styles.iconContainer}>
-              <AlertTriangle size={64} color={Colors.primary} />
+              <Ionicons name="warning" size={64} color={Colors.primary} />
             </View>
             
             <Text style={styles.title}>
@@ -69,7 +69,7 @@ export class ProductionErrorBoundary extends Component<Props, State> {
             
             <View style={styles.buttonContainer}>
               <TouchableOpacity style={styles.retryButton} onPress={this.handleRetry}>
-                <RefreshCw size={20} color={Colors.primary} />
+                <Ionicons name="refresh" size={20} color={Colors.primary} />
                 <Text style={styles.retryButtonText}>Try Again</Text>
               </TouchableOpacity>
               

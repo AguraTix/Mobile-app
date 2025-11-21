@@ -31,55 +31,59 @@ export default function RootLayout() {
       <RootProvider>
         <ToastProvider>
           <Stack
-          screenOptions={{
-            headerShown: false,
-            contentStyle: {
-              backgroundColor: Colors.background,
-            },
-            animation: 'slide_from_right',
-          }}
-        >
-        {/* Public screens - no authentication required */}
-        <Stack.Screen name="index" options={{ animation: 'none' }} />
-        <Stack.Screen name="onboarding" options={{ animation: 'none' }} />
-        <Stack.Screen name="welcome" options={{ animation: 'none' }} />
-        
-        {/* Auth screens - require guest access */}
-        <Stack.Screen 
-          name="auth/login" 
-          options={{ 
-            animation: 'slide_from_bottom',
-            gestureEnabled: true 
-          }} 
-        />
-        <Stack.Screen 
-          name="auth/register" 
-          options={{ 
-            animation: 'slide_from_bottom',
-            gestureEnabled: true 
-          }} 
-        />
-        <Stack.Screen 
-          name="auth/register-email" 
-          options={{ 
-            animation: 'slide_from_bottom',
-            gestureEnabled: true 
-          }} 
-        />
-        <Stack.Screen 
-          name="auth/register-phone" 
-          options={{ 
-            animation: 'slide_from_bottom',
-            gestureEnabled: true 
-          }} 
-        />
-        
-        {/* Protected screens - require authentication */}
-        <Stack.Screen name="(tabs)" options={{ animation: 'none' }} />
-        <Stack.Screen name="profile" />
-        <Stack.Screen name="events/user" />
-        <Stack.Screen name="event" />
-        <Stack.Screen name="notifications" />
+            screenOptions={{
+              headerShown: false,
+              contentStyle: {
+                backgroundColor: Colors.background,
+              },
+              animation: 'slide_from_right',
+            }}
+          >
+            {/* Public screens - no authentication required */}
+            <Stack.Screen name="index" options={{ animation: 'none' }} />
+            <Stack.Screen name="onboarding" options={{ animation: 'none' }} />
+            <Stack.Screen name="welcome" options={{ animation: 'none' }} />
+
+            {/* Auth screens - require guest access */}
+            <Stack.Screen
+              name="auth/login"
+              options={{
+                animation: 'slide_from_bottom',
+                gestureEnabled: true
+              }}
+            />
+            <Stack.Screen
+              name="auth/register"
+              options={{
+                animation: 'slide_from_bottom',
+                gestureEnabled: true
+              }}
+            />
+            <Stack.Screen
+              name="auth/register-email"
+              options={{
+                animation: 'slide_from_bottom',
+                gestureEnabled: true
+              }}
+            />
+            <Stack.Screen
+              name="auth/register-phone"
+              options={{
+                animation: 'slide_from_bottom',
+                gestureEnabled: true
+              }}
+            />
+
+            {/* Protected screens - require authentication */}
+            <Stack.Screen name="home" options={{ animation: 'none' }} />
+            <Stack.Screen name="menu" options={{ animation: 'none' }} />
+            <Stack.Screen name="tickets" options={{ animation: 'none' }} />
+            <Stack.Screen name="events-user" options={{ animation: 'none' }} />
+            <Stack.Screen name="profile-main" options={{ animation: 'none' }} />
+            <Stack.Screen name="events" />
+            <Stack.Screen name="profile" />
+            <Stack.Screen name="event" />
+            <Stack.Screen name="notifications" />
           </Stack>
         </ToastProvider>
       </RootProvider>

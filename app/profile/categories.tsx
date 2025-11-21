@@ -32,7 +32,7 @@ export default function CategoriesScreen() {
 
   const handleSave = () => {
     // Mock save - just navigate back
-    router.replace('/(tabs)');
+    router.replace('/home');
   };
 
   return (

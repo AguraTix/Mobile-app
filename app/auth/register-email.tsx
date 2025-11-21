@@ -10,14 +10,14 @@ import React from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 interface RegisterFormValues {
-  name:string
+  name: string
   email: string
   phone: string
   password: string
 }
 
 const registerValidationSchema = {
-  
+
   name: commonValidations.name,
   email: commonValidations.email,
   phone: commonValidations.phone,
@@ -26,7 +26,7 @@ const registerValidationSchema = {
 
 export default function RegisterEmailScreen() {
   const router = useRouter()
-const {register}=useAuth()
+  const { register } = useAuth()
   const {
     formik,
     getFieldError,
@@ -36,7 +36,7 @@ const {register}=useAuth()
     isSubmitting,
   } = useFormValidation<RegisterFormValues>(
     {
-      name:'',
+      name: '',
       email: '',
       phone: '',
       password: '',
@@ -45,16 +45,16 @@ const {register}=useAuth()
     async (values) => {
       try {
         console.log('Registering with:', values);
-      const response = await register({
+        const response = await register({
           name: values.name,
           email: values.email.trim(),
           phone_number: values.phone.trim(),
           password: values.password,
         });
         console.log('Registration response:', response);
-       
-          router.replace('/(tabs)');
-        
+
+        router.replace('/home');
+
       } catch (error) {
         console.error('Registration error:', error);
         // Error handled
@@ -88,7 +88,7 @@ const {register}=useAuth()
             onBlur={() => setFieldTouched('name')}
             error={getFieldError('name')}
           />
-          
+
           <Input
             label="Email"
             placeholder="Email"

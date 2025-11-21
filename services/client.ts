@@ -42,11 +42,11 @@ class ApiClient {
             (response: AxiosResponse) => response,
             async (error) => {
                 try {
-console.log(error.message)
                     if (error.response) {
+                        
                         const apiError: ApiError = {
                             status: error.status,
-                            message: error?.message || 'An error occurred',
+                            message: error?.response.data.error || 'An error occurred',
                             errors: error.errors,
                         };
 

@@ -3,7 +3,7 @@ import { radius, spacing } from "@/constants/spacing";
 import { typeScale } from "@/constants/typography";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { Bell, Calendar, ChevronLeft, MapPin, Search, User } from "lucide-react-native";
+import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import {
   Alert,

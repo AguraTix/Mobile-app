@@ -1,5 +1,5 @@
 import Colors from "@/constants/Colors";
-import { Eye, EyeOff, LucideIcon } from "lucide-react-native";
+import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
     StyleSheet,
@@ -13,8 +13,8 @@ import {
 interface InputProps extends TextInputProps {
   label?: string;
   error?: string;
-  leftIcon?: LucideIcon;
-  rightIcon?: LucideIcon;
+  leftIcon?: React.ComponentType<any>;
+  rightIcon?: React.ComponentType<any>;
   onRightIconPress?: () => void;
   secureTextEntry?: boolean;
   containerStyle?: any;
@@ -89,9 +89,9 @@ export default function Input({
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
           >
             {isPasswordVisible ? (
-              <EyeOff size={20} color={Colors.textSecondary} />
+              <Ionicons name="eye-off" size={20} color={Colors.textSecondary} />
             ) : (
-              <Eye size={20} color={Colors.textSecondary} />
+              <Ionicons name="eye" size={20} color={Colors.textSecondary} />
             )}
           </TouchableOpacity>
         )}

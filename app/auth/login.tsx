@@ -2,7 +2,6 @@ import Button from "@/components/Button";
 import Header from "@/components/Header";
 import Input from "@/components/Input";
 import NetworkError from "@/components/NetworkError";
-import { useToast } from "@/components/ToastProvider";
 import Colors from "@/constants/Colors";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNotification } from "@/contexts/NotificationContext";
@@ -12,7 +11,8 @@ import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import * as WebBrowser from "expo-web-browser";
 import React, { useEffect, useState } from "react";
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 interface LoginFormValues {
   identifier: string;
@@ -26,18 +26,10 @@ const loginValidationSchema = {
 
 export default function LoginScreen() {
   const router = useRouter();
-  const { showToast } = useToast();
   const { login, isLoading: authLoading, error: authError, user } = useAuth();
   const { addNotification } = useNotification();
   const [networkError, setNetworkError] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
-
-  // Navigate to home if already logged in
-  useEffect(() => {
-    if (user) {
-      router.replace("/(tabs)");
-    }
-  }, [user]);
 
   // Handle auth errors
   useEffect(() => {
@@ -64,32 +56,13 @@ export default function LoginScreen() {
       try {
         setLocalError(null);
         setNetworkError(false);
-        
-        // Call the login function from context
         await login({
           identifier: values.identifier,
           password: values.password,
         });
-        
-        addNotification("Welcome back!", 'success', 3000);
-        router.replace("/(tabs)");
+
       } catch (error: any) {
         console.error('Login error:', error);
-        
-        // Check if it's a network error
-        if (error?.message?.includes('Network Error') || 
-            error?.message?.includes('timeout') ||
-            error?.code === 'NETWORK_ERROR' ||
-            error?.message?.includes('ECONNREFUSED')) {
-          setNetworkError(true);
-          addNotification('Network error. Please check your connection.', 'error', 5000);
-        } else {
-          const errorMessage = error?.response?.data?.message || 
-                              error?.message || 
-                              "Login failed. Please check your credentials and try again.";
-          setLocalError(errorMessage);
-          addNotification(errorMessage, 'error', 5000);
-        }
       }
     }
   );
@@ -98,11 +71,11 @@ export default function LoginScreen() {
     try {
       setNetworkError(false);
       setLocalError(null);
-      
+
       const redirectUrl = Linking.createURL("/auth/login");
       console.log(redirectUrl)
       const authUrl = `http://10.12.74.188:3000/api/auth/google?redirect_uri=${encodeURIComponent(redirectUrl)}`;
-      
+
       const result = await WebBrowser.openAuthSessionAsync(
         authUrl,
         redirectUrl
@@ -112,7 +85,7 @@ export default function LoginScreen() {
         const parsed = Linking.parse(result.url);
         const query = parsed.queryParams || {};
         addNotification("Google login successful!", 'success', 3000);
-        router.replace("/(tabs)");
+        router.replace("/home");
         return;
       }
     } catch (error: any) {
@@ -136,7 +109,7 @@ export default function LoginScreen() {
       <SafeAreaView style={styles.container}>
         <StatusBar style="light" />
         <Header title="Login" showBack />
-        <NetworkError 
+        <NetworkError
           message="Unable to connect to our servers. Please check your internet connection."
           onRetry={handleRetry}
         />
@@ -199,8 +172,8 @@ export default function LoginScreen() {
             />
 
             <View style={styles.signupContainer}>
-              <Text style={styles.signupText}>Don't have an account? </Text>
-              <TouchableOpacity onPress={() => router.push("/auth/register")}>
+              <Text style={styles.signupText}>Don&rsquo;t have an account? </Text>
+              <TouchableOpacity onPress={() => router.push("/events-user")}>
                 <Text style={styles.signupLink}>Sign up</Text>
               </TouchableOpacity>
             </View>

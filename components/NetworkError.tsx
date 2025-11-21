@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { RefreshCw, Wifi, WifiOff } from 'lucide-react-native';
+import { Ionicons } from "@expo/vector-icons";
 import Colors from '@/constants/Colors';
 
 interface NetworkErrorProps {
@@ -17,7 +17,7 @@ export default function NetworkError({
   return (
     <View style={styles.container}>
       <View style={styles.iconContainer}>
-        <WifiOff size={48} color={Colors.primary} />
+        <Ionicons name="wifi" size={48} color={Colors.primary} />
       </View>
       
       <Text style={styles.title}>Connection Error</Text>

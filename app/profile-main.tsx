@@ -1,38 +1,20 @@
+import BottomNav from "@/components/BottomNav";
 import Button from "@/components/Button";
 import Header from "@/components/Header";
 import Colors from "@/constants/Colors";
 import { useAuth } from "@/contexts";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
-import {
-  Bell,
-  Calendar,
-  ChevronRight,
-  CreditCard,
-  DollarSign,
-  Edit3,
-  FileText,
-  Grid3X3,
-  Heart,
-  HelpCircle,
-  LogOut,
-  MapPin,
-  MessageCircle,
-  Settings,
-  Share2,
-  Shield,
-  Star
-} from "lucide-react-native";
+import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useRef } from "react";
 import {
   Animated,
-  Dimensions,
   Image,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -140,7 +122,7 @@ export default function ProfileScreen() {
       title: "My Tickets",
       subtitle: "View and manage your tickets",
       icon: FileText,
-      onPress: () => router.push("/(tabs)/tickets"),
+      onPress: () => router.push("/tickets"),
       color: "#8b5cf6",
       badge: 2,
     },
@@ -212,7 +194,7 @@ export default function ProfileScreen() {
       <View style={styles.statsGrid}>
         <View style={styles.statItem}>
           <View style={[styles.statIcon, { backgroundColor: `${Colors.primary}15` }]}>
-            <Calendar size={20} color={Colors.primary} />
+            <Ionicons name="calendar" size={20} color={Colors.primary} />
           </View>
           <Text style={styles.statNumber}>{userStats.eventsAttended}</Text>
           <Text style={styles.statLabel}>Events</Text>
@@ -411,7 +393,7 @@ export default function ProfileScreen() {
                     <Text style={styles.menuBadgeText}>{item.badge}</Text>
                   </View>
                 )}
-                <ChevronRight size={20} color={Colors.textSecondary} />
+                <Ionicons name="chevron-forward" size={20} color={Colors.textSecondary} />
               </View>
             </TouchableOpacity>
           ))}
@@ -434,6 +416,7 @@ export default function ProfileScreen() {
           <Text style={styles.versionText}>Agura v1.0.0</Text>
         </View>
       </ScrollView>
+      <BottomNav />
     </SafeAreaView>
   );
 }

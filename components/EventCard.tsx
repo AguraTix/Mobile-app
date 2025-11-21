@@ -1,6 +1,6 @@
 import Colors from "@/constants/Colors";
 import { Event } from "@/types/backend";
-import { Bookmark, Calendar, Clock, Heart, MapPin, Share2, Star, Users } from "lucide-react-native";
+import { Ionicons } from "@expo/vector-icons";
 import React, { useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -126,14 +126,14 @@ export default function EventCard({
               </Text>
               <View style={styles.compactMeta}>
                 <View style={styles.compactMetaItem}>
-                  <Calendar size={14} color={Colors.textSecondary} />
+                  <Ionicons name="calendar" size={14} color={Colors.textSecondary} />
                   <Text style={styles.compactMetaText}>
                     {formatDate(event.date || "")}
                   </Text>
                 </View>
                 {event.Venue && (
                   <View style={styles.compactMetaItem}>
-                    <MapPin size={14} color={Colors.textSecondary} />
+                    <Ionicons name="location" size={14} color={Colors.textSecondary} />
                     <Text style={styles.compactMetaText} numberOfLines={1}>
                       {event.Venue.location}
                     </Text>
@@ -186,16 +186,12 @@ export default function EventCard({
                     style={[styles.actionButton, isFavorite && styles.actionButtonActive]}
                     onPress={onFavorite}
                   >
-                    <Heart
-                      size={20}
-                      color={isFavorite ? '#ffffff' : Colors.text}
-                      fill={isFavorite ? '#ffffff' : 'transparent'}
-                    />
+                    <Ionicons name="heart" size={20} color={isFavorite ? '#ffffff' : Colors.text} />
                   </TouchableOpacity>
                 )}
                 {onShare && (
                   <TouchableOpacity style={styles.actionButton} onPress={onShare}>
-                    <Share2 size={20} color={Colors.text} />
+                    <Ionicons name="share-social" size={20} color={Colors.text} />
                   </TouchableOpacity>
                 )}
                 {onBookmark && (
@@ -203,11 +199,7 @@ export default function EventCard({
                     style={[styles.actionButton, isBookmarked && styles.actionButtonActive]}
                     onPress={onBookmark}
                   >
-                    <Bookmark
-                      size={20}
-                      color={isBookmarked ? '#ffffff' : Colors.text}
-                      fill={isBookmarked ? '#ffffff' : 'transparent'}
-                    />
+                    <Ionicons name="bookmark" size={20} color={isBookmarked ? '#ffffff' : Colors.text} />
                   </TouchableOpacity>
                 )}
               </View>
@@ -216,7 +208,7 @@ export default function EventCard({
               {minPrice !== null && (
                 <View style={styles.priceBadge}>
                   <Text style={styles.priceBadgeText}>
-                    {minPrice === 0 ? 'Free' : `$${minPrice}`}
+                    {minPrice === 0 ? 'Free' : `$${ minPrice } `}
                   </Text>
                 </View>
               )}
@@ -238,13 +230,13 @@ export default function EventCard({
               <View style={styles.detailedMeta}>
                 <View style={styles.metaRow}>
                   <View style={styles.metaItem}>
-                    <Calendar size={16} color={Colors.textSecondary} />
+                    <Ionicons name="calendar" size={16} color={Colors.textSecondary} />
                     <Text style={styles.metaText}>
                       {formatDate(event.date || "")}
                     </Text>
                   </View>
                   <View style={styles.metaItem}>
-                    <Clock size={16} color={Colors.textSecondary} />
+                    <Ionicons name="time" size={16} color={Colors.textSecondary} />
                     <Text style={styles.metaText}>
                       {formatTime(event.date || "")}
                     </Text>
@@ -253,7 +245,7 @@ export default function EventCard({
 
                 {event.Venue && (
                   <View style={styles.metaItem}>
-                    <MapPin size={16} color={Colors.textSecondary} />
+                    <Ionicons name="location" size={16} color={Colors.textSecondary} />
                     <Text style={styles.metaText} numberOfLines={1}>
                       {event.Venue.location}
                     </Text>
@@ -262,7 +254,7 @@ export default function EventCard({
 
                 {event.artist_lineup && event.artist_lineup.length > 0 && (
                   <View style={styles.metaItem}>
-                    <Users size={16} color={Colors.textSecondary} />
+                    <Ionicons name="people" size={16} color={Colors.textSecondary} />
                     <Text style={styles.metaText} numberOfLines={1}>
                       {event.artist_lineup.join(', ')}
                     </Text>
@@ -322,11 +314,7 @@ export default function EventCard({
                   style={[styles.defaultActionButton, isFavorite && styles.defaultActionButtonActive]}
                   onPress={onFavorite}
                 >
-                  <Heart
-                    size={16}
-                    color={isFavorite ? Colors.primary : Colors.text}
-                    fill={isFavorite ? Colors.primary : 'transparent'}
-                  />
+                  <Ionicons name="heart" size={16} color={isFavorite ? Colors.primary : Colors.text} />
                 </TouchableOpacity>
               )}
             </View>
@@ -339,14 +327,14 @@ export default function EventCard({
 
             <View style={styles.metaContainer}>
               <View style={styles.metaItem}>
-                <Calendar size={18} color={Colors.textSecondary} />
+                <Ionicons name="calendar" size={18} color={Colors.textSecondary} />
                 <Text style={styles.metaText}>
                   {formatDate(event.date || "")}
                 </Text>
               </View>
 
               <View style={styles.metaItem}>
-                <Clock size={18} color={Colors.textSecondary} />
+                <Ionicons name="time" size={18} color={Colors.textSecondary} />
                 <Text style={styles.metaText}>
                   {formatTime(event.date || "")}
                 </Text>
@@ -354,7 +342,7 @@ export default function EventCard({
 
               {event.Venue && (
                 <View style={styles.metaItem}>
-                  <MapPin size={18} color={Colors.textSecondary} />
+                  <Ionicons name="location" size={18} color={Colors.textSecondary} />
                   <Text style={styles.metaText} numberOfLines={1}>
                     {event.Venue.location}
                   </Text>
@@ -367,7 +355,7 @@ export default function EventCard({
                 <View style={styles.priceContainer}>
                   <Text style={styles.priceLabel}>From:</Text>
                   <Text style={styles.price}>
-                    {minPrice === 0 ? "Free" : `$${minPrice}`}
+                    {minPrice === 0 ? "Free" : `$${ minPrice } `}
                   </Text>
                 </View>
               )}

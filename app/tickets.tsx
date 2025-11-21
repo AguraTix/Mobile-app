@@ -1,3 +1,4 @@
+import BottomNav from "@/components/BottomNav";
 import Button from "@/components/Button";
 import Header from "@/components/Header";
 import Skeleton from "@/components/Skeleton";
@@ -5,15 +6,7 @@ import Colors from "@/constants/Colors";
 import { useTicket } from "@/contexts";
 import { TicketStatus } from "@/types/backend";
 import { useRouter } from "expo-router";
-import {
-  ArrowRight,
-  Calendar,
-  Clock3,
-  Download,
-  MapPin,
-  Share2,
-  Ticket
-} from "lucide-react-native";
+import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import {
   ScrollView,
@@ -77,7 +70,7 @@ export default function TicketsScreen() {
     >
       <View style={styles.ticketHeader}>
         <View style={styles.ticketTypeContainer}>
-          <Ticket size={20} color={Colors.primary} />
+          <Ionicons name="ticket" size={20} color={Colors.primary} />
           <Text style={styles.ticketType}>{ticket.sectionName || "Standard"}</Text>
         </View>
         <View style={styles.ticketStatus}>
@@ -98,14 +91,14 @@ export default function TicketsScreen() {
 
       <View style={styles.eventDetails}>
         <View style={styles.detailRow}>
-          <Calendar size={16} color={Colors.textSecondary} />
+          <Ionicons name="calendar" size={16} color={Colors.textSecondary} />
           <Text style={styles.detailText}>
             {ticket.Event?.date ? formatDate(ticket.Event.date) : 'TBD'} at {ticket.Event?.date ? formatTime(ticket.Event.date) : 'TBD'}
           </Text>
         </View>
 
         <View style={styles.detailRow}>
-          <MapPin size={16} color={Colors.textSecondary} />
+          <Ionicons name="location" size={16} color={Colors.textSecondary} />
           <Text style={styles.detailText}>{ticket.Event?.Venue?.name || ""}</Text>
         </View>
 
@@ -131,7 +124,7 @@ export default function TicketsScreen() {
                 onPress={() => handleDownloadTicket(ticket)}
                 hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
               >
-                <Download size={18} color={Colors.primary} />
+                <Ionicons name="download" size={18} color={Colors.primary} />
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -139,7 +132,7 @@ export default function TicketsScreen() {
                 onPress={() => handleShareTicket(ticket)}
                 hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
               >
-                <Share2 size={18} color={Colors.primary} />
+                <Ionicons name="share-social" size={18} color={Colors.primary} />
               </TouchableOpacity>
             </>
           )}
@@ -149,7 +142,7 @@ export default function TicketsScreen() {
             onPress={() => handleTicketPress(ticket.ticket_id)}
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
           >
-            <ArrowRight size={18} color={Colors.primary} />
+            <Ionicons name="arrow-forward" size={18} color={Colors.primary} />
           </TouchableOpacity>
         </View>
       </View>
@@ -168,7 +161,7 @@ export default function TicketsScreen() {
         {/* Header Section */}
         <View style={styles.headerSection}>
           <View style={styles.headerIcon}>
-            <Ticket size={32} color={Colors.primary} />
+            <Ionicons name="ticket" size={32} color={Colors.primary} />
           </View>
           <Text style={styles.headerTitle}>My Tickets</Text>
           <Text style={styles.headerSubtitle}>
@@ -206,7 +199,7 @@ export default function TicketsScreen() {
         {!loading && userTickets.length === 0 && (
           <View style={styles.emptyState}>
             <View style={styles.emptyIconContainer}>
-              <Ticket size={48} color={Colors.textSecondary} />
+              <Ionicons name="ticket" size={48} color={Colors.textSecondary} />
             </View>
             <Text style={styles.emptyTitle}>No Tickets Yet</Text>
             <Text style={styles.emptyMessage}>
@@ -217,7 +210,7 @@ export default function TicketsScreen() {
               variant="primary"
               size="large"
               fullWidth={true}
-              onPress={() => router.push("/(tabs)/events-user")}
+              onPress={() => router.push("/events-user")}
               style={styles.browseButton}
             />
           </View>
@@ -231,11 +224,12 @@ export default function TicketsScreen() {
               variant="outline"
               size="large"
               fullWidth={true}
-              onPress={() => router.push("/(tabs)/events-user")}
+              onPress={() => router.push("/events-user")}
             />
           </View>
         )}
       </ScrollView>
+      <BottomNav />
     </SafeAreaView>
   );
 }

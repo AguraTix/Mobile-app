@@ -1,7 +1,7 @@
 import Colors from '@/constants/Colors';
 import { useAuth } from '@/contexts';
 import { useRouter } from 'expo-router';
-import { ChevronLeft } from 'lucide-react-native';
+import { Ionicons } from "@expo/vector-icons";
 import React from 'react';
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -27,7 +27,7 @@ const SettingsOption: React.FC<SettingsOptionProps> = ({
       </Text>
       {subtitle && <Text style={styles.optionSubtitle}>{subtitle}</Text>}
     </View>
-    {showChevron && <ChevronLeft size={20} color={Colors.textSecondary} />}
+    {showChevron && <Ionicons name="chevron-back" size={20} color={Colors.textSecondary} />}
   </TouchableOpacity>
 );
 

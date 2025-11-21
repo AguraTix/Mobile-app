@@ -21,7 +21,7 @@ export default function WelcomeScreen() {
 
     return (
         <>
-            <View style={styles.container} >
+            <View className='bg-black flex-1 items-center justify-center' >
                 <StatusBar style="light" />
                 <View style={styles.innerContent}>
                     <View style={styles.carouselContainer}>
@@ -73,7 +73,7 @@ const SPACING = 32;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#000000',
+        backgroundColor: '#ffffff',
         justifyContent: 'center',
         alignItems: 'center',
     },
