@@ -2,17 +2,15 @@ import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import React from "react";
 import {
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 import Header from "@/components/Header";
 import SocialLoginButton from "@/components/SocialLoginButton";
-import Colors from "@/constants/Colors";
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -24,47 +22,47 @@ export default function RegisterScreen() {
 
   return (
     <>
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView className="flex-1 bg-background pb-10">
         <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
+          className="flex-1"
+          contentContainerClassName="flex-grow"
         >
           <Header title="Don't Have Account ?" showBack />
-          <View style={styles.content}>
-            <View style={styles.imageContainer}>
+          <View className="flex-1 px-9 pt-8 pb-10 items-center">
+            <View className="w-[260px] h-[260px] rounded-[36px] overflow-hidden mb-8 self-center bg-card shadow-lg">
               <Image
                 source={require("@/assets/images/icon.png")}
-                style={styles.image}
+                className="w-full h-full rounded-[36px]"
                 contentFit="contain"
               />
             </View>
-            <Text style={styles.title}>
+            <Text className="text-2xl font-bold text-text text-center mb-4 leading-8">
               Buy your Event ticket with{"\n"}Agura Platform
             </Text>
-            <Text style={styles.description}>
+            <Text className="text-[15px] text-text-secondary text-center mb-8">
               Sign up to our app and start buying your ticket easily and faster
             </Text>
-            <View style={styles.socialButtonsContainer}>
+            <View className="w-full mb-6 items-center">
               <SocialLoginButton
                 provider="google"
                 onPress={handleRegisterWithGoogle}
-                style={styles.socialButton}
+                className="bg-white mb-3.5 py-[7px] px-[18px] rounded-[28px] min-w-[317px] max-w-[461px] self-center shadow-sm"
               />
               <SocialLoginButton
                 provider="gmail"
                 onPress={goEmail}
-                style={styles.socialButton}
+                className="bg-white mb-3.5 py-[7px] px-[18px] rounded-[28px] min-w-[317px] max-w-[461px] self-center shadow-sm"
               />
               <SocialLoginButton
                 provider="phone"
                 onPress={goPhone}
-                style={styles.socialButton}
+                className="bg-white mb-3.5 py-[7px] px-[18px] rounded-[28px] min-w-[317px] max-w-[461px] self-center shadow-sm"
               />
             </View>
-            <View style={styles.loginContainer}>
-              <Text style={styles.loginText}>Already have an account? </Text>
+            <View className="flex-row justify-center mt-3">
+              <Text className="text-text-secondary text-sm">Already have an account? </Text>
               <TouchableOpacity onPress={goLogin}>
-                <Text style={styles.loginLink}>Login</Text>
+                <Text className="text-primary text-sm font-semibold">Login</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -73,90 +71,3 @@ export default function RegisterScreen() {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-    paddingBottom:40
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 36,
-    paddingTop: 32,
-    paddingBottom: 40,
-    alignItems: "center",
-  },
-  imageContainer: {
-    width: 260,
-    height: 260,
-    borderRadius: 36,
-    overflow: "hidden",
-    marginBottom: 32,
-    alignSelf: "center",
-    backgroundColor: Colors.card,
-    elevation: 4,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 12,
-  },
-  image: {
-    width: "100%",
-    height: "100%",
-    borderRadius: 36,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: Colors.text,
-    textAlign: "center",
-    marginBottom: 16,
-    lineHeight: 32,
-  },
-  highlight: {
-    color: Colors.primary,
-  },
-  description: {
-    fontSize: 15,
-    color: Colors.textSecondary,
-    textAlign: "center",
-    marginBottom: 32,
-  },
-  socialButtonsContainer: {
-    width: "100%",
-    marginBottom: 24,
-    alignItems: "center",
-  },
-  socialButton: {
-    backgroundColor: Colors.white,
-    marginBottom: 14,
-    paddingVertical: 6.8,
-    paddingHorizontal: 18,
-    borderRadius: 28,
-    minWidth: 316.8,
-    maxWidth: 460.8,
-    alignSelf: "center",
-    elevation: 2,
-  },
-  loginContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginTop: 12,
-  },
-  loginText: {
-    color: Colors.textSecondary,
-    fontSize: 14,
-  },
-  loginLink: {
-    color: Colors.primary,
-    fontSize: 14,
-    fontWeight: "600",
-  },
-});

@@ -81,12 +81,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const storedToken = await SecureStore.getItemAsync('auth_token');
       const storedUser = await SecureStore.getItemAsync('user');
-
+      console.log(storedToken, storedUser)
       if (storedToken && storedUser) {
         setToken(storedToken);
-        setUser(JSON.parse(storedUser));
+        setUser(JSON.parse(storedUser))
         router.replace('/home');
-      }
+      } else router.replace('/welcome')
     } catch (err) {
       console.error('Failed to load user data:', err);
     }
