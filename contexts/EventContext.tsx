@@ -1,10 +1,13 @@
 import { EventService } from "@/services/event";
 import { Event, EventCreateInput, EventUpdateInput } from "@/types/events";
-import React, { createContext, ReactNode, useCallback, useContext, useState } from 'react';
+import React, { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
 
 interface EventContextType {
   events: Event[];
   currentEvent: Event | null;
+  featuredEvents: Event[];
+  upcomingEvents: Event[];
+  recentEvents: Event[];
   isLoading: boolean;
   error: string | null;
   fetchEvents: () => Promise<void>;
@@ -22,6 +25,9 @@ const EventContext = createContext<EventContextType | null>(null);
 export function EventProvider({ children }: { children: ReactNode }) {
   const [events, setEvents] = useState<Event[]>([]);
   const [currentEvent, setCurrentEvent] = useState<Event | null>(null);
+  const [recentEvents, setRecentEvents] = useState<Event[]>([]);
+  const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
+  const [featuredEvents, setFeaturedEvents] = useState<Event[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -39,12 +45,40 @@ export function EventProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const fetchUpcomingEvents = useCallback(async (limit = 10, offset = 0) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await EventService.getUpcoming({ limit, offset });
+      setUpcomingEvents(response.events!);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to fetch upcoming events';
+      setError(message);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const fetchFeaturedEvents = useCallback(async (limit = 10, offset = 0) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await EventService.getFeatured({ limit, offset });
+      setFeaturedEvents(response.events!);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to fetch featured events';
+      setError(message);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   const fetchRecentEvents = useCallback(async (limit = 10, offset = 0) => {
     setIsLoading(true);
     setError(null);
     try {
       const response = await EventService.getRecent({ limit, offset });
-      setEvents(response.events!);
+      setRecentEvents(response.events!);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to fetch recent events';
       setError(message);
@@ -56,6 +90,7 @@ export function EventProvider({ children }: { children: ReactNode }) {
   const fetchEventById = useCallback(async (eventId: string) => {
     setIsLoading(true);
     setError(null);
+    setCurrentEvent(null)
     try {
       const response = await EventService.getById(eventId);
       setCurrentEvent(response.event!);
@@ -146,6 +181,13 @@ export function EventProvider({ children }: { children: ReactNode }) {
     setError(null);
   }, []);
 
+  useEffect(() => {
+    fetchFeaturedEvents()
+    fetchUpcomingEvents()
+    fetchRecentEvents()
+    fetchEvents()
+  }, [fetchEvents, fetchFeaturedEvents, fetchUpcomingEvents, fetchRecentEvents])
+
   const value: EventContextType = {
     events,
     currentEvent,
@@ -159,6 +201,9 @@ export function EventProvider({ children }: { children: ReactNode }) {
     updateEvent,
     deleteEvent,
     clearError,
+    featuredEvents,
+    upcomingEvents,
+    recentEvents,
   };
 
   return (

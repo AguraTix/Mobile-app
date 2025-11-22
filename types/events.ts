@@ -38,7 +38,7 @@ export interface EventUpdateInput {
 export interface Event {
   event_id: string;
   title: string;
-  description?: string;
+  description: string;
   date: string;
   venue_id: string;
   admin_id: string;
@@ -49,9 +49,9 @@ export interface Event {
   tickets?: TicketTypeConfig[];
   ticketsCreated?: number;
   Venue?: Venue;
-  User?: User;
-  createdAt?: string;
-  updatedAt?: string;
+  User: User;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface EventCreateOutput {

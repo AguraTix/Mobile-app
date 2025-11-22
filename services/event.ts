@@ -1,21 +1,7 @@
 import { Event, EventCreateInput, EventImage, EventUpdateInput } from '@/types/events';
 import { EventServiceResponse } from '@/types/response';
-import { TicketTypeConfig } from '@/types/ticket';
 import { client } from './client';
 import { API_ENDPOINTS } from './constants';
-
-type EventData = {
-  title: string;
-  description: string;
-  date: string;
-  venue_id: string;
-  artist_lineup: string[];
-  tickets: TicketTypeConfig[]; // Fix type reference
-  event_image?: File;
-  event_images?: File[];
-};
-
-type EventUpdateData = Partial<EventData>;
 
 type PaginationParams = {
   limit?: number;
@@ -32,6 +18,12 @@ export const EventService = {
 
   getRecent: (params?: PaginationParams) =>
     client.get<{ message: string; events: Event[]; pagination: { total: number } }>(API_ENDPOINTS.EVENTS.RECENT, params),
+
+  getUpcoming: (params?: PaginationParams) =>
+    client.get<{ message: string; events: Event[]; pagination: { total: number } }>(API_ENDPOINTS.EVENTS.UPCOMING, params),
+
+  getFeatured: (params?: PaginationParams) =>
+    client.get<{ message: string; events: Event[]; pagination: { total: number } }>(API_ENDPOINTS.EVENTS.FEATURED, params),
 
   getById: (eventId: string) =>
     client.get<EventServiceResponse>(API_ENDPOINTS.EVENTS.BY_ID(eventId)),

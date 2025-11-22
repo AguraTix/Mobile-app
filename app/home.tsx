@@ -23,20 +23,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const { width } = Dimensions.get("window");
 
 
-const mockFeaturedEvents: any[] = [
-  { id: '1', event_id: '1', title: 'Summer Music Festival', date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), venue_id: 'v1', admin_id: 'a1', description: 'Amazing summer music festival', artist_lineup: ['Artist 1', 'Artist 2'], image_url: 'https://via.placeholder.com/300x200?text=Music+Festival' },
-  { id: '2', event_id: '2', title: 'Tech Conference 2024', date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(), venue_id: 'v2', admin_id: 'a1', description: 'Tech conference', artist_lineup: [], image_url: 'https://via.placeholder.com/300x200?text=Tech+Conference' },
-];
-const mockAllEvents: any[] = [
-  ...mockFeaturedEvents,
-  { id: '3', event_id: '3', title: 'Sports Championship', date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(), venue_id: 'v3', admin_id: 'a1', description: 'Sports event', artist_lineup: [], image_url: 'https://via.placeholder.com/300x200?text=Sports' },
-  { id: '4', event_id: '4', title: 'Food Expo', date: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString(), venue_id: 'v4', admin_id: 'a1', description: 'Food expo', artist_lineup: [], image_url: 'https://via.placeholder.com/300x200?text=Food+Expo' },
-];
 
 export default function HomeScreen() {
   const router = useRouter();
   const { user } = useAuth()
-  const { events, fetchEvents, isLoading } = useEvent();
+  const { events, featuredEvents, upcomingEvents, recentEvents, isLoading:loading } = useEvent();
   const [searchQuery, setSearchQuery] = useState("");
   const [recentSearches, setRecentSearches] = useState<string[]>([
     "music festival",
@@ -52,23 +43,6 @@ export default function HomeScreen() {
   ]);
   const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    fetchEvents().catch(console.error);
-  }, []);
-
-  // Use real events from context, fallback to mock if empty
-  const featuredEvents = events.length > 0 ? events.slice(0, 2) : mockFeaturedEvents;
-  const allEvents = events.length > 0 ? events : mockAllEvents;
-  const loading = isLoading;
-
-  // Compute upcoming events from all events
-  const upcomingEvents = useMemo(() => {
-    const now = new Date();
-    return allEvents
-      .filter((event: any) => new Date(event.date) > now)
-      .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
-      .slice(0, 6);
-  }, [allEvents]);
 
   const quickActions = [
     {
@@ -230,11 +204,11 @@ export default function HomeScreen() {
               contentContainerStyle={{ paddingHorizontal: 20 }}
             >
               {featuredEvents.map((event) => (
-                <View key={event.id} style={{ width: width - 40, marginRight: 20 }}>
+                <View key={event.event_id} style={{ width: width - 40, marginRight: 20 }}>
                   <EventCard
                     event={event}
                     variant="detailed"
-                    onPress={() => handleEventPress(event.id)}
+                    onPress={() => handleEventPress(event.event_id)}
                     onFavorite={() => Alert.alert("Favorite", "Added to favorites")}
                     onShare={() => Alert.alert("Share", "Sharing event...")}
                     onBookmark={() => Alert.alert("Bookmark", "Bookmarked event")}
@@ -262,10 +236,10 @@ export default function HomeScreen() {
           ) : (
             upcomingEvents.map((event) => (
               <EventCard
-                key={event.id}
+                key={event.event_id}
                 event={event}
                 variant="default"
-                onPress={() => handleEventPress(event.id)}
+                onPress={() => handleEventPress(event.event_id)}
                 onFavorite={() => Alert.alert("Favorite", "Added to favorites")}
               />
             ))

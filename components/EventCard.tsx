@@ -18,7 +18,7 @@ interface EventCardProps {
   onFavorite?: () => void;
   onShare?: () => void;
   onBookmark?: () => void;
-  variant?: "default" | "featured" | "compact" | "detailed";
+  variant?: "default" | "featured" | "compact" | "detailed" | "grid";
   loading?: boolean;
   isFavorite?: boolean;
   isBookmarked?: boolean;
@@ -102,6 +102,88 @@ export default function EventCard({
 
   if (loading) {
     return <EventCardSkeleton variant={variant} />;
+  }
+
+  if (variant === "grid") {
+    const minPrice = getMinPrice();
+    return (
+      <Animated.View style={{ opacity: opacityAnim, flex: 1 }}>
+        <TouchableOpacity
+          className="bg-card rounded-xl overflow-hidden"
+          style={styles.gridShadow}
+          onPress={onPress}
+          activeOpacity={0.8}
+          onPressIn={handlePressIn}
+          onPressOut={handlePressOut}
+        >
+          <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+            {/* Image */}
+            <View className="relative h-[140px]">
+              <Image
+                source={getImageSource()}
+                className="w-full h-full"
+                resizeMode="cover"
+                onLoad={() => setImageLoaded(true)}
+                onError={() => setImageError(true)}
+              />
+              {!imageLoaded && !imageError && (
+                <View className="absolute inset-0 bg-card justify-center items-center">
+                  <ActivityIndicator color={Colors.primary} />
+                </View>
+              )}
+              {imageError && (
+                <View className="absolute inset-0 bg-card justify-center items-center">
+                  <Text className="text-text-secondary text-xs">Image unavailable</Text>
+                </View>
+              )}
+
+              {/* Price Badge */}
+              {minPrice !== null && (
+                <View className="absolute bottom-2 left-2 bg-primary px-2.5 py-1 rounded-lg">
+                  <Text className="text-white text-xs font-bold">
+                    {minPrice === 0 ? 'Free' : `$${minPrice}`}
+                  </Text>
+                </View>
+              )}
+
+              {/* Favorite Button */}
+              {onFavorite && (
+                <TouchableOpacity
+                  className={`absolute top-2 right-2 p-1.5 rounded-full ${isFavorite ? 'bg-primary' : 'bg-black/60'}`}
+                  onPress={onFavorite}
+                >
+                  <Ionicons name="heart" size={14} color={isFavorite ? '#ffffff' : Colors.text} />
+                </TouchableOpacity>
+              )}
+            </View>
+
+            {/* Content */}
+            <View className="p-3">
+              <Text className="text-sm font-bold text-text mb-2 leading-5" numberOfLines={2}>
+                {event.title}
+              </Text>
+
+              <View className="gap-1.5">
+                <View className="flex-row items-center gap-1.5">
+                  <Ionicons name="calendar" size={12} color={Colors.textSecondary} />
+                  <Text className="text-[11px] text-text-secondary font-medium flex-1" numberOfLines={1}>
+                    {formatDate(event.date || "")}
+                  </Text>
+                </View>
+                {event.Venue && (
+                  <View className="flex-row items-center gap-1.5">
+                    <Ionicons name="location" size={12} color={Colors.textSecondary} />
+                    <Text className="text-[11px] text-text-secondary font-medium flex-1" numberOfLines={1}>
+                      {event.Venue.location}
+                    </Text>
+                  </View>
+                )}
+              </View>
+            </View>
+          </Animated.View>
+        </TouchableOpacity>
+      </Animated.View>
+    );
   }
 
   if (variant === "compact") {
@@ -417,6 +499,13 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
+  },
+  gridShadow: {
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
   },
   detailedShadow: {
     shadowColor: "#000",
