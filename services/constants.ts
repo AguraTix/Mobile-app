@@ -55,6 +55,8 @@ export const API_ENDPOINTS = {
     ALL: '/events',
     CREATE: '/events',
     RECENT: '/events/recent',
+    UPCOMING:'/events/upcoming',
+    FEATURED:'/events/upcoming',
     BY_ID: (id: string) => `/events/${id}`,
     UPDATE: (id: string) => `/events/${id}`,
     DELETE: (id: string) => `/events/${id}`,
@@ -68,9 +70,10 @@ export const API_ENDPOINTS = {
   TICKETS: {
     AVAILABLE: (eventId: string) => `/tickets/event/${eventId}/available`,
     BOOK: (ticketId: string) => `/tickets/${ticketId}/book`,
-    MY_TICKETS: '/tickets/my-tickets',
+    MY_TICKETS: '/tickets/my',
     CANCEL: (ticketId: string) => `/tickets/${ticketId}/cancel`,
     ADMIN_BOOKED: '/tickets/admin/booked',
+    TICKET_QR: (ticketId: string) => `/tickets/${ticketId}/qrcode`,
   },
 
   // ============================================================================
@@ -78,6 +81,7 @@ export const API_ENDPOINTS = {
   // ============================================================================
   FOODS: {
     ALL: '/foods',
+    GENERAL:'/foods/general',
     CREATE: '/foods',
     BY_ID: (id: string) => `/foods/${id}`,
     UPDATE: (id: string) => `/foods/${id}`,

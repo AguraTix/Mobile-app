@@ -1,4 +1,6 @@
 import Colors from "@/constants/Colors";
+import { useEvent } from "@/contexts";
+import { TicketTypeConfig } from "@/types/ticket";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -23,54 +25,47 @@ function formatPrice(price: number, currency: string = 'RWF'): string {
   return `${price.toLocaleString()} ${currency}`;
 }
 
-// Mock event data
-const mockEventData = {
-  id: '1',
-  title: 'Summer Music Festival',
-  date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-  location: 'Central Park, Kigali',
-  imageUrl: 'https://via.placeholder.com/400x300?text=Music+Festival',
-  description: 'Join us for an amazing summer music festival featuring top artists and live performances.',
-  price: 50,
-  category: 'music',
-};
-
-const mockCategories = [
-  { id: '1', name: 'VIP', price: 100, quantity: 50 },
-  { id: '2', name: 'Regular', price: 50, quantity: 200 },
-  { id: '3', name: 'Student', price: 30, quantity: 100 },
-];
 
 export default function EventDetailScreen() {
-  const { id } = useLocalSearchParams<{
-    id: string;
-  }>();
+  const { id } = useLocalSearchParams<{ id: string; }>();
   const router = useRouter();
-
-  const [event, setEvent] = useState(mockEventData);
-  const [categories, setCategories] = useState(mockCategories);
+  const { fetchEventById, currentEvent } = useEvent()
+  // TODO: Venue model doesn't include coordinates yet, using default Kigali location
+  // Update this when venue coordinates are added to the backend
   const [coords, setCoords] = useState<{ latitude: number; longitude: number }>({
     latitude: -1.9441,
     longitude: 30.0619,
   });
 
   useEffect(() => {
-    // Mock data already loaded
+    fetchEventById(id.toString())
   }, [id]);
 
-  const handleBuyTicket = (category: any) => {
-    if (!category.quantity || category.quantity <= 0) {
+  const handleBuyTicket = (ticket: TicketTypeConfig) => {
+    if (!ticket.quantity || ticket.quantity <= 0) {
       Alert.alert("Sold Out", "This ticket category is no longer available.");
       return;
     }
 
-    // Navigate to seat selection with category info
-    router.push(`/event/${id}/seat-selection?categoryId=${category.id}&categoryName=${encodeURIComponent(category.name)}&price=${category.price}`);
+    // Navigate to seat selection with ticket info
+    router.push(`/event/${id}/seat-selection?ticketType=${encodeURIComponent(ticket.type)}&price=${ticket.price}`);
   };
 
   const handleViewMap = () => {
     router.push(`/event/${id}/map`);
   };
+
+  // Show loading or empty state while event is being fetched
+  if (!currentEvent) {
+    return (
+      <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+        <StatusBar style="light" />
+        <View className="flex-1 items-center justify-center">
+          <Text className="text-text-secondary">Loading event details...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
@@ -84,7 +79,7 @@ export default function EventDetailScreen() {
         >
           <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
         </TouchableOpacity>
-        <Text className="text-white text-xl font-bold flex-1 text-center">{event.title}</Text>
+        <Text className="text-white text-xl font-bold flex-1 text-center">{currentEvent.title}</Text>
         <View className="flex-row items-center">
           <TouchableOpacity className="p-2 mr-2">
             <Ionicons name="search" size={20} color="#FFFFFF" />
@@ -104,8 +99,8 @@ export default function EventDetailScreen() {
         <View className="h-[200px] mx-5 rounded-2xl overflow-hidden mb-6">
           <RNImage
             source={
-              event.imageUrl
-                ? { uri: event.imageUrl }
+              currentEvent?.image_url
+                ? { uri: currentEvent.image_url }
                 : require('@/assets/images/m1.png')
             }
             className="w-full h-full"
@@ -117,7 +112,7 @@ export default function EventDetailScreen() {
         <View className="bg-card mx-5 rounded-2xl p-5 mb-6" style={styles.shadow}>
           <View className="flex-row items-center justify-between mb-4">
             <Text className="text-text-secondary text-xs mr-2">Organizer:</Text>
-            <Text className="text-text text-base font-medium">Platini</Text>
+            <Text className="text-text text-base font-medium">{currentEvent?.User?.name || "N/A"}</Text>
           </View>
 
           <View className="flex-row items-center justify-between mb-4">
@@ -126,7 +121,7 @@ export default function EventDetailScreen() {
               <Text className="text-text-secondary text-xs ml-2">Date:</Text>
             </View>
             <Text className="text-text text-base font-medium">
-              {event.date ? new Date(event.date).toLocaleDateString('en-US', {
+              {currentEvent?.date ? new Date(currentEvent.date).toLocaleDateString('en-US', {
                 day: '2-digit',
                 month: 'short',
                 year: 'numeric'
@@ -139,34 +134,34 @@ export default function EventDetailScreen() {
               <Ionicons name="location" size={16} color="#FFFFFF" />
               <Text className="text-text-secondary text-xs ml-2">Venue:</Text>
             </View>
-            <Text className="text-text text-base font-medium">{event.location || "Serena Hotel Kigali"}</Text>
+            <Text className="text-text text-base font-medium">{currentEvent?.Venue?.location || currentEvent?.Venue?.name || "TBD"}</Text>
           </View>
         </View>
 
         {/* Tickets Section */}
         <View className="px-5 mb-6">
           <Text className="text-text text-xl font-bold mb-4">Tickets</Text>
-          {categories.length === 0 ? (
+          {!currentEvent?.tickets || currentEvent.tickets.length === 0 ? (
             <View className="bg-card rounded-2xl p-8 items-center" style={styles.shadow}>
               <Text className="text-text-secondary text-base text-center">No tickets available for this event</Text>
             </View>
           ) : (
             <View className="flex-row flex-wrap justify-between">
-              {categories.map((category, idx) => (
+              {currentEvent.tickets.map((ticket, idx) => (
                 <View key={idx} className="bg-card rounded-xl p-4 w-[48%] mb-3 border border-border">
-                  <Text className="text-text text-sm font-semibold mb-2">{category.name}</Text>
+                  <Text className="text-text text-sm font-semibold mb-2">{ticket.type}</Text>
                   <View className="bg-[#4CAF50] px-2 py-1 rounded-xl self-start mb-2">
                     <Text className="text-white text-[10px] font-semibold">
-                      {category.quantity || 0} left
+                      {ticket.quantity || 0} left
                     </Text>
                   </View>
                   <Text className="text-primary text-base font-bold mb-3">
-                    {category.price.toLocaleString()} RWF
+                    {ticket.price.toLocaleString()} RWF
                   </Text>
                   <TouchableOpacity
-                    className={`bg-primary rounded-lg py-2 items-center ${(!category.quantity || category.quantity <= 0) ? 'bg-text-secondary opacity-50' : ''}`}
-                    onPress={() => handleBuyTicket(category)}
-                    disabled={!category.quantity || category.quantity <= 0}
+                    className={`bg-primary rounded-lg py-2 items-center ${(!ticket.quantity || ticket.quantity <= 0) ? 'bg-text-secondary opacity-50' : ''}`}
+                    onPress={() => handleBuyTicket(ticket)}
+                    disabled={!ticket.quantity || ticket.quantity <= 0}
                   >
                     <Text className="text-text text-sm font-semibold">Buy</Text>
                   </TouchableOpacity>
@@ -199,8 +194,8 @@ export default function EventDetailScreen() {
                     latitude: coords.latitude,
                     longitude: coords.longitude,
                   }}
-                  title={event.title}
-                  description={event.location}
+                  title={currentEvent?.title || "Event Location"}
+                  description={currentEvent?.Venue?.location || currentEvent?.Venue?.name || ""}
                   pinColor={Colors.primary}
                 />
               </MapView>

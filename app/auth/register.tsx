@@ -1,16 +1,16 @@
-import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import React from "react";
 import {
-  SafeAreaView,
   ScrollView,
   Text,
   TouchableOpacity,
   View,
+  Image
 } from "react-native";
 
 import Header from "@/components/Header";
 import SocialLoginButton from "@/components/SocialLoginButton";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -22,18 +22,18 @@ export default function RegisterScreen() {
 
   return (
     <>
-      <SafeAreaView className="flex-1 bg-background pb-10">
+      <SafeAreaView className="flex-1 bg-background pb-5">
         <ScrollView
           className="flex-1"
           contentContainerClassName="flex-grow"
         >
           <Header title="Don't Have Account ?" showBack />
-          <View className="flex-1 px-9 pt-8 pb-10 items-center">
-            <View className="w-[260px] h-[260px] rounded-[36px] overflow-hidden mb-8 self-center bg-card shadow-lg">
+          <View className="flex-1 px-9 pt-8 pb-5 items-center">
+            <View className="w-full h-96 overflow-hidden mb-8 self-center shadow-lg">
               <Image
-                source={require("@/assets/images/icon.png")}
-                className="w-full h-full rounded-[36px]"
-                contentFit="contain"
+                source={require("@/assets/images/signup.png")}
+                className="w-full h-full"
+                resizeMode="cover"
               />
             </View>
             <Text className="text-2xl font-bold text-text text-center mb-4 leading-8">

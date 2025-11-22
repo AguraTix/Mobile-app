@@ -72,11 +72,7 @@ export default function EventsUserScreen() {
   // Debounce search
   useEffect(() => {
     if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
-
     setIsDebouncing(true);
-
-
-
     return () => {
       if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
     };
@@ -142,7 +138,7 @@ export default function EventsUserScreen() {
   const renderEventItem = ({ item }: { item: Event }) => (
     <EventCard
       event={item}
-      variant={viewMode === "grid" ? "compact" : "default"}
+      variant={viewMode === "grid" ? "grid" : "default"}
       onPress={() => router.push(`/event/${item.event_id}`)}
     />
   );
@@ -191,7 +187,7 @@ export default function EventsUserScreen() {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       <View className="flex-1 p-4">
         {/* Search */}
         <SearchBar
@@ -253,7 +249,7 @@ export default function EventsUserScreen() {
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
           ListEmptyComponent={renderEmptyState}
-          contentContainerStyle={{ paddingBottom: 50 }}
+          contentContainerStyle={{ paddingBottom: 100 }}
         />
       </View>
 
@@ -264,5 +260,9 @@ export default function EventsUserScreen() {
 }
 
 const styles = StyleSheet.create({
-  gridRow: { justifyContent: "space-between" },
+  gridRow: {
+    justifyContent: "space-between",
+    gap: 12,
+    marginBottom: 12,
+  },
 });

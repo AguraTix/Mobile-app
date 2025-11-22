@@ -30,7 +30,7 @@ export default function Carousel({ children }: { children: React.ReactNode[] }) 
     }, [activeIndex, children.length]);
 
     return (
-        <View>
+        <View className="flex-1">
             <ScrollView
                 ref={scrollRef}
                 horizontal
@@ -38,9 +38,10 @@ export default function Carousel({ children }: { children: React.ReactNode[] }) 
                 showsHorizontalScrollIndicator={false}
                 onScroll={onScroll}
                 scrollEventThrottle={16}
+                style={{ flex: 1 }}
             >
                 {children.map((child, index) => (
-                    <View key={index} style={{ width }}>
+                    <View key={index} style={{ width, height: '100%' }}>
                         {child}
                     </View>
                 ))}
