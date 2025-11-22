@@ -18,7 +18,7 @@ import EventCard from "@/components/EventCard";
 import SearchBar from "@/components/SearchBar";
 import Colors from "@/constants/Colors";
 import { useEvent } from "@/contexts";
-import { Event } from "@/types/backend";
+import { Event } from "@/types/events";
 
 type FilterOption = {
   id: string;

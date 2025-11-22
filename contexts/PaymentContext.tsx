@@ -1,5 +1,5 @@
 import { PaymentService } from '@/services/payment';
-import { Payment, PaymentCreateInput } from '@/types/backend';
+import { Payment, PaymentCreateInput } from '@/types/payment';
 import React, { createContext, useCallback, useContext, useState } from 'react';
 
 interface PaymentContextType {

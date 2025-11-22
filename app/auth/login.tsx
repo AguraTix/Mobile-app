@@ -2,7 +2,6 @@ import Button from "@/components/Button";
 import Header from "@/components/Header";
 import Input from "@/components/Input";
 import NetworkError from "@/components/NetworkError";
-import Colors from "@/constants/Colors";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNotification } from "@/contexts/NotificationContext";
 import { commonValidations, useFormValidation } from "@/hooks/useFormValidation";
@@ -11,7 +10,7 @@ import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import * as WebBrowser from "expo-web-browser";
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 interface LoginFormValues {
@@ -26,7 +25,7 @@ const loginValidationSchema = {
 
 export default function LoginScreen() {
   const router = useRouter();
-  const { login, isLoading: authLoading, error: authError, user } = useAuth();
+  const { login, isLoading: authLoading, error: authError } = useAuth();
   const { addNotification } = useNotification();
   const [networkError, setNetworkError] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
@@ -106,7 +105,7 @@ export default function LoginScreen() {
   // Show network error if there's a network issue
   if (networkError) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView className="flex-1 bg-background">
         <StatusBar style="light" />
         <Header title="Login" showBack />
         <NetworkError
@@ -119,122 +118,79 @@ export default function LoginScreen() {
 
   return (
     <>
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView className="flex-1 bg-background">
         <StatusBar style="light" />
         <Header title="Login" showBack />
 
-        <View style={styles.content}>
-          <View style={styles.inputContainer}>
-            <Input
-              label="Email or Phone"
-              placeholder="Email or Phone Number"
-              value={getFieldValue('identifier')}
-              onChangeText={(text) => setFieldValue('identifier', text)}
-              onBlur={() => setFieldTouched('identifier')}
-              error={getFieldError('identifier')}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              autoComplete="email"
-            />
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+        >
+          <ScrollView
+            contentContainerClassName="flex-grow"
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
+            <View className="flex-1 px-6 py-8 justify-between">
+              <View className="w-full gap-3">
+                <Input
+                  label="Email or Phone"
+                  placeholder="Email or Phone Number"
+                  value={getFieldValue('identifier')}
+                  onChangeText={(text) => setFieldValue('identifier', text)}
+                  onBlur={() => setFieldTouched('identifier')}
+                  error={getFieldError('identifier')}
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                  autoComplete="email"
+                />
 
-            <Input
-              label="Password"
-              placeholder="Password"
-              value={getFieldValue('password')}
-              onChangeText={(text) => setFieldValue('password', text)}
-              onBlur={() => setFieldTouched('password')}
-              error={getFieldError('password')}
-              secureTextEntry
-              autoComplete="password"
-            />
-          </View>
+                <Input
+                  label="Password"
+                  placeholder="Password"
+                  value={getFieldValue('password')}
+                  onChangeText={(text) => setFieldValue('password', text)}
+                  onBlur={() => setFieldTouched('password')}
+                  error={getFieldError('password')}
+                  secureTextEntry
+                  autoComplete="password"
+                />
+              </View>
 
-          <View style={styles.bottomSection}>
-            {localError && <Text style={styles.errorText}>{localError}</Text>}
+              <View className="w-full pb-8">
+                {localError && <Text className="text-error mb-4 text-center text-sm font-medium">{localError}</Text>}
 
-            <Button
-              title="Login"
-              onPress={handleSubmit}
-              loading={isSubmitting || authLoading}
-              style={styles.loginButton}
-              fullWidth
-              size="large"
-              disabled={!formik.isValid || !formik.dirty || authLoading}
-            />
+                <Button
+                  title="Login"
+                  onPress={handleSubmit}
+                  loading={isSubmitting || authLoading}
+                  className="bg-primary rounded-[25px] mb-6"
+                  fullWidth
+                  size="large"
+                  disabled={!formik.isValid || !formik.dirty || authLoading}
+                />
 
-            <Button
-              title="Continue with Google"
-              onPress={handleGoogleLogin}
-              style={styles.googleButton}
-              fullWidth
-              size="large"
-              disabled={authLoading || isSubmitting}
-            />
+                <Button
+                  title="Continue with Google"
+                  onPress={handleGoogleLogin}
+                  className="bg-transparent border border-border rounded-[25px] mb-8"
+                  fullWidth
+                  size="large"
+                  disabled={authLoading || isSubmitting}
+                />
 
-            <View style={styles.signupContainer}>
-              <Text style={styles.signupText}>Don&rsquo;t have an account? </Text>
-              <TouchableOpacity onPress={() => router.push("/events-user")}>
-                <Text style={styles.signupLink}>Sign up</Text>
-              </TouchableOpacity>
+                <View className="flex-row justify-center">
+                  <Text className="text-text-secondary text-sm">Don&rsquo;t have an account? </Text>
+                  <TouchableOpacity onPress={() => router.push("/auth/register")}>
+                    <Text className="text-primary text-sm font-semibold">Sign up</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
             </View>
-          </View>
-        </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 24,
-    padding: 32,
-    justifyContent: "space-between",
-  },
-  inputContainer: {
-    width: "100%",
-    gap: 12,
-  },
-  bottomSection: {
-    width: "100%",
-    paddingBottom: 32,
-  },
-  errorText: {
-    color: Colors.error,
-    marginBottom: 16,
-    textAlign: "center",
-    fontSize: 14,
-    fontWeight: "500",
-  },
-  loginButton: {
-    backgroundColor: Colors.primary,
-    borderRadius: 25,
-    paddingVertical: 16,
-    marginBottom: 24,
-  },
-  googleButton: {
-    backgroundColor: "transparent",
-    borderWidth: 1,
-    borderColor: Colors.border,
-    borderRadius: 25,
-    paddingVertical: 16,
-    marginBottom: 32,
-  },
-  signupContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-  },
-  signupText: {
-    color: Colors.textSecondary,
-    fontSize: 14,
-  },
-  signupLink: {
-    color: Colors.primary,
-    fontSize: 14,
-    fontWeight: "600",
-  },
-});

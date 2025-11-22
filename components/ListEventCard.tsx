@@ -1,5 +1,5 @@
 import Colors from "@/constants/Colors";
-import { Event } from "@/types/backend";
+import { Event } from "@/types/events";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { memo } from "react";

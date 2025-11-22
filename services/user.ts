@@ -1,10 +1,10 @@
 import {
-    User,
-    UserRegisterInput,
-    UserRegisterOutput,
-    UserUpdateRoleInput,
-    UserUpdateRoleOutput,
-} from '@/types/backend';
+  User,
+  UserRegisterInput,
+  UserRegisterOutput,
+  UserUpdateRoleInput,
+  UserUpdateRoleOutput,
+} from '@/types/auth';
 import { client } from './client';
 import { API_ENDPOINTS } from './constants';
 

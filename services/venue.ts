@@ -1,12 +1,12 @@
 import {
-    VenueCreateInput,
-    VenueCreateOutput,
-    VenueDeleteOutput,
-    VenueDetailOutput,
-    VenueListOutput,
-    VenueUpdateInput,
-    VenueUpdateOutput
-} from '@/types/backend';
+  VenueCreateInput,
+  VenueCreateOutput,
+  VenueDeleteOutput,
+  VenueDetailOutput,
+  VenueListOutput,
+  VenueUpdateInput,
+  VenueUpdateOutput
+} from '@/types/venue';
 import { client } from './client';
 import { API_ENDPOINTS } from './constants';
 

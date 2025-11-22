@@ -1,3 +1,4 @@
+import { clsx, type ClassValue } from "clsx";
 import React from 'react';
 import {
   Image,
@@ -6,6 +7,11 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
+import { twMerge } from "tailwind-merge";
+
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 type SocialProvider = 'apple' | 'google' | 'gmail' | 'phone';
 
@@ -14,6 +20,7 @@ interface SocialLoginButtonProps {
   onPress: () => void;
   style?: ViewStyle;
   showText?: boolean;
+  className?: string;
 }
 
 const iconMap: Record<SocialProvider, any> = {
@@ -35,13 +42,14 @@ const SocialLoginButton: React.FC<SocialLoginButtonProps> = ({
   onPress,
   style,
   showText = true,
+  className,
 }) => {
   const iconSource = iconMap[provider];
   const buttonText = textMap[provider];
 
   return (
     <TouchableOpacity
-      className="flex-row items-center justify-start bg-card rounded-full py-[14px] px-5 my-2"
+      className={cn("flex-row items-center justify-start bg-card rounded-full py-[14px] px-5 my-2", className)}
       style={style}
       onPress={onPress}
       activeOpacity={0.85}

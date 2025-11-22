@@ -1,13 +1,13 @@
 import {
-    FoodByEventOutput,
-    FoodCreateInput,
-    FoodCreateOutput,
-    FoodDeleteOutput,
-    FoodDetailOutput,
-    FoodListOutput,
-    FoodUpdateInput,
-    FoodUpdateOutput
-} from '@/types/backend';
+  FoodByEventOutput,
+  FoodCreateInput,
+  FoodCreateOutput,
+  FoodDeleteOutput,
+  FoodDetailOutput,
+  FoodListOutput,
+  FoodUpdateInput,
+  FoodUpdateOutput
+} from '@/types/food';
 import { client } from './client';
 import { API_ENDPOINTS } from './constants';
 

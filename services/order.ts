@@ -1,12 +1,12 @@
 import {
-    FoodOrder,
-    FoodOrderCreateInput,
-    FoodOrderCreateOutput,
-    FoodOrderEventOutput,
-    FoodOrderHistoryOutput,
-    FoodOrderListOutput,
-    FoodOrderQueryParams,
-} from '@/types/backend';
+  FoodOrder,
+  FoodOrderCreateInput,
+  FoodOrderCreateOutput,
+  FoodOrderEventOutput,
+  FoodOrderHistoryOutput,
+  FoodOrderListOutput,
+  FoodOrderQueryParams,
+} from '@/types/order';
 import { client } from './client';
 import { API_ENDPOINTS } from './constants';
 
