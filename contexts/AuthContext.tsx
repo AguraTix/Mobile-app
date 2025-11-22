@@ -1,6 +1,6 @@
 import { authService } from "@/services/auth";
 import { ApiError } from "@/types";
-import { User, UserLoginInput, UserRegisterInput } from "@/types/backend";
+import { User, UserLoginInput, UserRegisterInput } from "@/types/auth";
 import { router } from "expo-router";
 import * as SecureStore from 'expo-secure-store';
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";

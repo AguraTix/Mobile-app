@@ -4,7 +4,7 @@ import Header from "@/components/Header";
 import Skeleton from "@/components/Skeleton";
 import Colors from "@/constants/Colors";
 import { useTicket } from "@/contexts";
-import { TicketStatus } from "@/types/backend";
+import { TicketStatus } from "@/types/ticket";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";

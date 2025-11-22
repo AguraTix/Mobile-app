@@ -1,9 +1,9 @@
 import {
-    Payment,
-    PaymentCreateInput,
-    PaymentCreateOutput,
-    PaymentVerifyOutput,
-} from '@/types/backend';
+  Payment,
+  PaymentCreateInput,
+  PaymentCreateOutput,
+  PaymentVerifyOutput,
+} from '@/types/payment';
 import { client } from './client';
 import { API_ENDPOINTS } from './constants';
 

@@ -1,6 +1,6 @@
 import { EventService } from "@/services/event";
-import { Event, EventCreateInput, EventUpdateInput } from "@/types/backend";
-import { createContext, ReactNode, useCallback, useContext, useState } from "react";
+import { Event, EventCreateInput, EventUpdateInput } from "@/types/events";
+import React, { createContext, ReactNode, useCallback, useContext, useState } from 'react';
 
 interface EventContextType {
   events: Event[];

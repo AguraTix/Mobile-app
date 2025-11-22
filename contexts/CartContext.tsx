@@ -1,4 +1,4 @@
-import { FoodOrder } from "@/types/backend";
+import { FoodOrder } from "@/types/order";
 import { createContext, ReactNode, useCallback, useContext, useState } from "react";
 
 interface CartItem extends FoodOrder {

@@ -1,6 +1,6 @@
 import { TicketService } from "@/services/ticket";
-import { Ticket, TicketGrouped } from "@/types/backend";
-import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
+import { Ticket, TicketGrouped } from "@/types/ticket";
+import { createContext, ReactNode, useCallback, useContext, useState } from "react";
 
 interface TicketContextType {
   availableTickets: TicketGrouped[];

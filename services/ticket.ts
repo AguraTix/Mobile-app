@@ -1,11 +1,11 @@
 import {
-    TicketAdminListOutput,
-    TicketAdminQueryParams,
-    TicketAvailableOutput,
-    TicketBookOutput,
-    TicketCancelOutput,
-    TicketMyListOutput
-} from '@/types/backend';
+  TicketAdminListOutput,
+  TicketAdminQueryParams,
+  TicketAvailableOutput,
+  TicketBookOutput,
+  TicketCancelOutput,
+  TicketMyListOutput
+} from '@/types/ticket';
 import { client } from './client';
 import { API_ENDPOINTS } from './constants';
 

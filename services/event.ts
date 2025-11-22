@@ -1,5 +1,6 @@
-import { Event, EventCreateInput, EventImage, EventUpdateInput, TicketType } from '@/types/backend';
+import { Event, EventCreateInput, EventImage, EventUpdateInput } from '@/types/events';
 import { EventServiceResponse } from '@/types/response';
+import { TicketTypeConfig } from '@/types/ticket';
 import { client } from './client';
 import { API_ENDPOINTS } from './constants';
 
@@ -9,7 +10,7 @@ type EventData = {
   date: string;
   venue_id: string;
   artist_lineup: string[];
-  tickets: TicketType[]; // Fix type reference
+  tickets: TicketTypeConfig[]; // Fix type reference
   event_image?: File;
   event_images?: File[];
 };
@@ -23,27 +24,27 @@ type PaginationParams = {
 };
 
 export const EventService = {
-  create: (data: EventCreateInput) => 
+  create: (data: EventCreateInput) =>
     client.post<EventServiceResponse>(API_ENDPOINTS.EVENTS.ALL, data),
-  
-  getAll: () => 
+
+  getAll: () =>
     client.get<EventServiceResponse>(API_ENDPOINTS.EVENTS.ALL),
-  
-  getRecent: (params?: PaginationParams) => 
+
+  getRecent: (params?: PaginationParams) =>
     client.get<{ message: string; events: Event[]; pagination: { total: number } }>(API_ENDPOINTS.EVENTS.RECENT, params),
-  
-  getById: (eventId: string) => 
+
+  getById: (eventId: string) =>
     client.get<EventServiceResponse>(API_ENDPOINTS.EVENTS.BY_ID(eventId)),
-  
-  update: (eventId: string, data: EventUpdateInput) => 
+
+  update: (eventId: string, data: EventUpdateInput) =>
     client.put<EventServiceResponse>(API_ENDPOINTS.EVENTS.BY_ID(eventId), data),
-  
-  delete: (eventId: string) => 
+
+  delete: (eventId: string) =>
     client.delete<{ message: string }>(API_ENDPOINTS.EVENTS.BY_ID(eventId)),
-  
-  getByVenue: (venueId: string) => 
+
+  getByVenue: (venueId: string) =>
     client.get<EventServiceResponse>(API_ENDPOINTS.EVENTS.BY_VENUE(venueId)),
-  
-  getImages: (eventId: string) => 
+
+  getImages: (eventId: string) =>
     client.get<{ message: string; event_images: EventImage[]; image_url?: string; image_count: number }>(API_ENDPOINTS.EVENTS.IMAGES(eventId))
 };

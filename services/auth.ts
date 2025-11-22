@@ -1,15 +1,15 @@
 import {
-    PasswordResetInput,
-    PasswordResetOutput,
-    PasswordResetRequestInput,
-    PasswordResetRequestOutput,
-    PasswordResetVerifyInput,
-    PasswordResetVerifyOutput,
-    UserLoginInput,
-    UserLoginOutput,
-    UserRegisterInput,
-    UserRegisterOutput,
-} from '@/types/backend';
+  PasswordResetInput,
+  PasswordResetOutput,
+  PasswordResetRequestInput,
+  PasswordResetRequestOutput,
+  PasswordResetVerifyInput,
+  PasswordResetVerifyOutput,
+  UserLoginInput,
+  UserLoginOutput,
+  UserRegisterInput,
+  UserRegisterOutput,
+} from '@/types/auth';
 import { client } from './client';
 import { API_ENDPOINTS } from './constants';
 

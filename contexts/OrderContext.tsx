@@ -1,5 +1,5 @@
 import { OrderService } from "@/services/order";
-import { FoodOrder, FoodOrderCreateInput } from "@/types/backend";
+import { FoodOrder, FoodOrderCreateInput } from "@/types/order";
 import { createContext, ReactNode, useCallback, useContext, useState } from "react";
 
 interface OrderContextType {
@@ -87,7 +87,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     try {
       const response = await OrderService.update(orderId, data);
       const updatedOrder = response.order;
-      setMyOrders(prev => 
+      setMyOrders(prev =>
         prev.map(order => order.order_id === orderId ? updatedOrder : order)
       );
       if (currentOrder?.order_id === orderId) {
@@ -186,4 +186,3 @@ export const useOrder = (): OrderContextType => {
   }
   return context;
 };
-   

@@ -1,7 +1,7 @@
 import Header from '@/components/Header';
 import Colors from '@/constants/Colors';
 import { useOrder } from '@/contexts';
-import { FoodOrder } from '@/types/backend';
+import { FoodOrder } from '@/types/order';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
