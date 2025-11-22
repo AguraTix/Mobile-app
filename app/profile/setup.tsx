@@ -21,7 +21,7 @@ import {
 export default function MyAccountScreen() {
   const router = useRouter();
   const { user } = useAuth()
-
+console.log(user)
   const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
   const [phoneNumber, setPhoneNumber] = useState(user?.phone_number || "");

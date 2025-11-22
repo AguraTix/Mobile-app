@@ -30,7 +30,7 @@ export interface UserUpdateRoleInput {
 export interface User {
   user_id: string;
   email: string;
-  phone_number?: string;
+  phone_number: string;
   name: string;
   profile_photo?: string;
   role: UserRole;
