@@ -7,7 +7,7 @@ import * as NavigationBar from 'expo-navigation-bar';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { Platform } from 'react-native';
+import { Keyboard, Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import '../global.css';
 
@@ -15,7 +15,37 @@ export default function RootLayout() {
   const [isSplashVisible, setIsSplashVisible] = React.useState(true);
 
   React.useEffect(() => {
-    NavigationBar.setButtonStyleAsync('light')
+    // Configure navigation bar for Android
+    if (Platform.OS === 'android') {
+      NavigationBar.setButtonStyleAsync('light');
+      NavigationBar.setBehaviorAsync('inset-swipe');
+      NavigationBar.setVisibilityAsync('hidden');
+
+      // Show navigation bar when keyboard appears
+      const keyboardDidShowListener = Keyboard.addListener(
+        'keyboardDidShow',
+        () => {
+          NavigationBar.setVisibilityAsync('visible');
+        }
+      );
+
+      // Hide navigation bar when keyboard disappears
+      const keyboardDidHideListener = Keyboard.addListener(
+        'keyboardDidHide',
+        () => {
+          NavigationBar.setVisibilityAsync('hidden');
+        }
+      );
+
+      // Cleanup listeners
+      return () => {
+        keyboardDidShowListener.remove();
+        keyboardDidHideListener.remove();
+      };
+    }
+  }, []);
+
+  React.useEffect(() => {
     // Hide splash screen after a short delay for smooth transition
     const timer = setTimeout(() => {
       setIsSplashVisible(false);

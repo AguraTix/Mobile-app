@@ -195,7 +195,7 @@ export default function TicketsScreen() {
             </View>
             <Text className="text-xl font-semibold text-text mb-3 text-center">No Tickets Yet</Text>
             <Text className="text-base text-text-secondary text-center leading-6 mb-8">
-              You haven't purchased any tickets yet. Start exploring events to get your first ticket!
+              You haven&apos;t purchased any tickets yet. Start exploring events to get your first ticket!
             </Text>
             <Button
               title="Browse Events"
