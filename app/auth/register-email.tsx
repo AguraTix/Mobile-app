@@ -44,20 +44,16 @@ export default function RegisterEmailScreen() {
     registerValidationSchema,
     async (values) => {
       try {
-        console.log('Registering with:', values);
         const response = await register({
           name: values.name,
           email: values.email.trim(),
           phone_number: values.phone.trim(),
           password: values.password,
         });
-        console.log('Registration response:', response);
 
         router.replace('/home');
-
       } catch (error) {
         console.error('Registration error:', error);
-        // Error handled
       }
     }
   )

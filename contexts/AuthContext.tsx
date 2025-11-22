@@ -28,13 +28,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
     setError(null);
     try {
-      console.log(credentials)
       const response = await authService.login(credentials);
       setUser(response.user);
       setToken(response.token);
-      console.log(response)
       await SecureStore.setItemAsync('auth_token', response.token);
       await SecureStore.setItemAsync('user', JSON.stringify(response.user));
+      await loadUserData();
     } catch (err) {
       const message = err as unknown as ApiError
       setError(message.message);
@@ -48,11 +47,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setError(null);
     try {
       await authService.register(data);
-      // After registration, user should login
+      router.replace('/auth/login')
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Registration failed';
-      setError(message);
-      throw err;
+      const message = err as unknown as ApiError
+      setError(message.message);
     } finally {
       setIsLoading(false);
     }
@@ -66,9 +64,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setToken(null);
       await SecureStore.deleteItemAsync('auth_token');
       await SecureStore.deleteItemAsync('user');
+      await loadUserData();
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Logout failed';
-      setError(message);
+      const message = err as unknown as ApiError
+      setError(message.message);
     } finally {
       setIsLoading(false);
     }
@@ -78,22 +77,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setError(null);
   }, []);
 
-  useEffect(() => {
-    const loadUserData = async () => {
-      try {
-        const storedToken = await SecureStore.getItemAsync('auth_token');
-        const storedUser = await SecureStore.getItemAsync('user');
-        
-        if (storedToken && storedUser) {
-          setToken(storedToken);
-          setUser(JSON.parse(storedUser));
-          router.replace('/(tabs)');
-        }
-      } catch (err) {
-        console.error('Failed to load user data:', err);
+  const loadUserData = async () => {
+    try {
+      const storedToken = await SecureStore.getItemAsync('auth_token');
+      const storedUser = await SecureStore.getItemAsync('user');
+
+      if (storedToken && storedUser) {
+        setToken(storedToken);
+        setUser(JSON.parse(storedUser));
+        router.replace('/home');
       }
-    };
-    
+    } catch (err) {
+      console.error('Failed to load user data:', err);
+    }
+  };
+  useEffect(() => {
     loadUserData();
   }, []);
 
