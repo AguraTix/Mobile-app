@@ -20,7 +20,6 @@ export default function EventOrdersScreen() {
       fetchOrdersByEvent(id)
         .then(setOrders)
         .catch((error) => {
-          console.error('Failed to fetch orders:', error);
           // Fallback to myOrders if event-specific fetch fails
           setOrders(myOrders);
         });

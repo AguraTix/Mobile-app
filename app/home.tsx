@@ -89,7 +89,6 @@ export default function HomeScreen() {
       // Add to recent searches
       const newRecentSearches = [query.trim(), ...recentSearches.filter(s => s !== query.trim())].slice(0, 5);
       setRecentSearches(newRecentSearches);
-      console.log('Searching for:', query.trim());
     }
   };
 
@@ -257,7 +256,6 @@ export default function HomeScreen() {
                 className="w-[47%] p-5 rounded-lg items-center justify-center min-h-[100px] bg-card"
                 style={[{ backgroundColor: category.color + '20' }, styles.shadow]}
                 onPress={() => {
-                  console.log('Selected category:', category.name);
                 }}
                 activeOpacity={0.8}
               >

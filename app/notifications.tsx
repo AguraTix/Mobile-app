@@ -154,7 +154,6 @@ export default function NotificationsScreen() {
       // const data = await NotificationsAPI.getNotifications();
       setNotifications(mockNotifications);
     } catch (error) {
-      console.error('Failed to load notifications:', error);
       setNotifications(mockNotifications);
     }
   }, [mockNotifications]);

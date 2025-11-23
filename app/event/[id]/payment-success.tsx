@@ -36,7 +36,6 @@ export default function PaymentSuccessScreen() {
       }
       setIsLoading(false);
     } catch (error) {
-      console.error('Failed to load order details:', error);
       setIsLoading(false);
     }
   };
