@@ -4,6 +4,7 @@ import { User, UserLoginInput, UserRegisterInput } from "@/types/auth";
 import { router } from "expo-router";
 import * as SecureStore from 'expo-secure-store';
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
+import { Keyboard } from "react-native";
 
 interface AuthContextType {
   user: User | null;
@@ -33,6 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setToken(response.token);
       await SecureStore.setItemAsync('auth_token', response.token);
       await SecureStore.setItemAsync('user', JSON.stringify(response.user));
+      Keyboard.dismiss();
       await loadUserData();
     } catch (err) {
       const message = err as unknown as ApiError
@@ -47,6 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setError(null);
     try {
       await authService.register(data);
+      Keyboard.dismiss();
       router.replace('/auth/login')
     } catch (err) {
       const message = err as unknown as ApiError
