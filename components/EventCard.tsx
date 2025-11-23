@@ -1,6 +1,7 @@
 import Colors from "@/constants/Colors";
 import { Event } from "@/types/events";
 import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from 'expo-linear-gradient';
 import React, { useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -410,6 +411,68 @@ export default function EventCard({
                     </Text>
                   </View>
                 )}
+              </View>
+            </View>
+          </Animated.View>
+        </TouchableOpacity>
+      </Animated.View>
+    );
+  }
+
+  if (variant === "poster") {
+    return (
+      <Animated.View style={{ opacity: opacityAnim, flex: 1 }}>
+        <TouchableOpacity
+          className="bg-card rounded-[32px] overflow-hidden h-full w-full"
+          onPress={onPress}
+          activeOpacity={0.9}
+          onPressIn={handlePressIn}
+          onPressOut={handlePressOut}
+        >
+          <Animated.View style={{ transform: [{ scale: scaleAnim }], flex: 1 }}>
+            <View className="relative flex-1">
+              <Image
+                source={getImageSource()}
+                className="w-full h-full"
+                resizeMode="cover"
+                onLoad={() => setImageLoaded(true)}
+                onError={() => setImageError(true)}
+              />
+              {!imageLoaded && !imageError && (
+                <View className="absolute inset-0 bg-card justify-center items-center">
+                  <ActivityIndicator color={Colors.primary} />
+                </View>
+              )}
+
+              {/* Gradient Overlay */}
+              <LinearGradient
+                colors={['transparent', 'rgba(0,0,0,0.8)', 'rgba(0,0,0,0.95)']}
+                style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: '60%' }}
+              />
+
+              {/* Content */}
+              <View className="absolute bottom-0 left-0 right-0 p-6">
+                <Text className="text-2xl font-bold text-white mb-3" numberOfLines={2}>
+                  {event.title}
+                </Text>
+
+                <View className="gap-2">
+                  <View className="flex-row items-center gap-2">
+                    <Ionicons name="calendar-outline" size={16} color="#cccccc" />
+                    <Text className="text-sm text-gray-300 font-medium">
+                      {formatDate(event.date || "")}
+                    </Text>
+                  </View>
+
+                  {event.Venue && (
+                    <View className="flex-row items-center gap-2">
+                      <Ionicons name="location-outline" size={16} color="#cccccc" />
+                      <Text className="text-sm text-gray-300 font-medium" numberOfLines={1}>
+                        {event.Venue.location}
+                      </Text>
+                    </View>
+                  )}
+                </View>
               </View>
             </View>
           </Animated.View>
