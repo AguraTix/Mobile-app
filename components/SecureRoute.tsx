@@ -36,7 +36,6 @@ export default function SecureRoute({
         router.replace(redirectTo as any);
       }
     } catch (error) {
-      console.error('Authentication check failed:', error);
       setIsAuthenticated(false);
       router.replace(redirectTo as any);
     } finally {
