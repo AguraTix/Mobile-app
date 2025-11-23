@@ -1,5 +1,6 @@
 import BottomNav from "@/components/BottomNav";
 import EventCard from "@/components/EventCard";
+import FoodCard from "@/components/FoodCard";
 import SectionHeader from "@/components/SectionHeader";
 import Skeleton from "@/components/Skeleton";
 import Colors from "@/constants/Colors";
@@ -13,7 +14,6 @@ import {
   Image,
   RefreshControl,
   ScrollView,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View
@@ -27,7 +27,7 @@ export default function HomeScreen() {
   const { user } = useAuth()
   const { featuredEvents, upcomingEvents, fetchEvents, fetchFeaturedEvents, isLoading: loading } = useEvent();
   const { myOrders, fetchMyOrders, isLoading: ordersLoading } = useOrder();
-console.log(upcomingEvents.length)
+  console.log(upcomingEvents.length)
   const [refreshing, setRefreshing] = useState(false);
   const [activeSlide, setActiveSlide] = React.useState(0);
 
@@ -226,40 +226,81 @@ console.log(upcomingEvents.length)
                 <Skeleton height={80} radius={16} />
               </View>
             ) : (
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ paddingHorizontal: 20, gap: 16 }}
-              >
-                {myOrders.map((order) => (
+              <View className="px-5 gap-4">
+                {myOrders.slice(0, 3).map((order) => (
                   <TouchableOpacity
                     key={order.order_id}
-                    className="w-[280px] bg-card p-4 rounded-2xl flex-row items-center"
-                    style={styles.shadow}
+                    className="bg-[#1A1A1A] rounded-[24px] p-4 flex-row items-center overflow-hidden relative"
+                    activeOpacity={0.8}
                     onPress={() => router.push(`/event/${order.event_id}/orders`)}
                   >
-                    <View className="w-16 h-16 rounded-xl bg-background items-center justify-center mr-4">
-                      <Text className="text-2xl">🍔</Text>
+                    {/* Ribbon */}
+                    <View className="absolute top-0 right-0 bg-[#2E7D32] px-6 py-1 transform rotate-45 translate-x-4 translate-y-2 z-10">
+                      <Text className="text-white text-[10px] font-bold uppercase">Complete</Text>
                     </View>
-                    <View className="flex-1">
-                      <Text className="text-text font-bold text-base mb-1" numberOfLines={1}>
-                        Order #{order.order_id.slice(-4)}
-                      </Text>
-                      <Text className="text-text-secondary text-sm mb-2" numberOfLines={1}>
-                        {order.quantity || 1} items • {order.order_status}
-                      </Text>
-                      <View className="flex-row items-center">
-                        <View className="w-2 h-2 rounded-full bg-primary mr-2" />
-                        <Text className="text-primary text-xs font-medium">In Progress</Text>
-                      </View>
+
+                    {/* Image */}
+                    <View className="w-14 h-14 rounded-2xl bg-white overflow-hidden mr-4">
+                      <Image
+                        source={require('@/assets/images/m1.png')}
+                        className="w-full h-full"
+                        resizeMode="cover"
+                      />
                     </View>
-                    <Ionicons name="chevron-forward" size={20} color={Colors.textSecondary} />
+
+                    {/* Content */}
+                    <View className="flex-1 mr-8">
+                      <Text className="text-white font-bold text-base mb-1" numberOfLines={1}>
+                        Soft Drinks
+                      </Text>
+                      <Text className="text-gray-400 text-xs" numberOfLines={1}>
+                        Juice and Fries
+                      </Text>
+                      <Text className="text-primary text-xs font-bold mt-1">
+                        20,000 RWF
+                      </Text>
+                    </View>
+
+                    {/* Quantity */}
+                    <Text className="text-white text-lg font-medium mr-2">
+                      {order.quantity || 1}
+                    </Text>
                   </TouchableOpacity>
                 ))}
-              </ScrollView>
+              </View>
             )}
           </View>
         )}
+
+        {/* Food & Drinks Section */}
+        <View className="mb-6">
+          <View className="px-5">
+            <SectionHeader
+              title="Food & Drinks"
+              subtitle=""
+              showSeeAll={true}
+              onSeeAllPress={() => router.push("/menu")}
+            />
+          </View>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingHorizontal: 20 }}
+          >
+            {[
+              { id: '1', name: 'Burger', category: 'food', price: 5000, image: require('@/assets/images/m1.png') },
+              { id: '2', name: 'Pizza', category: 'food', price: 8000, image: require('@/assets/images/m1.png') },
+              { id: '3', name: 'Coke', category: 'drinks', price: 2000, image: require('@/assets/images/m1.png') },
+            ].map((item) => (
+              <FoodCard
+                key={item.id}
+                item={item}
+                onPress={() => { }}
+                onAdd={() => Alert.alert("Added", `${item.name} added to cart`)}
+              />
+            ))}
+          </ScrollView>
+        </View>
 
         {/* Bottom Spacing */}
         <View className="h-[100px]" />
@@ -268,13 +309,3 @@ console.log(upcomingEvents.length)
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  shadow: {
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-  },
-});
