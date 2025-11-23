@@ -35,13 +35,12 @@ type SortOption = {
 
 export default function EventsUserScreen() {
   const router = useRouter();
-  const { events: allEvents, fetchEvents, isLoading: loading, error } = useEvent();
+  const { events: allEvents, fetchEvents } = useEvent();
 
   // Search & General States
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
-  const [isDebouncing, setIsDebouncing] = useState(false);
-  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [refreshing, setRefreshing] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("list");
@@ -60,19 +59,14 @@ export default function EventsUserScreen() {
   const handleSortPress = () => setShowSortModal(true);
   const handleFilterPress = () => setShowFilters(!showFilters);
 
-  const loadData = async () => {
-    await fetchEvents();
-  };
-
-  // Fetch events
-  useEffect(() => {
-    fetchEvents();
-  }, [fetchEvents]);
-
-  // Debounce search
+  // Debounce search - update debouncedQuery after user stops typing
   useEffect(() => {
     if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
-    setIsDebouncing(true);
+
+    debounceTimerRef.current = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 500); // 500ms delay
+
     return () => {
       if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
     };
@@ -80,10 +74,21 @@ export default function EventsUserScreen() {
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await loadData();
+    await fetchEvents();
     setRefreshing(false);
-  }, []);
+  }, [fetchEvents]);
 
+  // Filter options for categories and price ranges
+  const filterOptions: FilterOption[] = [
+    { id: "music", label: "Music", value: "music" },
+    { id: "sports", label: "Sports", value: "sports" },
+    { id: "technology", label: "Technology", value: "technology" },
+    { id: "food", label: "Food & Dining", value: "food" },
+    { id: "art", label: "Art & Culture", value: "art" },
+    { id: "business", label: "Business", value: "business" },
+    { id: "free", label: "Free Events", value: "free" },
+    { id: "paid", label: "Paid Events", value: "paid" },
+  ];
 
   const sortOptions: SortOption[] = [
     {
@@ -118,21 +123,82 @@ export default function EventsUserScreen() {
     },
   ];
 
+  // Helper function to get minimum ticket price
+  const getMinPrice = (event: Event): number => {
+    if (!event.tickets || event.tickets.length === 0) return 0;
+    const prices = event.tickets.map(t => t.price);
+    return Math.min(...prices);
+  };
+
   // Apply Filters & Sort
   const filteredAndSortedEvents = useMemo(() => {
     if (!allEvents) return [];
 
     const query = debouncedQuery.toLowerCase();
 
+    // Step 1: Filter by search query
     let results = allEvents.filter((event) => {
-      const match =
+      const matchesSearch =
         event.title.toLowerCase().includes(query) ||
-        event.Venue?.name?.toLowerCase().includes(query);
+        event.Venue?.name?.toLowerCase().includes(query) ||
+        event.description?.toLowerCase().includes(query);
 
-      return match;
+      return matchesSearch;
     });
 
-    return results;
+    // Step 2: Apply category and price filters
+    if (selectedFilters.length > 0) {
+      results = results.filter((event) => {
+        const minPrice = getMinPrice(event);
+
+        // Check price filters
+        if (selectedFilters.includes("free") && minPrice === 0) return true;
+        if (selectedFilters.includes("paid") && minPrice > 0) return true;
+
+        // Check category filters (match against title, description, or artist lineup)
+        const categoryFilters = selectedFilters.filter(f => !["free", "paid"].includes(f));
+        if (categoryFilters.length > 0) {
+          return categoryFilters.some(filter => {
+            const searchText = `${event.title} ${event.description || ""} ${event.artist_lineup?.join(" ") || ""}`.toLowerCase();
+            return searchText.includes(filter);
+          });
+        }
+
+        return false;
+      });
+    }
+
+    // Step 3: Apply sorting
+    const sorted = [...results].sort((a, b) => {
+      switch (selectedSort) {
+        case "date_asc":
+          return new Date(a.date).getTime() - new Date(b.date).getTime();
+
+        case "date_desc":
+          return new Date(b.date).getTime() - new Date(a.date).getTime();
+
+        case "price_asc": {
+          const priceA = getMinPrice(a);
+          const priceB = getMinPrice(b);
+          return priceA - priceB;
+        }
+
+        case "price_desc": {
+          const priceA = getMinPrice(a);
+          const priceB = getMinPrice(b);
+          return priceB - priceA;
+        }
+
+        case "popularity":
+          // Sort by number of tickets sold (assuming higher ticketsCreated = more popular)
+          return (b.ticketsCreated || 0) - (a.ticketsCreated || 0);
+
+        default:
+          return 0;
+      }
+    });
+
+    return sorted;
   }, [allEvents, debouncedQuery, selectedFilters, selectedSort]);
 
   const renderEventItem = ({ item }: { item: Event }) => (
@@ -153,6 +219,20 @@ export default function EventsUserScreen() {
     </View>
   );
 
+  const toggleFilter = (filterId: string) => {
+    setSelectedFilters(prev => {
+      if (prev.includes(filterId)) {
+        return prev.filter(id => id !== filterId);
+      } else {
+        return [...prev, filterId];
+      }
+    });
+  };
+
+  const clearAllFilters = () => {
+    setSelectedFilters([]);
+  };
+
   const renderSortModal = () => (
     <Modal visible={showSortModal} transparent animationType="slide">
       <View className="flex-1 bg-black/50 justify-end">
@@ -168,7 +248,7 @@ export default function EventsUserScreen() {
             {sortOptions.map((option) => (
               <TouchableOpacity
                 key={option.id}
-                className="py-3.5"
+                className="py-3.5 flex-row items-center justify-between"
                 onPress={() => {
                   setSelectedSort(option.id);
                   setShowSortModal(false);
@@ -178,9 +258,97 @@ export default function EventsUserScreen() {
                   {option.icon}
                   <Text className="ml-3 text-base text-text">{option.label}</Text>
                 </View>
+                {selectedSort === option.id && (
+                  <Ionicons name="checkmark" size={24} color={Colors.primary} />
+                )}
               </TouchableOpacity>
             ))}
           </ScrollView>
+        </View>
+      </View>
+    </Modal>
+  );
+
+  const renderFilterModal = () => (
+    <Modal visible={showFilters} transparent animationType="slide">
+      <View className="flex-1 bg-black/50 justify-end">
+        <View className="bg-background p-5 rounded-t-[20px]" style={{ maxHeight: '80%' }}>
+          <View className="flex-row justify-between items-center mb-4">
+            <Text className="text-lg font-semibold text-text">Filters</Text>
+            <View className="flex-row items-center gap-3">
+              {selectedFilters.length > 0 && (
+                <TouchableOpacity onPress={clearAllFilters}>
+                  <Text className="text-primary text-sm font-medium">Clear All</Text>
+                </TouchableOpacity>
+              )}
+              <TouchableOpacity onPress={() => setShowFilters(false)}>
+                <Ionicons name="close" size={24} color={Colors.text} />
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <ScrollView showsVerticalScrollIndicator={false}>
+            {/* Categories Section */}
+            <View className="mb-6">
+              <Text className="text-base font-semibold text-text mb-3">Categories</Text>
+              <View className="gap-2">
+                {filterOptions.filter(f => !["free", "paid"].includes(f.id)).map((option) => (
+                  <TouchableOpacity
+                    key={option.id}
+                    className="flex-row items-center justify-between py-3 px-4 bg-card rounded-lg"
+                    onPress={() => toggleFilter(option.id)}
+                    activeOpacity={0.7}
+                  >
+                    <Text className="text-text text-base">{option.label}</Text>
+                    <View className={`w-6 h-6 rounded border-2 items-center justify-center ${selectedFilters.includes(option.id)
+                      ? 'bg-primary border-primary'
+                      : 'border-text-secondary'
+                      }`}>
+                      {selectedFilters.includes(option.id) && (
+                        <Ionicons name="checkmark" size={16} color="#FFFFFF" />
+                      )}
+                    </View>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+
+            {/* Price Range Section */}
+            <View className="mb-6">
+              <Text className="text-base font-semibold text-text mb-3">Price</Text>
+              <View className="gap-2">
+                {filterOptions.filter(f => ["free", "paid"].includes(f.id)).map((option) => (
+                  <TouchableOpacity
+                    key={option.id}
+                    className="flex-row items-center justify-between py-3 px-4 bg-card rounded-lg"
+                    onPress={() => toggleFilter(option.id)}
+                    activeOpacity={0.7}
+                  >
+                    <Text className="text-text text-base">{option.label}</Text>
+                    <View className={`w-6 h-6 rounded border-2 items-center justify-center ${selectedFilters.includes(option.id)
+                      ? 'bg-primary border-primary'
+                      : 'border-text-secondary'
+                      }`}>
+                      {selectedFilters.includes(option.id) && (
+                        <Ionicons name="checkmark" size={16} color="#FFFFFF" />
+                      )}
+                    </View>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          </ScrollView>
+
+          {/* Apply Button */}
+          <TouchableOpacity
+            className="bg-primary py-4 rounded-lg items-center mt-4"
+            onPress={() => setShowFilters(false)}
+            activeOpacity={0.8}
+          >
+            <Text className="text-white text-base font-semibold">
+              Apply Filters {selectedFilters.length > 0 && `(${selectedFilters.length})`}
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
     </Modal>
@@ -228,10 +396,19 @@ export default function EventsUserScreen() {
               </TouchableOpacity>
 
               <TouchableOpacity
-                className="p-2 rounded-md bg-card"
+                className={`p-2 rounded-md relative ${selectedFilters.length > 0 ? 'bg-primary/20' : 'bg-card'}`}
                 onPress={handleFilterPress}
               >
-                <Ionicons name="filter" size={20} color={Colors.text} />
+                <Ionicons
+                  name="filter"
+                  size={20}
+                  color={selectedFilters.length > 0 ? Colors.primary : Colors.text}
+                />
+                {selectedFilters.length > 0 && (
+                  <View className="absolute -top-1 -right-1 bg-primary rounded-full w-5 h-5 items-center justify-center">
+                    <Text className="text-white text-xs font-bold">{selectedFilters.length}</Text>
+                  </View>
+                )}
               </TouchableOpacity>
             </View>
           </View>
@@ -254,6 +431,7 @@ export default function EventsUserScreen() {
       </View>
 
       {renderSortModal()}
+      {renderFilterModal()}
       <BottomNav />
     </SafeAreaView>
   );
