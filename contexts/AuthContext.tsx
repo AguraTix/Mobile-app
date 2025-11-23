@@ -59,7 +59,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(async () => {
     setIsLoading(true);
     try {
-      await authService.logout();
       setUser(null);
       setToken(null);
       await SecureStore.deleteItemAsync('auth_token');
@@ -81,7 +80,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const storedToken = await SecureStore.getItemAsync('auth_token');
       const storedUser = await SecureStore.getItemAsync('user');
-      console.log(storedToken, storedUser)
       if (storedToken && storedUser) {
         setToken(storedToken);
         setUser(JSON.parse(storedUser))

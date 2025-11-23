@@ -20,7 +20,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const { user } = useAuth()
+  const { user, logout } = useAuth()
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -32,8 +32,7 @@ export default function ProfileScreen() {
   }, []);
 
   const handleLogout = async () => {
-    // Mock logout - just navigate to login
-    router.replace("/auth/login");
+    await logout()
   };
 
   const handleEditAvatar = async () => {
