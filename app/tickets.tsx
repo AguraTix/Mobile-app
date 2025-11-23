@@ -19,8 +19,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TicketsScreen() {
   const router = useRouter();
-  const { myTickets: userTickets } = useTicket()
-  const loading = false;
+  const { myTickets: userTickets, isLoading: loading } = useTicket()
 
   const activeTickets = userTickets.filter(ticket => ticket.status === TicketStatus.AVAILABLE);
   const expiredTickets = userTickets.filter(ticket => ticket.status === TicketStatus.CANCELLED);
@@ -139,7 +138,7 @@ export default function TicketsScreen() {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+    <SafeAreaView className="flex-1  bg-background" edges={["top"]}>
       <Header title="My Tickets" showBack />
 
       <ScrollView

@@ -4,6 +4,7 @@ import { User, UserLoginInput, UserRegisterInput } from "@/types/auth";
 import { router } from "expo-router";
 import * as SecureStore from 'expo-secure-store';
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
+import { Keyboard } from "react-native";
 
 interface AuthContextType {
   user: User | null;
@@ -33,6 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setToken(response.token);
       await SecureStore.setItemAsync('auth_token', response.token);
       await SecureStore.setItemAsync('user', JSON.stringify(response.user));
+      Keyboard.dismiss();
       await loadUserData();
     } catch (err) {
       const message = err as unknown as ApiError
@@ -47,7 +49,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setError(null);
     try {
       await authService.register(data);
-      router.replace('/auth/login')
+      Keyboard.dismiss();
+      router.replace('/auth/categories')
     } catch (err) {
       const message = err as unknown as ApiError
       setError(message.message);
@@ -59,7 +62,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(async () => {
     setIsLoading(true);
     try {
-      await authService.logout();
       setUser(null);
       setToken(null);
       await SecureStore.deleteItemAsync('auth_token');
@@ -81,7 +83,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const storedToken = await SecureStore.getItemAsync('auth_token');
       const storedUser = await SecureStore.getItemAsync('user');
-      console.log(storedToken, storedUser)
       if (storedToken && storedUser) {
         setToken(storedToken);
         setUser(JSON.parse(storedUser))

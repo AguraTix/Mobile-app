@@ -54,7 +54,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return items.reduce((sum, item) => sum + item.quantity, 0);
   }, [items]);
 
-  const totalPrice = items.reduce((sum, item) => sum + (item.quantity * 0), 0); // Price calculation depends on your data structure
+  const totalPrice = items.reduce((sum, item) => sum + (item.quantity * (item.Food?.foodprice || 0)), 0);
 
   const value: CartContextType = {
     items,

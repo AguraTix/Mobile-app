@@ -147,8 +147,6 @@ export default function HelpSupportScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <Header showLogo />
-      
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <Ionicons name="chevron-back" size={24} color={Colors.text} />

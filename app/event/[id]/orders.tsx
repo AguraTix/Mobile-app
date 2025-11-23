@@ -1,11 +1,12 @@
-import Header from '@/components/Header';
+import Loading from '@/components/Loading';
 import Colors from '@/constants/Colors';
 import { useOrder } from '@/contexts';
 import { FoodOrder } from '@/types/order';
+import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function EventOrdersScreen() {
@@ -20,7 +21,6 @@ export default function EventOrdersScreen() {
       fetchOrdersByEvent(id)
         .then(setOrders)
         .catch((error) => {
-          console.error('Failed to fetch orders:', error);
           // Fallback to myOrders if event-specific fetch fails
           setOrders(myOrders);
         });
@@ -70,16 +70,13 @@ export default function EventOrdersScreen() {
   return (
     <SafeAreaView className="flex-1 bg-background" edges={['top']}>
       <StatusBar style="light" />
-      <Header
-        showLogo
-        showProfile
-        showSearch
-        onSearchPress={() => { }}
-      />
 
       <View className="flex-1">
-        <View className="flex-row justify-between items-center px-5 mb-5">
-          <Text className="text-text text-lg font-bold">Event Orders</Text>
+        <View className="flex-row items-center px-5 py-4 mb-5">
+          <TouchableOpacity onPress={() => router.replace('/home')} className="mr-3 p-1">
+            <Ionicons name="chevron-back" size={24} color={Colors.text} />
+          </TouchableOpacity>
+          <Text className="text-text text-lg font-bold flex-1">Event Orders</Text>
           <TouchableOpacity>
             <Text className="text-text-secondary text-sm">Recent</Text>
           </TouchableOpacity>
@@ -115,10 +112,7 @@ export default function EventOrdersScreen() {
           showsVerticalScrollIndicator={false}
         >
           {isLoading ? (
-            <View className="py-16 items-center justify-center">
-              <ActivityIndicator size="large" color={Colors.primary} />
-              <Text className="text-text-secondary text-base mt-4">Loading orders...</Text>
-            </View>
+            <Loading fullScreen={false} />
           ) : orders.length === 0 ? (
             <View className="py-16 items-center justify-center">
               <Text className="text-text-secondary text-base text-center leading-6">No orders yet</Text>

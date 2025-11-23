@@ -1,9 +1,7 @@
-import Colors from '@/constants/Colors';
-import { useAuth } from '@/contexts';
-import { useRouter } from 'expo-router';
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from 'expo-router';
 import React from 'react';
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 
 interface SettingsOptionProps {
   title: string;
@@ -13,47 +11,31 @@ interface SettingsOptionProps {
   destructive?: boolean;
 }
 
-const SettingsOption: React.FC<SettingsOptionProps> = ({
-  title,
-  subtitle,
-  onPress,
-  showChevron = true,
-  destructive = false
-}) => (
-  <TouchableOpacity style={styles.optionItem} onPress={onPress}>
-    <View style={styles.optionContent}>
-      <Text style={[styles.optionTitle, destructive && styles.destructiveText]}>
-        {title}
-      </Text>
-      {subtitle && <Text style={styles.optionSubtitle}>{subtitle}</Text>}
-    </View>
-    {showChevron && <Ionicons name="chevron-back" size={20} color={Colors.textSecondary} />}
-  </TouchableOpacity>
-);
-
 export default function SettingsScreen() {
   const router = useRouter();
-  const { logout } = useAuth();
-
-  const handleLogout = () => {
-    logout();
-    router.replace('/');
-  };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.blueHeader}>
-        <View style={styles.titleRow}>
-          <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
-            <Ionicons name="chevron-back" size={24} color="#fff" />
-          </TouchableOpacity>
-          <Text style={[styles.screenTitle, { color: '#fff' }]}>Settings</Text>
-        </View>
+    <SafeAreaView className="flex-1 bg-black">
+      {/* Header */}
+      <View className="flex-row items-center px-5 py-4 pt-20">
+        <TouchableOpacity
+          onPress={() => router.back()}
+          className="w-10 h-10 rounded-full bg-neutral-800 items-center justify-center mr-4"
+        >
+          <Ionicons name="chevron-back" size={24} color="#fff" />
+        </TouchableOpacity>
+        <Text className="text-xl font-semibold text-white">Settings</Text>
       </View>
 
-      <View style={styles.content}>
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>General</Text>
+      <View className="flex-1 px-5 pt-4">
+        {/* General Section */}
+        <View className="mb-8">
+          <Text className="text-base font-medium text-neutral-400 mb-4">General</Text>
+
+          <SettingsOption
+            title="Reset Password"
+            onPress={() => router.push('/profile/reset-password')}
+          />
 
           <SettingsOption
             title="Notifications"
@@ -61,8 +43,9 @@ export default function SettingsScreen() {
           />
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Security</Text>
+        {/* Security Section */}
+        <View className="mb-8">
+          <Text className="text-base font-medium text-neutral-400 mb-4">Security</Text>
 
           <SettingsOption
             title="Privacy Policy"
@@ -72,91 +55,29 @@ export default function SettingsScreen() {
             }}
           />
         </View>
-
-        <View style={styles.logoutContainer}>
-          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-            <Text style={styles.logoutButtonText}>Logout</Text>
-          </TouchableOpacity>
-        </View>
       </View>
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  blueHeader: {
-    backgroundColor: '#007AFF',
-    paddingBottom: 20,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 20,
-    marginBottom: 32,
-  },
-  backBtn: {
-    marginRight: 12,
-    padding: 4,
-  },
-  screenTitle: {
-    color: Colors.text,
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  section: {
-    marginBottom: 32,
-  },
-  sectionTitle: {
-    color: Colors.text,
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 16,
-  },
-  optionItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  optionContent: {
-    flex: 1,
-  },
-  optionTitle: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: Colors.text,
-    marginBottom: 4,
-  },
-  optionSubtitle: {
-    fontSize: 14,
-    color: Colors.textSecondary,
-  },
-  destructiveText: {
-    color: Colors.error,
-  },
-  logoutContainer: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    paddingBottom: 32,
-  },
-  logoutButton: {
-    backgroundColor: Colors.primary,
-    borderRadius: 25,
-    paddingVertical: 16,
-    alignItems: 'center',
-  },
-  logoutButtonText: {
-    color: Colors.text,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-});
+const SettingsOption: React.FC<SettingsOptionProps> = ({
+  title,
+  subtitle,
+  onPress,
+  showChevron = true,
+  destructive = false
+}) => (
+  <TouchableOpacity
+    className="flex-row items-center justify-between py-4 mb-2"
+    onPress={onPress}
+    activeOpacity={0.7}
+  >
+    <View className="flex-1 mr-4">
+      <Text className={`text-lg font-medium ${destructive ? 'text-red-500' : 'text-white'}`}>
+        {title}
+      </Text>
+      {subtitle && <Text className="text-sm text-neutral-400 mt-1">{subtitle}</Text>}
+    </View>
+    {showChevron && <Ionicons name="chevron-forward" size={20} color="#fff" />}
+  </TouchableOpacity>
+);

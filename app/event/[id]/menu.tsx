@@ -1,4 +1,3 @@
-import Header from '@/components/Header';
 import Colors from '@/constants/Colors';
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -9,9 +8,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Mock menu items
 const mockMenuItems = [
-  { id: '1', name: 'Burger', category: 'food', price: 5000, available: true },
-  { id: '2', name: 'Pizza', category: 'food', price: 8000, available: true },
-  { id: '3', name: 'Coke', category: 'drinks', price: 2000, available: true },
+  { id: '1', name: 'Big cheese burger', category: 'food', price: 5000, available: true, description: 'This is a big burger cheese for people' },
+  { id: '2', name: 'Pizza', category: 'food', price: 8000, available: true, description: 'This is a fresh pizza for people' },
+  { id: '3', name: 'Coke', category: 'drinks', price: 2000, available: true, description: 'This is a cold drink for people' },
 ];
 
 export default function EventMenuScreen() {
@@ -50,11 +49,10 @@ export default function EventMenuScreen() {
   return (
     <SafeAreaView className="flex-1 bg-background" edges={['top']}>
       <StatusBar style="light" />
-      <Header showLogo showProfile showSearch />
 
       <View className="flex-1">
-        <View className="flex-row items-center px-5 mb-5">
-          <TouchableOpacity onPress={() => router.back()} className="mr-3 p-1">
+        <View className="flex-row items-center px-5 py-4 mb-5">
+          <TouchableOpacity onPress={() => router.replace('/home')} className="mr-3 p-1">
             <Ionicons name="chevron-back" size={24} color={Colors.text} />
           </TouchableOpacity>
           <Text className="text-text text-lg font-bold">Event Menu</Text>
@@ -115,30 +113,66 @@ export default function EventMenuScreen() {
 }
 
 // Menu Item Component
-const MenuItemComponent: React.FC<{ item: any; onPress: () => void }> = ({ item, onPress }) => (
-  <TouchableOpacity
-    className={`bg-card rounded-2xl mb-4 overflow-hidden w-[48%] relative ${!item.available ? 'opacity-60' : ''}`}
-    onPress={onPress}
-    disabled={!item.available}
-    activeOpacity={0.8}
-  >
-    <Image
-      source={require('@/assets/images/m1.png')}
-      className="w-full h-[120px]"
-    />
-    <View className="p-4">
-      <Text className="text-text text-base font-semibold mb-1">{item.name}</Text>
-      <Text className="text-primary text-sm font-bold mb-3">
-        {item.price.toLocaleString()} RWF
-      </Text>
-      <View className="flex-row justify-between items-center">
-        <View className={`px-3 py-1.5 rounded-lg ${!item.available ? 'bg-text-secondary' : 'bg-primary'}`}>
-          <Text className={`text-xs font-semibold ${!item.available ? 'text-background' : 'text-text'}`}>
-            {item.available ? 'Order' : 'Out of Stock'}
-          </Text>
+const MenuItemComponent: React.FC<{ item: any; onPress: () => void }> = ({ item, onPress }) => {
+  const [isFavorite, setIsFavorite] = React.useState(false);
+
+  return (
+    <TouchableOpacity
+      className="bg-card rounded-2xl mb-4 overflow-hidden w-[48%] relative"
+      onPress={onPress}
+      disabled={!item.available}
+      activeOpacity={0.8}
+    >
+      {/* Food Image - Centered */}
+      <View className="items-center justify-center pt-4 pb-2 bg-card">
+        <Image
+          source={require('@/assets/images/m1.png')}
+          className="w-[120px] h-[120px]"
+          resizeMode="contain"
+        />
+      </View>
+
+      {/* Content */}
+      <View className="px-4 pb-4">
+        {/* Title */}
+        <Text className="text-text text-base font-bold mb-1" numberOfLines={1}>
+          {item.name}
+        </Text>
+
+        {/* Description */}
+        <Text className="text-text-secondary text-xs mb-3" numberOfLines={2}>
+          {item.description || `This is a ${item.name.toLowerCase()} for people`}
+        </Text>
+
+        {/* Rating and Favorite */}
+        <View className="flex-row justify-between items-center">
+          <View className="flex-row items-center">
+            <Text className="text-base mr-1">⭐</Text>
+            <Text className="text-text text-sm font-medium">4+</Text>
+          </View>
+
+          <TouchableOpacity
+            onPress={(e) => {
+              e.stopPropagation();
+              setIsFavorite(!isFavorite);
+            }}
+            className="p-1"
+          >
+            <Ionicons
+              name={isFavorite ? "heart" : "heart-outline"}
+              size={20}
+              color={isFavorite ? "#ff4444" : Colors.text}
+            />
+          </TouchableOpacity>
         </View>
       </View>
-    </View>
-    {!item.available && <View className="absolute inset-0 bg-black/50 justify-center items-center" />}
-  </TouchableOpacity>
-);
+
+      {/* Out of stock overlay */}
+      {!item.available && (
+        <View className="absolute inset-0 bg-black/60 justify-center items-center rounded-2xl">
+          <Text className="text-white text-sm font-bold">Out of Stock</Text>
+        </View>
+      )}
+    </TouchableOpacity>
+  );
+};

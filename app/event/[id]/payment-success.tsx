@@ -1,3 +1,4 @@
+import Loading from "@/components/Loading";
 import Colors from "@/constants/Colors";
 import { useOrder } from "@/contexts/OrderContext";
 import { usePayment } from "@/contexts/PaymentContext";
@@ -6,11 +7,10 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
   ScrollView,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -36,7 +36,6 @@ export default function PaymentSuccessScreen() {
       }
       setIsLoading(false);
     } catch (error) {
-      console.error('Failed to load order details:', error);
       setIsLoading(false);
     }
   };
@@ -63,10 +62,7 @@ export default function PaymentSuccessScreen() {
     return (
       <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
         <StatusBar style="light" />
-        <View className="flex-1 justify-center items-center">
-          <ActivityIndicator size="large" color={Colors.primary} />
-          <Text className="text-text text-base mt-4">Loading order details...</Text>
-        </View>
+        <Loading fullScreen />
       </SafeAreaView>
     );
   }

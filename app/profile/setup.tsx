@@ -1,27 +1,24 @@
-import Header from "@/components/Header";
 import Colors from "@/constants/Colors";
 import { useAuth } from "@/contexts";
+import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
   Alert,
   SafeAreaView,
-  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 
 
 export default function MyAccountScreen() {
   const router = useRouter();
   const { user } = useAuth()
-console.log(user)
   const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
   const [phoneNumber, setPhoneNumber] = useState(user?.phone_number || "");
@@ -60,163 +57,93 @@ console.log(user)
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView className="flex-1 bg-background">
       <StatusBar style="light" />
-      <Header showLogo showProfile showSearch />
 
-      <View style={styles.content}>
-        <View style={styles.titleRow}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+      <View className="flex-1 px-5 pt-6">
+        {/* Header */}
+        <View className="flex-row items-center mb-10">
+          <TouchableOpacity
+            onPress={() => router.back()}
+            className="mr-3 p-2 -ml-2"
+            activeOpacity={0.7}
+          >
             <Ionicons name="chevron-back" size={24} color={Colors.text} />
           </TouchableOpacity>
-          <Text style={styles.screenTitle}>My Account</Text>
+          <Text className="text-text text-xl font-bold">My Account</Text>
         </View>
 
-        <View style={styles.profileSection}>
-          <TouchableOpacity style={styles.profileImageContainer} onPress={pickImage}>
-            {profileImage ? (
-              <Image source={{ uri: profileImage }} style={styles.profileImage} />
-            ) : user?.profile_photo ? (
-              <Image source={{ uri: user.profile_photo }} style={styles.profileImage} />
-            ) : (
-              <Image source={require('@/assets/images/profile.jpg')} style={styles.profileImage} />
-            )}
-            <View style={styles.editIndicator}>
-              <Text style={styles.editIcon}>✎</Text>
+        {/* Profile Image */}
+        <View className="items-center mb-12">
+          <TouchableOpacity
+            className="relative"
+            onPress={pickImage}
+            activeOpacity={0.8}
+          >
+            <View className="w-24 h-24 rounded-full items-center justify-center overflow-hidden border-2 border-[#fce7cf]">
+                <Image 
+                source={require('@/assets/images/profile.jpg')} 
+                className="w-full h-full z-5" 
+                contentFit="cover"
+                />
+            </View>
+            <View className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-primary items-center justify-center border-2 border-background shadow-lg">
+              <Ionicons name="camera" size={16} color={Colors.text} />
             </View>
           </TouchableOpacity>
+          <Text className="text-text-secondary text-sm mt-3">Tap to change photo</Text>
         </View>
 
-        <View style={styles.formContainer}>
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Name</Text>
+        {/* Form Fields */}
+        <View className="flex-1">
+          <View className="mb-5">
+            <Text className="text-text text-sm mb-2 font-semibold">Full Name</Text>
             <TextInput
-              style={styles.textInput}
+              className="bg-card rounded-2xl px-5 py-4 text-base text-text border border-transparent focus:border-primary"
               value={name}
               onChangeText={setName}
+              placeholder="Enter your name"
               placeholderTextColor={Colors.textSecondary}
             />
           </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Email</Text>
+          <View className="mb-5">
+            <Text className="text-text text-sm mb-2 font-semibold">Email Address</Text>
             <TextInput
-              style={styles.textInput}
+              className="bg-card rounded-2xl px-5 py-4 text-base text-text border border-transparent focus:border-primary"
               value={email}
               onChangeText={setEmail}
+              placeholder="Enter your email"
               placeholderTextColor={Colors.textSecondary}
               keyboardType="email-address"
               autoCapitalize="none"
             />
           </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Phone Number</Text>
+          <View className="mb-5">
+            <Text className="text-text text-sm mb-2 font-semibold">Phone Number</Text>
             <TextInput
-              style={styles.textInput}
+              className="bg-card rounded-2xl px-5 py-4 text-base text-text border border-transparent focus:border-primary"
               value={phoneNumber}
               onChangeText={setPhoneNumber}
+              placeholder="Enter your phone number"
               placeholderTextColor={Colors.textSecondary}
               keyboardType="phone-pad"
             />
           </View>
         </View>
 
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-            <Text style={styles.saveButtonText}>Save</Text>
+        {/* Save Button */}
+        <View className="pb-10">
+          <TouchableOpacity
+            className="bg-primary rounded-full py-5 items-center shadow-lg active:opacity-90"
+            onPress={handleSave}
+            activeOpacity={0.9}
+          >
+            <Text className="text-text text-lg font-bold">Save Changes</Text>
           </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 32,
-  },
-  backBtn: {
-    marginRight: 12,
-    padding: 4,
-  },
-  screenTitle: {
-    color: Colors.text,
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  profileSection: {
-    alignItems: 'center',
-    marginBottom: 40,
-  },
-  profileImageContainer: {
-    position: 'relative',
-  },
-  profileImage: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-  },
-  editIndicator: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: Colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  editIcon: {
-    color: Colors.text,
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  formContainer: {
-    flex: 1,
-  },
-  inputGroup: {
-    marginBottom: 24,
-  },
-  inputLabel: {
-    color: Colors.textSecondary,
-    fontSize: 14,
-    marginBottom: 8,
-    fontWeight: '500',
-  },
-  textInput: {
-    backgroundColor: '#1C1C1E',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    fontSize: 16,
-    color: Colors.text,
-    borderWidth: 1,
-    borderColor: '#3C3C3E',
-  },
-  buttonContainer: {
-    paddingBottom: 32,
-  },
-  saveButton: {
-    backgroundColor: Colors.primary,
-    borderRadius: 25,
-    paddingVertical: 16,
-    alignItems: 'center',
-  },
-  saveButtonText: {
-    color: Colors.text,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-});

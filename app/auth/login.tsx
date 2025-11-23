@@ -72,7 +72,6 @@ export default function LoginScreen() {
       setLocalError(null);
 
       const redirectUrl = Linking.createURL("/auth/login");
-      console.log(redirectUrl)
       const authUrl = `http://10.12.74.188:3000/api/auth/google?redirect_uri=${encodeURIComponent(redirectUrl)}`;
 
       const result = await WebBrowser.openAuthSessionAsync(

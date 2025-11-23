@@ -18,45 +18,75 @@ export default function BottomNav() {
         {
             name: 'Home',
             path: '/home',
-            icon: <Ionicons name="home" size={26} color={pathname === '/home' ? Colors.primary : Colors.textSecondary} />,
+            icon: <></>,
         },
         {
             name: 'Menu',
             path: '/menu',
-            icon: <Ionicons name="restaurant" size={26} color={pathname === '/menu' ? Colors.primary : Colors.textSecondary} />,
-        },
-        {
-            name: 'Tickets',
-            path: '/tickets',
-            icon: <Ionicons name="ticket" size={26} color={pathname === '/tickets' ? Colors.primary : Colors.textSecondary} />,
+            icon: <></>,
         },
         {
             name: 'Events',
             path: '/events-user',
-            icon: <Ionicons name="time" size={26} color={pathname === '/events-user' ? Colors.primary : Colors.textSecondary} />,
+            icon: <></>,
+        },
+        {
+            name: 'Tickets',
+            path: '/tickets',
+            icon: <></>,
         },
         {
             name: 'Profile',
             path: '/profile-main',
-            icon: <Ionicons name="person" size={26} color={pathname === '/profile-main' ? Colors.primary : Colors.textSecondary} />,
+            icon: <></>,
         },
     ];
 
     return (
-        <View className="flex-row justify-between items-center bg-card rounded-[40px] mx-4 mb-10 mt-2 px-0 py-2.5 shadow-lg" style={styles.shadow}>
-            {navItems.map((item) => {
+        <View className="absolute bottom-5 left-4 right-4 flex-row justify-between items-center bg-[#1A1A1A] rounded-[40px] px-2 py-2 shadow-lg" style={styles.shadow}>
+            {navItems.map((item, index) => {
                 const isFocused = pathname === item.path;
+                const isCenter = index === 2; // The middle item (Events/Star)
+
+                if (isCenter) {
+                    return (
+                        <TouchableOpacity
+                            key={item.path}
+                            accessibilityRole="button"
+                            accessibilityState={isFocused ? { selected: true } : {}}
+                            onPress={() => router.push(item.path as any)}
+                            className="items-center justify-center -mt-8"
+                            activeOpacity={0.9}
+                        >
+                            <View className={`w-16 h-16 rounded-full justify-center items-center border-4 border-[#121212] ${isFocused ? 'bg-card' : 'bg-card'}`}>
+                                <View className="w-14 h-14 rounded-full bg-[#2A2A2A] justify-center items-center border border-white/10">
+                                    <Ionicons name="star" size={24} color={isFocused ? Colors.primary : "#A0A0A0"} />
+                                </View>
+                            </View>
+                        </TouchableOpacity>
+                    );
+                }
+
                 return (
                     <TouchableOpacity
                         key={item.path}
                         accessibilityRole="button"
                         accessibilityState={isFocused ? { selected: true } : {}}
                         onPress={() => router.push(item.path as any)}
-                        className="items-center justify-center px-3"
-                        activeOpacity={0.8}
+                        className="items-center justify-center flex-1"
+                        activeOpacity={0.7}
                     >
-                        <View className={`p-2 rounded-3xl justify-center items-center ${isFocused ? 'bg-input-background border-2 border-primary' : 'bg-transparent'}`}>
-                            {item.icon}
+                        <View className="p-2 justify-center items-center">
+                            <Ionicons
+                                name={
+                                    item.name === 'Home' ? (isFocused ? 'home' : 'home-outline') :
+                                        item.name === 'Menu' ? (isFocused ? 'clipboard' : 'clipboard-outline') :
+                                            item.name === 'Tickets' ? (isFocused ? 'ticket' : 'ticket-outline') :
+                                                (isFocused ? 'person' : 'person-outline')
+                                }
+                                size={24}
+                                color={isFocused ? Colors.primary : "#A0A0A0"}
+                            />
                         </View>
                     </TouchableOpacity>
                 );

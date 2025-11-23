@@ -1,4 +1,3 @@
-import Header from '@/components/Header';
 import Colors from '@/constants/Colors';
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from 'expo-router';
@@ -32,32 +31,31 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onPre
     });
   };
 
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case 'order_success':
-        return '✓';
-      case 'event_reminder':
-        return '📅';
-      case 'promotion':
-        return '🎉';
-      default:
-        return '📱';
-    }
+  const getNotificationIcon = () => {
+    return (
+      <View className="w-12 h-12 rounded-2xl bg-[#4CAF50] items-center justify-center">
+        <Ionicons name="checkmark-circle" size={28} color="#FFFFFF" />
+      </View>
+    );
   };
 
   return (
     <TouchableOpacity
-      className="flex-row items-start py-3 border-b border-white/10"
+      className="flex-row items-start py-4"
       onPress={onPress}
       activeOpacity={0.8}
     >
-      <View className="w-10 h-10 rounded-full bg-[#4CAF50] items-center justify-center mr-3">
-        <Text className="text-white text-lg font-bold">{getNotificationIcon(notification.type)}</Text>
-      </View>
+      {getNotificationIcon()}
 
-      <View className="flex-1 pr-3">
-        <Text className="text-text text-base font-semibold mb-1">{notification.title}</Text>
-        <Text className="text-text-secondary text-sm leading-5 mb-2">{notification.message}</Text>
+      <View className="flex-1 ml-3">
+        <View className="flex-row items-start justify-between mb-1">
+          <Text className="text-text text-base font-semibold flex-1">{notification.title}</Text>
+          <Text className="text-text-secondary text-xs ml-2">{formatTime(notification.timestamp)}</Text>
+        </View>
+
+        <Text className="text-text-secondary text-sm leading-5 mb-2" numberOfLines={2}>
+          {notification.message}
+        </Text>
 
         {notification.actionText && (
           <TouchableOpacity className="self-start">
@@ -66,9 +64,9 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onPre
         )}
       </View>
 
-      <View className="justify-center">
-        <Text className="text-text-secondary text-xs text-right">{formatTime(notification.timestamp)}</Text>
-      </View>
+      {!notification.isRead && (
+        <View className="w-2 h-2 rounded-full bg-primary ml-2 mt-2" />
+      )}
     </TouchableOpacity>
   );
 };
@@ -154,7 +152,6 @@ export default function NotificationsScreen() {
       // const data = await NotificationsAPI.getNotifications();
       setNotifications(mockNotifications);
     } catch (error) {
-      console.error('Failed to load notifications:', error);
       setNotifications(mockNotifications);
     }
   }, [mockNotifications]);
@@ -206,7 +203,7 @@ export default function NotificationsScreen() {
 
     return (
       <View className="mb-6" key={title}>
-        <Text className="text-text text-base font-bold mb-4">{title}</Text>
+        <Text className="text-text-secondary text-sm font-semibold mb-3 uppercase tracking-wide">{title}</Text>
         {notifications.map((notification) => (
           <NotificationItem
             key={notification.id}
@@ -221,43 +218,42 @@ export default function NotificationsScreen() {
   return (
     <SafeAreaView className="flex-1 bg-background" edges={['top']}>
       <StatusBar style="light" />
-      <Header showLogo showProfile showSearch />
 
-      <View className="flex-1 px-5">
-        <View className="flex-row items-center mb-6">
+      <View className="flex-1">
+        {/* Header */}
+        <View className="flex-row items-center px-5 py-4 mb-4">
           <TouchableOpacity onPress={() => router.back()} className="mr-3 p-1">
             <Ionicons name="chevron-back" size={24} color={Colors.text} />
           </TouchableOpacity>
-          <Text className="text-text text-lg font-bold">Notifications</Text>
+          <Text className="text-text text-lg font-semibold">Notifications</Text>
         </View>
 
-        <View className="flex-1 bg-card rounded-2xl border-2 border-[#007AFF] border-dashed p-5">
-          <ScrollView
-            className="flex-1"
-            contentContainerStyle={{ paddingBottom: 20 }}
-            showsVerticalScrollIndicator={false}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={onRefresh}
-                tintColor={Colors.text}
-              />
-            }
-          >
-            {renderNotificationGroup('Today', groupedNotifications.today)}
-            {renderNotificationGroup('Yesterday', groupedNotifications.yesterday)}
-            {renderNotificationGroup('Older', groupedNotifications.older)}
+        {/* Notifications List */}
+        <ScrollView
+          className="flex-1 px-5"
+          contentContainerStyle={{ paddingBottom: 20 }}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={Colors.text}
+            />
+          }
+        >
+          {renderNotificationGroup('Today', groupedNotifications.today)}
+          {renderNotificationGroup('Yesterday', groupedNotifications.yesterday)}
+          {renderNotificationGroup('Older', groupedNotifications.older)}
 
-            {notifications.length === 0 && (
-              <View className="items-center justify-center py-16">
-                <Text className="text-text text-lg font-semibold mb-2">No notifications yet</Text>
-                <Text className="text-text-secondary text-sm text-center leading-5">
-                  You&apos;ll see your notifications here when you have some
-                </Text>
-              </View>
-            )}
-          </ScrollView>
-        </View>
+          {notifications.length === 0 && (
+            <View className="items-center justify-center py-16">
+              <Text className="text-text text-lg font-semibold mb-2">No notifications yet</Text>
+              <Text className="text-text-secondary text-sm text-center leading-5">
+                You'll see your notifications here when you have some
+              </Text>
+            </View>
+          )}
+        </ScrollView>
       </View>
     </SafeAreaView>
   );

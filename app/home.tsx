@@ -1,19 +1,19 @@
 import BottomNav from "@/components/BottomNav";
 import EventCard from "@/components/EventCard";
-import SearchBar from "@/components/SearchBar";
+import FoodCard from "@/components/FoodCard";
 import SectionHeader from "@/components/SectionHeader";
 import Skeleton from "@/components/Skeleton";
 import Colors from "@/constants/Colors";
-import { useAuth, useEvent } from "@/contexts";
+import { useAuth, useEvent, useOrder } from "@/contexts";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   Dimensions,
+  Image,
   RefreshControl,
   ScrollView,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View
@@ -22,78 +22,16 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get("window");
 
-
-
 export default function HomeScreen() {
   const router = useRouter();
   const { user } = useAuth()
-  const { events, featuredEvents, upcomingEvents, recentEvents, isLoading:loading } = useEvent();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [recentSearches, setRecentSearches] = useState<string[]>([
-    "music festival",
-    "tech conference",
-    "food expo",
-    "art exhibition"
-  ]);
-  const [popularSearches, setPopularSearches] = useState<string[]>([
-    "summer events",
-    "live music",
-    "sports games",
-    "business networking"
-  ]);
+  const { featuredEvents, upcomingEvents, fetchEvents, fetchFeaturedEvents, isLoading: loading } = useEvent();
+  const { myOrders, fetchMyOrders, isLoading: ordersLoading } = useOrder();
   const [refreshing, setRefreshing] = useState(false);
-
-
-  const quickActions = [
-    {
-      id: "1",
-      title: "My Tickets",
-      icon: "🎫",
-      color: Colors.primary,
-      onPress: () => router.push("/tickets")
-    },
-    {
-      id: "2",
-      title: "Book Event",
-      icon: "📅",
-      color: "#3b82f6",
-      onPress: () => router.push("/events-user")
-    },
-    {
-      id: "3",
-      title: "Food & Drinks",
-      icon: "🍔",
-      color: "#f59e0b",
-      onPress: () => router.push("/events-user")
-    },
-    {
-      id: "4",
-      title: "Get Help",
-      icon: "❓",
-      color: "#10b981",
-      onPress: () => router.push("/profile/help-support")
-    }
-  ];
-
-  const categories = [
-    { name: "Music", icon: "🎵", color: Colors.primary },
-    { name: "Sports", icon: "⚽", color: Colors.success },
-    { name: "Technology", icon: "💻", color: Colors.info },
-    { name: "Food", icon: "🍕", color: Colors.warning },
-    { name: "Art", icon: "🎨", color: Colors.error },
-    { name: "Business", icon: "💼", color: Colors.primaryLight }
-  ];
-
-  const handleSearch = (query: string) => {
-    if (query.trim()) {
-      // Add to recent searches
-      const newRecentSearches = [query.trim(), ...recentSearches.filter(s => s !== query.trim())].slice(0, 5);
-      setRecentSearches(newRecentSearches);
-      console.log('Searching for:', query.trim());
-    }
-  };
+  const [activeSlide, setActiveSlide] = React.useState(0);
 
   const handleEventPress = (eventId: string) => {
+    if (!eventId) return
     router.push(`/event/${eventId}`);
   };
 
@@ -101,23 +39,24 @@ export default function HomeScreen() {
     router.push("/events-user");
   };
 
-  const handleViewAllUpcoming = () => {
-    router.push("/events/upcoming");
-  };
 
-  const handleQuickAction = (action: any) => {
-    action.onPress();
-  };
 
   const onRefresh = async () => {
     setRefreshing(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setRefreshing(false);
+    try {
+      await Promise.all([
+        fetchEvents(),
+        fetchFeaturedEvents(),
+      ]);
+    } catch (error) {
+      console.error('Error refreshing:', error);
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   const handleNotificationPress = () => {
-    Alert.alert("Notifications", "You have 3 new notifications");
+    router.push('/notifications');
   };
 
   return (
@@ -129,142 +68,230 @@ export default function HomeScreen() {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        {/* Header */}
+        {/* Top Header with Logo */}
         <View className="flex-row justify-between items-center px-5 py-4">
-          <View className="flex-1">
-            <Text className="text-3xl font-bold text-text mb-1">Hello, {user?.name || 'Guest'}! 👋</Text>
-            <Text className="text-base text-text-secondary">Discover amazing events today</Text>
+          <Text className="text-2xl font-bold text-text">Agura</Text>
+          <View className="flex-row items-center gap-3">
+            <TouchableOpacity
+              className="p-2"
+              onPress={() => router.push("/events-user")}
+              activeOpacity={0.8}
+            >
+              <Ionicons name="search" size={24} color={Colors.text} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              className="relative p-2"
+              onPress={handleNotificationPress}
+              activeOpacity={0.8}
+            >
+              <Ionicons name="notifications-outline" size={24} color={Colors.text} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              className="relative"
+              onPress={handleNotificationPress}
+              activeOpacity={0.8}
+            >
+              <Image
+                source={require('@/assets/images/profile.jpg')}
+                className="w-10 h-10 rounded-full"
+              />
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity
-            className="relative p-2 rounded-lg bg-card"
-            onPress={handleNotificationPress}
-            activeOpacity={0.8}
-          >
-            <Ionicons name="notifications" size={24} color={Colors.text} />
-            <View className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary" />
+        </View>
+
+        {/* Upcoming Events Title with See All */}
+        <View className="flex-row justify-between items-center px-5 mb-4">
+          <Text className="text-xl font-bold text-text">Upcoming Events</Text>
+          <TouchableOpacity onPress={handleViewAllEvents}>
+            <Text className="text-primary text-base font-semibold">See All</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Search Bar */}
-        <View className="px-5">
-          <SearchBar
-            placeholder="Search events, venues, or categories..."
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            onSearch={handleSearch}
-            showFilter={true}
-            showSuggestions={true}
-            recentSearches={recentSearches}
-            popularSearches={popularSearches}
-          />
-        </View>
-
-        {/* Quick Actions */}
-        <View className="mb-8 px-5">
-          <Text className="text-xl font-bold text-text mb-4">Quick Actions</Text>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ gap: 16 }}
-          >
-            {quickActions.map((action) => (
-              <TouchableOpacity
-                key={action.id}
-                className="w-[140px] p-4 rounded-lg items-center justify-center min-h-[100px] bg-card mr-4"
-                style={[{ backgroundColor: action.color + '20' }, styles.shadow]}
-                onPress={() => handleQuickAction(action)}
-                activeOpacity={0.8}
-              >
-                <Text className="text-2xl mb-2">{action.icon}</Text>
-                <Text className="text-sm font-semibold text-text text-center">{action.title}</Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
-
-        {/* Featured Events */}
-        <View className="mb-10">
-          <View className="px-5">
-            <SectionHeader
-              title="Featured Events"
-              subtitle="Handpicked events just for you"
-              showSeeAll={true}
-              onSeeAllPress={handleViewAllEvents}
-            />
-          </View>
+        {/* Upcoming Events Carousel */}
+        <View className="mb-6">
           {loading ? (
-            <View className="flex-row px-5 gap-5">
-              <View className="w-[calc(100vw-40px)] mr-5"><Skeleton height={200} radius={16} /></View>
-              <View className="w-[calc(100vw-40px)] mr-5"><Skeleton height={200} radius={16} /></View>
+            <View className="px-5">
+              <Skeleton height={400} radius={20} />
             </View>
           ) : (
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ paddingHorizontal: 20 }}
-            >
-              {featuredEvents.map((event) => (
-                <View key={event.event_id} style={{ width: width - 40, marginRight: 20 }}>
-                  <EventCard
-                    event={event}
-                    variant="detailed"
-                    onPress={() => handleEventPress(event.event_id)}
-                    onFavorite={() => Alert.alert("Favorite", "Added to favorites")}
-                    onShare={() => Alert.alert("Share", "Sharing event...")}
-                    onBookmark={() => Alert.alert("Bookmark", "Bookmarked event")}
+            <>
+              <ScrollView
+                horizontal
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+                onScroll={(e) => {
+                  const slideIndex = Math.round(e.nativeEvent.contentOffset.x / width);
+                  setActiveSlide(slideIndex);
+                }}
+                scrollEventThrottle={16}
+              >
+                {upcomingEvents.slice(0, 3).map((event) => (
+                  <View key={event.event_id} style={{ width: width }} className="px-5">
+                    <EventCard
+                      event={event}
+                      variant="detailed"
+                      onPress={() => handleEventPress(event.event_id)}
+                      onFavorite={() => Alert.alert("Favorite", "Added to favorites")}
+                      onShare={() => Alert.alert("Share", "Sharing event...")}
+                      onBookmark={() => Alert.alert("Bookmark", "Bookmarked event")}
+                    />
+                  </View>
+                ))}
+              </ScrollView>
+
+              {/* Dots Indicator */}
+              <View className="flex-row justify-center items-center mt-2 gap-2">
+                {upcomingEvents.slice(0, 3).map((_, index) => (
+                  <View
+                    key={index}
+                    className={`h-2 rounded-full ${index === activeSlide ? 'w-6 bg-primary' : 'w-2 bg-text-secondary'}`}
                   />
-                </View>
-              ))}
-            </ScrollView>
+                ))}
+              </View>
+            </>
           )}
         </View>
 
-        {/* Upcoming Events */}
-        <View className="mb-10 px-5">
+        {/* Available Events */}
+        <View className="mb-6 px-5">
           <SectionHeader
-            title="Upcoming Events"
-            subtitle="Events happening soon"
+            title="Available Events"
+            subtitle=""
             showSeeAll={true}
-            onSeeAllPress={handleViewAllUpcoming}
+            onSeeAllPress={handleViewAllEvents}
           />
           {loading ? (
             <View className="gap-3">
-              <Skeleton height={92} radius={12} />
-              <Skeleton height={92} radius={12} />
-              <Skeleton height={92} radius={12} />
+              <Skeleton height={140} radius={16} />
+              <Skeleton height={140} radius={16} />
             </View>
           ) : (
-            upcomingEvents.map((event) => (
+            featuredEvents.slice(0, 3).map((event) => (
               <EventCard
                 key={event.event_id}
                 event={event}
-                variant="default"
+                variant="list"
                 onPress={() => handleEventPress(event.event_id)}
-                onFavorite={() => Alert.alert("Favorite", "Added to favorites")}
               />
             ))
           )}
         </View>
 
-        {/* Event Categories */}
-        <View className="mb-10 px-5">
-          <Text className="text-xl font-bold text-text mb-4">Browse by Category</Text>
-          <View className="flex-row flex-wrap gap-4">
-            {categories.map((category, index) => (
-              <TouchableOpacity
-                key={index}
-                className="w-[47%] p-5 rounded-lg items-center justify-center min-h-[100px] bg-card"
-                style={[{ backgroundColor: category.color + '20' }, styles.shadow]}
-                onPress={() => {
-                  console.log('Selected category:', category.name);
-                }}
-                activeOpacity={0.8}
-              >
-                <Text className="text-[32px] mb-2">{category.icon}</Text>
-                <Text className="text-base font-semibold text-text text-center">{category.name}</Text>
-              </TouchableOpacity>
-            ))}
+        {/* Booked Events */}
+        <View className="mb-6 px-5">
+          <SectionHeader
+            title="Booked Events"
+            subtitle=""
+            showSeeAll={true}
+            onSeeAllPress={() => router.push("/tickets")}
+          />
+          {loading ? (
+            <View className="gap-3">
+              <Skeleton height={140} radius={16} />
+              <Skeleton height={140} radius={16} />
+            </View>
+          ) : (
+            upcomingEvents.slice(0, 3).map((event) => (
+              <EventCard
+                key={event.event_id}
+                event={event}
+                variant="list"
+                onPress={() => handleEventPress(event.event_id)}
+              />
+            ))
+          )}
+        </View>
+
+        {/* Orders Section */}
+        {myOrders.length > 0 && (
+          <View className="mb-6">
+            <View className="px-5">
+              <SectionHeader
+                title="Orders"
+                subtitle=""
+                showSeeAll={true}
+                onSeeAllPress={() => router.push("/tickets")}
+              />
+            </View>
+            {ordersLoading ? (
+              <View className="px-5">
+                <Skeleton height={80} radius={16} />
+              </View>
+            ) : (
+              <View className="px-5 gap-4">
+                {myOrders.slice(0, 3).map((order) => (
+                  <TouchableOpacity
+                    key={order.order_id}
+                    className="bg-[#1A1A1A] rounded-[24px] p-4 flex-row items-center overflow-hidden relative"
+                    activeOpacity={0.8}
+                    onPress={() => router.push(`/event/${order.event_id}/orders`)}
+                  >
+                    {/* Ribbon */}
+                    <View className="absolute top-0 right-0 bg-[#2E7D32] px-6 py-1 transform rotate-45 translate-x-4 translate-y-2 z-10">
+                      <Text className="text-white text-[10px] font-bold uppercase">Complete</Text>
+                    </View>
+
+                    {/* Image */}
+                    <View className="w-14 h-14 rounded-2xl bg-white overflow-hidden mr-4">
+                      <Image
+                        source={require('@/assets/images/m1.png')}
+                        className="w-full h-full"
+                        resizeMode="cover"
+                      />
+                    </View>
+
+                    {/* Content */}
+                    <View className="flex-1 mr-8">
+                      <Text className="text-white font-bold text-base mb-1" numberOfLines={1}>
+                        Soft Drinks
+                      </Text>
+                      <Text className="text-gray-400 text-xs" numberOfLines={1}>
+                        Juice and Fries
+                      </Text>
+                      <Text className="text-primary text-xs font-bold mt-1">
+                        20,000 RWF
+                      </Text>
+                    </View>
+
+                    {/* Quantity */}
+                    <Text className="text-white text-lg font-medium mr-2">
+                      {order.quantity || 1}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
           </View>
+        )}
+
+        {/* Food & Drinks Section */}
+        <View className="mb-6">
+          <View className="px-5">
+            <SectionHeader
+              title="Food & Drinks"
+              subtitle=""
+              showSeeAll={true}
+              onSeeAllPress={() => router.push("/menu")}
+            />
+          </View>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingHorizontal: 20 }}
+          >
+            {[
+              { id: '1', name: 'Burger', category: 'food', price: 5000, image: require('@/assets/images/m1.png') },
+              { id: '2', name: 'Pizza', category: 'food', price: 8000, image: require('@/assets/images/m1.png') },
+              { id: '3', name: 'Coke', category: 'drinks', price: 2000, image: require('@/assets/images/m1.png') },
+            ].map((item) => (
+              <FoodCard
+                key={item.id}
+                item={item}
+                onPress={() => router.push(`/event/mock-event-id/food-detail?itemId=${item.id}`)}
+                onAdd={() => router.push(`/event/mock-event-id/food-detail?itemId=${item.id}`)}
+              />
+            ))}
+          </ScrollView>
         </View>
 
         {/* Bottom Spacing */}
@@ -274,13 +301,3 @@ export default function HomeScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  shadow: {
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-  },
-});

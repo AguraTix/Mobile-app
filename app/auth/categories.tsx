@@ -31,8 +31,7 @@ export default function CategoriesScreen() {
   };
 
   const handleSave = () => {
-    // Mock save - just navigate back
-    router.replace('/home');
+    router.replace('/auth/login');
   };
 
   return (

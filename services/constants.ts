@@ -1,6 +1,6 @@
 // API Configuration Constants
 
-const SERVER_URL = 'https://agurabackend.onrender.com'
+const SERVER_URL = 'https://agura-ticketing-backend.onrender.com'
 
 export const API_CONFIG = {
   BASE_URL: SERVER_URL,

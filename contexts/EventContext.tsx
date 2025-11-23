@@ -14,6 +14,7 @@ interface EventContextType {
   fetchRecentEvents: (limit?: number, offset?: number) => Promise<void>;
   fetchEventById: (eventId: string) => Promise<void>;
   fetchEventsByVenue: (venueId: string) => Promise<void>;
+  fetchFeaturedEvents: (limit?: number, offset?: number) => Promise<void>;
   createEvent: (data: EventCreateInput) => Promise<Event>;
   updateEvent: (eventId: string, data: EventUpdateInput) => Promise<Event>;
   deleteEvent: (eventId: string) => Promise<void>;
@@ -197,12 +198,13 @@ export function EventProvider({ children }: { children: ReactNode }) {
     fetchRecentEvents,
     fetchEventById,
     fetchEventsByVenue,
+    fetchFeaturedEvents,
     createEvent,
     updateEvent,
     deleteEvent,
     clearError,
     featuredEvents,
-    upcomingEvents,
+    upcomingEvents:recentEvents,
     recentEvents,
   };
 
