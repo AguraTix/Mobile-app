@@ -14,7 +14,6 @@ import {
   TouchableOpacity,
   View
 } from "react-native";
-import MapView, { Marker } from "react-native-maps";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export const options = {
@@ -171,37 +170,7 @@ export default function EventDetailScreen() {
           )}
         </View>
 
-        {/* Location Section */}
-        {coords.latitude && coords.longitude && (
-          <View className="px-5 mb-5">
-            <Text className="text-text text-xl font-bold mb-4">Location</Text>
-            <TouchableOpacity className="h-[200px] rounded-2xl overflow-hidden" onPress={handleViewMap}>
-              <MapView
-                style={styles.map}
-                initialRegion={{
-                  latitude: coords.latitude,
-                  longitude: coords.longitude,
-                  latitudeDelta: 0.01,
-                  longitudeDelta: 0.01,
-                }}
-                scrollEnabled={false}
-                zoomEnabled={false}
-                rotateEnabled={false}
-                pitchEnabled={false}
-              >
-                <Marker
-                  coordinate={{
-                    latitude: coords.latitude,
-                    longitude: coords.longitude,
-                  }}
-                  title={currentEvent?.title || "Event Location"}
-                  description={currentEvent?.Venue?.location || currentEvent?.Venue?.name || ""}
-                  pinColor={Colors.primary}
-                />
-              </MapView>
-            </TouchableOpacity>
-          </View>
-        )}
+        
       </ScrollView>
     </SafeAreaView>
   );

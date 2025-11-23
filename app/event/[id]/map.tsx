@@ -3,11 +3,9 @@ import Colors from '@/constants/Colors';
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
-import { Dimensions, Text, TouchableOpacity, View } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const { width, height } = Dimensions.get('window');
 
 export default function EventMapScreen() {
   const router = useRouter();
@@ -30,24 +28,6 @@ export default function EventMapScreen() {
         </TouchableOpacity>
         <Text className="text-lg font-bold text-text">{event.venue}</Text>
       </View>
-      <MapView
-        className="flex-1 w-full h-full rounded-t-3xl mt-0"
-        initialRegion={{
-          latitude: event.latitude,
-          longitude: event.longitude,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
-        }}
-        showsUserLocation
-        showsMyLocationButton
-        showsCompass
-        provider={undefined}
-      >
-        <Marker
-          coordinate={{ latitude: event.latitude, longitude: event.longitude }}
-          title={event.venue}
-        />
-      </MapView>
     </SafeAreaView>
   );
 }

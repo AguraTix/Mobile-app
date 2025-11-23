@@ -27,7 +27,7 @@ const { width } = Dimensions.get("window");
 export default function HomeScreen() {
   const router = useRouter();
   const { user } = useAuth()
-  const {featuredEvents, upcomingEvents, fetchEvents,fetchFeaturedEvents, isLoading:loading } = useEvent();
+  const { featuredEvents, upcomingEvents, fetchEvents, fetchFeaturedEvents, isLoading: loading } = useEvent();
   const [searchQuery, setSearchQuery] = useState("");
   const [recentSearches, setRecentSearches] = useState<string[]>([
     "music festival",
@@ -94,6 +94,7 @@ export default function HomeScreen() {
   };
 
   const handleEventPress = (eventId: string) => {
+    if (!eventId) return
     router.push(`/event/${eventId}`);
   };
 
