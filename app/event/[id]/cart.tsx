@@ -1,46 +1,20 @@
 import Header from '@/components/Header';
 import Colors from '@/constants/Colors';
+import { useCart } from '@/contexts';
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
+import React from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-// Mock cart item type
-type CartItem = {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-  image_url?: string;
-};
 
 export default function CartScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
-  const [cart, setCart] = useState<CartItem[]>([]);
-
-  const updateQuantity = (itemId: string, newQuantity: number) => {
-    if (newQuantity <= 0) {
-      setCart(cart.filter(item => item.id !== itemId));
-    } else {
-      setCart(cart.map(item =>
-        item.id === itemId ? { ...item, quantity: newQuantity } : item
-      ));
-    }
-  };
-
-  const removeItem = (itemId: string) => {
-    setCart(cart.filter(item => item.id !== itemId));
-  };
-
-  const calculateTotal = () => {
-    return cart.reduce((sum: number, item: CartItem) => sum + (item.price * item.quantity), 0);
-  };
+  const { items, totalPrice, updateItemQuantity, removeItem, clearCart, getTotalItems } = useCart();
 
   const handleProceedToCheckout = () => {
-    if (cart.length === 0) return;
+    if (items.length === 0) return;
     router.push(`/event/${id}/payment-info`);
   };
 
@@ -49,13 +23,13 @@ export default function CartScreen() {
   };
 
   // Cart Item Component
-  const CartItemComponent = ({ item }: { item: CartItem }) => (
+  const CartItemComponent = ({ item }: { item: typeof items[0] }) => (
     <View className="flex-row items-start bg-[#1C1C1E] rounded-2xl p-4 mb-3 relative">
       <View className="w-[60px] h-[60px] rounded-xl overflow-hidden mr-4">
         <Image
           source={
-            item.image_url
-              ? { uri: item.image_url }
+            item.Food?.foodimage
+              ? { uri: item.Food.foodimage }
               : require('@/assets/images/m1.png')
           }
           className="w-full h-full"
@@ -63,9 +37,9 @@ export default function CartScreen() {
       </View>
 
       <View className="flex-1 mr-3">
-        <Text className="text-text text-base font-semibold mb-1">{item.name}</Text>
+        <Text className="text-text text-base font-semibold mb-1">{item.Food?.foodname || 'Food Item'}</Text>
         <Text className="text-text-secondary text-sm font-medium">
-          {item.price.toLocaleString()} RWF each
+          {(item.Food?.foodprice || 0).toLocaleString()} RWF each
         </Text>
       </View>
 
@@ -73,7 +47,7 @@ export default function CartScreen() {
         <View className="flex-row items-center bg-primary rounded-[20px] px-1 py-1 mb-2">
           <TouchableOpacity
             className="w-7 h-7 rounded-[14px] bg-white/20 items-center justify-center"
-            onPress={() => updateQuantity(item.id, item.quantity - 1)}
+            onPress={() => updateItemQuantity(item.order_id, item.quantity - 1)}
           >
             <Ionicons name="remove" size={16} color={Colors.text} />
           </TouchableOpacity>
@@ -82,19 +56,19 @@ export default function CartScreen() {
 
           <TouchableOpacity
             className="w-7 h-7 rounded-[14px] bg-white/20 items-center justify-center"
-            onPress={() => updateQuantity(item.id, item.quantity + 1)}
+            onPress={() => updateItemQuantity(item.order_id, item.quantity + 1)}
           >
             <Ionicons name="add" size={16} color={Colors.text} />
           </TouchableOpacity>
         </View>
 
         <Text className="text-primary text-sm font-bold mb-1">
-          {(item.price * item.quantity).toLocaleString()} RWF
+          {((item.Food?.foodprice || 0) * item.quantity).toLocaleString()} RWF
         </Text>
 
         <TouchableOpacity
           className="px-2 py-1"
-          onPress={() => removeItem(item.id)}
+          onPress={() => removeItem(item.order_id)}
         >
           <Text className="text-[#ff4444] text-xs font-semibold">Remove</Text>
         </TouchableOpacity>
@@ -122,8 +96,8 @@ export default function CartScreen() {
             <Ionicons name="chevron-back" size={24} color={Colors.text} />
           </TouchableOpacity>
           <Text className="text-text text-lg font-bold flex-1">Your Cart</Text>
-          {cart.length > 0 && (
-            <TouchableOpacity onPress={() => setCart([])} className="px-3 py-1.5 bg-text-secondary rounded-lg">
+          {items.length > 0 && (
+            <TouchableOpacity onPress={clearCart} className="px-3 py-1.5 bg-text-secondary rounded-lg">
               <Text className="text-text text-sm font-semibold">Clear</Text>
             </TouchableOpacity>
           )}
@@ -134,7 +108,7 @@ export default function CartScreen() {
           contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 120 }}
           showsVerticalScrollIndicator={false}
         >
-          {cart.length === 0 ? (
+          {items.length === 0 ? (
             <View className="py-16 items-center justify-center">
               <Text className="text-text text-xl font-bold mb-2">Your cart is empty</Text>
               <Text className="text-text-secondary text-base text-center mb-6">
@@ -149,23 +123,23 @@ export default function CartScreen() {
             </View>
           ) : (
             <>
-              {cart.map((item) => (
-                <CartItemComponent key={item.id} item={item} />
+              {items.map((item) => (
+                <CartItemComponent key={item.order_id} item={item} />
               ))}
 
               {/* Order Summary */}
               <View className="bg-card rounded-2xl p-5 mt-5">
                 <View className="flex-row justify-between items-center mb-3">
-                  <Text className="text-text-secondary text-sm">Items ({cart.length})</Text>
+                  <Text className="text-text-secondary text-sm">Items ({items.length})</Text>
                   <Text className="text-text text-sm font-medium">
-                    {cart.reduce((sum, item) => sum + item.quantity, 0)} items
+                    {getTotalItems()} items
                   </Text>
                 </View>
 
                 <View className="flex-row justify-between items-center mb-3">
                   <Text className="text-text-secondary text-sm">Subtotal</Text>
                   <Text className="text-text text-sm font-medium">
-                    {calculateTotal().toLocaleString()} RWF
+                    {totalPrice.toLocaleString()} RWF
                   </Text>
                 </View>
 
@@ -174,7 +148,7 @@ export default function CartScreen() {
                 <View className="flex-row justify-between items-center">
                   <Text className="text-text text-base font-bold">Total</Text>
                   <Text className="text-primary text-base font-bold">
-                    {calculateTotal().toLocaleString()} RWF
+                    {totalPrice.toLocaleString()} RWF
                   </Text>
                 </View>
               </View>
@@ -183,12 +157,12 @@ export default function CartScreen() {
         </ScrollView>
 
         {/* Cart Footer */}
-        {cart.length > 0 && (
+        {items.length > 0 && (
           <View className="absolute bottom-0 left-0 right-0 bg-card rounded-t-3xl p-5 pb-8" style={styles.shadow}>
             <View className="flex-row justify-between items-center mb-5">
               <Text className="text-text text-base font-bold">Total</Text>
               <Text className="text-text text-xl font-bold">
-                {calculateTotal().toLocaleString()} RWF
+                {totalPrice.toLocaleString()} RWF
               </Text>
             </View>
 

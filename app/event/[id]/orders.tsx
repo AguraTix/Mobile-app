@@ -1,7 +1,8 @@
-import Header from '@/components/Header';
 import Loading from '@/components/Loading';
+import Colors from '@/constants/Colors';
 import { useOrder } from '@/contexts';
 import { FoodOrder } from '@/types/order';
+import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
@@ -69,16 +70,13 @@ export default function EventOrdersScreen() {
   return (
     <SafeAreaView className="flex-1 bg-background" edges={['top']}>
       <StatusBar style="light" />
-      <Header
-        showLogo
-        showProfile
-        showSearch
-        onSearchPress={() => { }}
-      />
 
       <View className="flex-1">
-        <View className="flex-row justify-between items-center px-5 mb-5">
-          <Text className="text-text text-lg font-bold">Event Orders</Text>
+        <View className="flex-row items-center px-5 py-4 mb-5">
+          <TouchableOpacity onPress={() => router.back()} className="mr-3 p-1">
+            <Ionicons name="chevron-back" size={24} color={Colors.text} />
+          </TouchableOpacity>
+          <Text className="text-text text-lg font-bold flex-1">Event Orders</Text>
           <TouchableOpacity>
             <Text className="text-text-secondary text-sm">Recent</Text>
           </TouchableOpacity>
