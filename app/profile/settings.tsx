@@ -17,7 +17,7 @@ export default function SettingsScreen() {
   return (
     <SafeAreaView className="flex-1 bg-black">
       {/* Header */}
-      <View className="flex-row items-center px-5 py-4">
+      <View className="flex-row items-center px-5 py-4 pt-20">
         <TouchableOpacity
           onPress={() => router.back()}
           className="w-10 h-10 rounded-full bg-neutral-800 items-center justify-center mr-4"

@@ -138,7 +138,7 @@ export default function TicketsScreen() {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+    <SafeAreaView className="flex-1  bg-background" edges={["top"]}>
       <Header title="My Tickets" showBack />
 
       <ScrollView

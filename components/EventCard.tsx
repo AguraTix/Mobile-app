@@ -104,7 +104,6 @@ export default function EventCard({
   if (loading) {
     return <EventCardSkeleton variant={variant} />;
   }
-
   if (variant === "grid") {
     const minPrice = getMinPrice();
     return (
@@ -147,15 +146,7 @@ export default function EventCard({
                 </View>
               )}
 
-              {/* Favorite Button */}
-              {onFavorite && (
-                <TouchableOpacity
-                  className={`absolute top-2 right-2 p-1.5 rounded-full ${isFavorite ? 'bg-primary' : 'bg-black/60'}`}
-                  onPress={onFavorite}
-                >
-                  <Ionicons name="heart" size={14} color={isFavorite ? '#ffffff' : Colors.text} />
-                </TouchableOpacity>
-              )}
+
             </View>
 
             {/* Content */}
@@ -300,11 +291,11 @@ export default function EventCard({
   }
 
   if (variant === "detailed") {
-    const minPrice = getMinPrice();
+    console.log(event.date)
     return (
       <Animated.View style={[{ opacity: opacityAnim }, styles.detailedShadow]} className="bg-card rounded-[20px] mb-5 overflow-hidden">
         <TouchableOpacity
-          className="bg-card rounded-[20px] overflow-hidden"
+          className="bg-card rounded-[20px] overflow-hidden relative"
           onPress={onPress}
           activeOpacity={0.8}
           onPressIn={handlePressIn}
@@ -314,11 +305,13 @@ export default function EventCard({
             <View className="relative h-[250px]">
               <Image
                 source={getImageSource()}
-                className="w-full h-full"
+                className="w-full h-full object-cover"
                 resizeMode="cover"
                 onLoad={() => setImageLoaded(true)}
                 onError={() => setImageError(true)}
               />
+              {/* Dark Overlay to reduce brightness */}
+              <View className="absolute inset-0 bg-black/30" />
               {!imageLoaded && !imageError && (
                 <View className="absolute inset-0 bg-card justify-center items-center">
                   <ActivityIndicator color={Colors.primary} />
@@ -330,68 +323,25 @@ export default function EventCard({
                 </View>
               )}
 
-              {/* Action Buttons */}
-              <View className="absolute top-[50px] right-3 flex-col gap-2.5 items-center justify-start">
-                {onFavorite && (
-                  <TouchableOpacity
-                    className={`p-2.5 rounded-3xl justify-center items-center w-11 h-11 ${isFavorite ? 'bg-primary' : 'bg-black/50'}`}
-                    onPress={onFavorite}
-                  >
-                    <Ionicons name="heart" size={20} color={isFavorite ? '#ffffff' : Colors.text} />
-                  </TouchableOpacity>
-                )}
-                {onShare && (
-                  <TouchableOpacity className="bg-black/50 p-2.5 rounded-3xl justify-center items-center w-11 h-11" onPress={onShare}>
-                    <Ionicons name="share-social" size={20} color={Colors.text} />
-                  </TouchableOpacity>
-                )}
-                {onBookmark && (
-                  <TouchableOpacity
-                    className={`p-2.5 rounded-3xl justify-center items-center w-11 h-11 ${isBookmarked ? 'bg-primary' : 'bg-black/50'}`}
-                    onPress={onBookmark}
-                  >
-                    <Ionicons name="bookmark" size={20} color={isBookmarked ? '#ffffff' : Colors.text} />
-                  </TouchableOpacity>
-                )}
-              </View>
 
-              {/* Price Badge */}
-              {minPrice !== null && (
-                <View className="absolute bottom-3 left-3 bg-primary px-4 py-2 rounded-[20px]">
-                  <Text className="text-white text-sm font-semibold">
-                    {minPrice === 0 ? 'Free' : `$${minPrice} `}
-                  </Text>
-                </View>
-              )}
             </View>
 
-            <View className="p-5">
+            <View className="p-5 absolute bottom-0">
               <View className="mb-3">
                 <Text className="text-[22px] font-bold text-text leading-7" numberOfLines={2}>
                   {event.title}
                 </Text>
               </View>
 
-              {event.description && (
-                <Text className="text-base text-text-secondary leading-6 mb-4" numberOfLines={2}>
-                  {event.description}
-                </Text>
-              )}
-
               <View className="gap-3">
                 <View className="flex-row justify-between">
                   <View className="flex-row items-center gap-3">
                     <Ionicons name="calendar" size={16} color={Colors.textSecondary} />
-                    <Text className="text-sm text-text-secondary font-medium flex-1">
-                      {formatDate(event.date || "")}
+                    <Text className="text-sm text-white font-medium">
+                      {formatDate(event.date)}
                     </Text>
                   </View>
-                  <View className="flex-row items-center gap-3">
-                    <Ionicons name="time" size={16} color={Colors.textSecondary} />
-                    <Text className="text-sm text-text-secondary font-medium flex-1">
-                      {formatTime(event.date || "")}
-                    </Text>
-                  </View>
+
                 </View>
 
                 {event.Venue && (
@@ -399,15 +349,6 @@ export default function EventCard({
                     <Ionicons name="location" size={16} color={Colors.textSecondary} />
                     <Text className="text-sm text-text-secondary font-medium flex-1" numberOfLines={1}>
                       {event.Venue.location}
-                    </Text>
-                  </View>
-                )}
-
-                {event.artist_lineup && event.artist_lineup.length > 0 && (
-                  <View className="flex-row items-center gap-3">
-                    <Ionicons name="people" size={16} color={Colors.textSecondary} />
-                    <Text className="text-sm text-text-secondary font-medium flex-1" numberOfLines={1}>
-                      {event.artist_lineup.join(', ')}
                     </Text>
                   </View>
                 )}
@@ -519,17 +460,7 @@ export default function EventCard({
               </View>
             )}
 
-            {/* Action Buttons for default variant */}
-            <View className="absolute top-3 right-3">
-              {onFavorite && (
-                <TouchableOpacity
-                  className={`p-2 rounded-[20px] justify-center items-center ${isFavorite ? 'bg-primary/50' : 'bg-black/60'}`}
-                  onPress={onFavorite}
-                >
-                  <Ionicons name="heart" size={16} color={isFavorite ? Colors.primary : Colors.text} />
-                </TouchableOpacity>
-              )}
-            </View>
+
           </View>
 
           <View className="p-5">

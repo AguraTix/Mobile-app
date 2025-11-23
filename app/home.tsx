@@ -27,15 +27,8 @@ export default function HomeScreen() {
   const { user } = useAuth()
   const { featuredEvents, upcomingEvents, fetchEvents, fetchFeaturedEvents, isLoading: loading } = useEvent();
   const { myOrders, fetchMyOrders, isLoading: ordersLoading } = useOrder();
-  console.log(upcomingEvents.length)
   const [refreshing, setRefreshing] = useState(false);
   const [activeSlide, setActiveSlide] = React.useState(0);
-
-  useEffect(() => {
-    fetchMyOrders();
-  }, [fetchMyOrders]);
-
-
 
   const handleEventPress = (eventId: string) => {
     if (!eventId) return
@@ -54,7 +47,6 @@ export default function HomeScreen() {
       await Promise.all([
         fetchEvents(),
         fetchFeaturedEvents(),
-        fetchMyOrders()
       ]);
     } catch (error) {
       console.error('Error refreshing:', error);
@@ -78,7 +70,7 @@ export default function HomeScreen() {
       >
         {/* Top Header with Logo */}
         <View className="flex-row justify-between items-center px-5 py-4">
-          <Text className="text-2xl font-bold text-text">agura</Text>
+          <Text className="text-2xl font-bold text-text">Agura</Text>
           <View className="flex-row items-center gap-3">
             <TouchableOpacity
               className="p-2"
@@ -100,7 +92,7 @@ export default function HomeScreen() {
               activeOpacity={0.8}
             >
               <Image
-                source={require('@/assets/images/m1.png')}
+                source={require('@/assets/images/profile.jpg')}
                 className="w-10 h-10 rounded-full"
               />
             </TouchableOpacity>
@@ -295,8 +287,8 @@ export default function HomeScreen() {
               <FoodCard
                 key={item.id}
                 item={item}
-                onPress={() => { }}
-                onAdd={() => Alert.alert("Added", `${item.name} added to cart`)}
+                onPress={() => router.push(`/event/mock-event-id/food-detail?itemId=${item.id}`)}
+                onAdd={() => router.push(`/event/mock-event-id/food-detail?itemId=${item.id}`)}
               />
             ))}
           </ScrollView>

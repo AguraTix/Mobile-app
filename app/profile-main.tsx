@@ -16,7 +16,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const { user } = useAuth()
+  const { user,logout } = useAuth()
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -54,6 +54,13 @@ export default function ProfileScreen() {
       title: "Contact",
       icon: () => <Ionicons name="call" size={24} color="white" />,
       onPress: () => router.push("/profile/contact"),
+      color: "#ec4899",
+    },
+    {
+      id: "logout",
+      title: "Logout",
+      icon: () => <Ionicons name="log-out" size={24} color="white" />,
+      onPress: () => logout(),
       color: "#ec4899",
     },
   ];

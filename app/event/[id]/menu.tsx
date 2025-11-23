@@ -52,7 +52,7 @@ export default function EventMenuScreen() {
 
       <View className="flex-1">
         <View className="flex-row items-center px-5 py-4 mb-5">
-          <TouchableOpacity onPress={() => router.back()} className="mr-3 p-1">
+          <TouchableOpacity onPress={() => router.replace('/home')} className="mr-3 p-1">
             <Ionicons name="chevron-back" size={24} color={Colors.text} />
           </TouchableOpacity>
           <Text className="text-text text-lg font-bold">Event Menu</Text>
