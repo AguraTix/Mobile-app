@@ -18,7 +18,7 @@ interface EventCardProps {
   onFavorite?: () => void;
   onShare?: () => void;
   onBookmark?: () => void;
-  variant?: "default" | "featured" | "compact" | "detailed" | "grid" | "list";
+  variant?: "default" | "featured" | "compact" | "detailed" | "grid" | "list" | "poster";
   loading?: boolean;
   isFavorite?: boolean;
   isBookmarked?: boolean;

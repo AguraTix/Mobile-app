@@ -204,7 +204,7 @@ export function EventProvider({ children }: { children: ReactNode }) {
     deleteEvent,
     clearError,
     featuredEvents,
-    upcomingEvents,
+    upcomingEvents:recentEvents,
     recentEvents,
   };
 
