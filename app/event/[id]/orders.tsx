@@ -1,11 +1,11 @@
 import Header from '@/components/Header';
-import Colors from '@/constants/Colors';
+import Loading from '@/components/Loading';
 import { useOrder } from '@/contexts';
 import { FoodOrder } from '@/types/order';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function EventOrdersScreen() {
@@ -114,10 +114,7 @@ export default function EventOrdersScreen() {
           showsVerticalScrollIndicator={false}
         >
           {isLoading ? (
-            <View className="py-16 items-center justify-center">
-              <ActivityIndicator size="large" color={Colors.primary} />
-              <Text className="text-text-secondary text-base mt-4">Loading orders...</Text>
-            </View>
+            <Loading fullScreen={false} />
           ) : orders.length === 0 ? (
             <View className="py-16 items-center justify-center">
               <Text className="text-text-secondary text-base text-center leading-6">No orders yet</Text>

@@ -1,13 +1,14 @@
 import Button from "@/components/Button";
 import EventCard from "@/components/EventCard";
 import Header from "@/components/Header";
+import Loading from "@/components/Loading";
 import Colors from "@/constants/Colors";
 import { useEvent } from "@/contexts/EventContext";
 import { useNotification } from "@/contexts/NotificationContext";
-import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React, { useEffect } from "react";
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function UpcomingEventsScreen() {
@@ -48,10 +49,7 @@ export default function UpcomingEventsScreen() {
     return (
       <SafeAreaView style={styles.container} edges={["top"]}>
         <Header title="Upcoming Events" showBack />
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={Colors.primary} />
-          <Text style={styles.loadingText}>Loading events...</Text>
-        </View>
+        <Loading fullScreen />
       </SafeAreaView>
     );
   }

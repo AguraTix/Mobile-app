@@ -1,4 +1,4 @@
-import Colors from "@/constants/Colors";
+import Loading from "@/components/Loading";
 import { useEvent } from "@/contexts";
 import { TicketTypeConfig } from "@/types/ticket";
 import { Ionicons } from "@expo/vector-icons";
@@ -56,14 +56,7 @@ export default function EventDetailScreen() {
 
   // Show loading or empty state while event is being fetched
   if (!currentEvent) {
-    return (
-      <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
-        <StatusBar style="light" />
-        <View className="flex-1 items-center justify-center">
-          <Text className="text-text-secondary">Loading event details...</Text>
-        </View>
-      </SafeAreaView>
-    );
+    return <Loading fullScreen />;
   }
 
   return (
@@ -170,7 +163,7 @@ export default function EventDetailScreen() {
           )}
         </View>
 
-        
+
       </ScrollView>
     </SafeAreaView>
   );

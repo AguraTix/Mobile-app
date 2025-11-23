@@ -15,6 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import BottomNav from "@/components/BottomNav";
 import EventCard from "@/components/EventCard";
+import Loading from "@/components/Loading";
 import SearchBar from "@/components/SearchBar";
 import Colors from "@/constants/Colors";
 import { useEvent } from "@/contexts";
@@ -35,7 +36,7 @@ type SortOption = {
 
 export default function EventsUserScreen() {
   const router = useRouter();
-  const { events: allEvents, fetchEvents } = useEvent();
+  const { events: allEvents, fetchEvents, isLoading } = useEvent();
 
   // Search & General States
   const [searchQuery, setSearchQuery] = useState("");
@@ -415,19 +416,23 @@ export default function EventsUserScreen() {
         </View>
 
         {/* Events */}
-        <FlatList
-          data={filteredAndSortedEvents}
-          keyExtractor={(item) => item.event_id}
-          renderItem={renderEventItem}
-          key={viewMode}
-          numColumns={viewMode === "grid" ? 2 : 1}
-          columnWrapperStyle={viewMode === "grid" ? styles.gridRow : undefined}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-          ListEmptyComponent={renderEmptyState}
-          contentContainerStyle={{ paddingBottom: 100 }}
-        />
+        {isLoading && !refreshing ? (
+          <Loading fullScreen />
+        ) : (
+          <FlatList
+            data={filteredAndSortedEvents}
+            keyExtractor={(item) => item.event_id}
+            renderItem={renderEventItem}
+            key={viewMode}
+            numColumns={viewMode === "grid" ? 2 : 1}
+            columnWrapperStyle={viewMode === "grid" ? styles.gridRow : undefined}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+            ListEmptyComponent={renderEmptyState}
+            contentContainerStyle={{ paddingBottom: 100 }}
+          />
+        )}
       </View>
 
       {renderSortModal()}

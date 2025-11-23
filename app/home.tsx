@@ -1,16 +1,19 @@
 import BottomNav from "@/components/BottomNav";
 import EventCard from "@/components/EventCard";
+import Loading from "@/components/Loading";
 import SearchBar from "@/components/SearchBar";
 import SectionHeader from "@/components/SectionHeader";
 import Skeleton from "@/components/Skeleton";
 import Colors from "@/constants/Colors";
-import { useAuth, useEvent, useOrder } from "@/contexts";
+import { useAuth, useCart, useEvent, useOrder } from "@/contexts";
+import { FoodOrderStatus } from "@/types/order";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   Dimensions,
+  Image,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -27,20 +30,21 @@ const { width } = Dimensions.get("window");
 export default function HomeScreen() {
   const router = useRouter();
   const { user } = useAuth()
-  const { events, featuredEvents, upcomingEvents, fetchEvents, fetchFeaturedEvents, isLoading: loading } = useEvent();
-  const { myOrders, fetchMyOrders } = useOrder();
+  const { featuredEvents, upcomingEvents, fetchEvents, fetchFeaturedEvents, isLoading: loading } = useEvent();
+  const { myOrders, fetchMyOrders, isLoading: ordersLoading } = useOrder();
+  const { addItem } = useCart();
   const [searchQuery, setSearchQuery] = useState("");
   const [recentSearches, setRecentSearches] = useState<string[]>([
-    "music festival",
-    "tech conference",
-    "food expo",
-    "art exhibition"
+    "Music Festival",
+    "Art Exhibition",
+    "Tech Conference",
+    "Food & Drink"
   ]);
-  const [popularSearches, setPopularSearches] = useState<string[]>([
-    "summer events",
-    "live music",
-    "sports games",
-    "business networking"
+  const [popularSearches] = useState<string[]>([
+    "Live Concerts",
+    "Workshops",
+    "Networking",
+    "Sports"
   ]);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -79,15 +83,41 @@ export default function HomeScreen() {
     }
   ];
 
-  // Filter for Food & Drinks events
-  const foodEvents = useMemo(() => {
-    if (!events) return [];
-    const keywords = ["food", "drink", "dining", "lunch", "dinner", "brunch", "wine", "beer", "cocktail"];
-    return events.filter(event => {
-      const text = `${event.title} ${event.description || ""}`.toLowerCase();
-      return keywords.some(keyword => text.includes(keyword));
+  // Mock menu items
+  const mockMenuItems = [
+    { id: '1', name: 'Burger', category: 'food', price: 5000, available: true, image: require('@/assets/images/m1.png') },
+    { id: '2', name: 'Pizza', category: 'food', price: 8000, available: true, image: require('@/assets/images/m1.png') },
+    { id: '3', name: 'Coke', category: 'drinks', price: 2000, available: true, image: require('@/assets/images/m1.png') },
+  ];
+
+  const handleAddToCart = (item: any) => {
+    if (!item.available) return;
+
+    addItem({
+      order_id: Math.random().toString(36).substr(2, 9),
+      user_id: user?.user_id || 'guest',
+      food_id: item.id,
+      event_id: 'mock-event-id', // Placeholder
+      order_status: FoodOrderStatus.PENDING,
+      quantity: 1,
+      Food: {
+        food_id: item.id,
+        event_id: 'mock-event-id',
+        foodname: item.name,
+        fooddescription: 'Delicious ' + item.name,
+        foodprice: item.price,
+        quantity: 100, // Mock available quantity
+        admin_id: 'mock-admin',
+        // category: item.category, // Removed as it's not in Food interface
+        // available: true, // Removed as it's not in Food interface
+        foodimage: '', // Mock image string
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }
     });
-  }, [events]);
+
+    Alert.alert("Success", `${item.name} added to cart!`);
+  };
 
   const handleSearch = (query: string) => {
     if (query.trim()) {
@@ -116,14 +146,21 @@ export default function HomeScreen() {
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await fetchEvents()
-    await fetchFeaturedEvents();
-    await fetchMyOrders();
-    setRefreshing(false);
+    try {
+      await Promise.all([
+        fetchEvents(),
+        fetchFeaturedEvents(),
+        fetchMyOrders()
+      ]);
+    } catch (error) {
+      console.error('Error refreshing:', error);
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   const handleNotificationPress = () => {
-    Alert.alert("Notifications", "You have 3 new notifications");
+    router.push('/notifications');
   };
 
   return (
@@ -189,7 +226,18 @@ export default function HomeScreen() {
         </View>
 
         {/* Active Orders */}
-        {myOrders.length > 0 && (
+        {ordersLoading ? (
+          <View className="mb-8 px-5">
+            <SectionHeader
+              title="Active Orders"
+              subtitle="Track your food & drinks"
+              showSeeAll={false}
+            />
+            <View className="h-[100px] justify-center">
+              <Loading size="small" />
+            </View>
+          </View>
+        ) : myOrders.length > 0 && (
           <View className="mb-8 px-5">
             <SectionHeader
               title="Active Orders"
@@ -295,31 +343,47 @@ export default function HomeScreen() {
         </View>
 
         {/* Food & Drinks Section */}
-        {foodEvents.length > 0 && (
-          <View className="mb-10 px-5">
-            <SectionHeader
-              title="Food & Drinks"
-              subtitle="Events with great dining options"
-              showSeeAll={true}
-              onSeeAllPress={() => router.push("/events-user")}
-            />
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ gap: 16 }}
-            >
-              {foodEvents.map((event) => (
-                <View key={event.event_id} style={{ width: 280, marginRight: 16 }}>
-                  <EventCard
-                    event={event}
-                    variant="detailed"
-                    onPress={() => handleEventPress(event.event_id)}
-                  />
+        <View className="mb-10 px-5">
+          <SectionHeader
+            title="Food & Drinks"
+            subtitle="Events with great dining options"
+            showSeeAll={true}
+            onSeeAllPress={() => router.push("/events-user")}
+          />
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ gap: 16 }}
+          >
+            {mockMenuItems.map((item) => (
+              <TouchableOpacity
+                key={item.id}
+                className="bg-card rounded-2xl overflow-hidden w-[200px] relative"
+                onPress={() => handleAddToCart(item)}
+                activeOpacity={0.8}
+                style={styles.shadow}
+              >
+                <Image
+                  source={item.image}
+                  className="w-full h-[120px]"
+                />
+                <View className="p-4">
+                  <Text className="text-text text-base font-semibold mb-1">{item.name}</Text>
+                  <Text className="text-primary text-sm font-bold mb-3">
+                    {item.price.toLocaleString()} RWF
+                  </Text>
+                  <View className="flex-row justify-between items-center">
+                    <View className={`px-3 py-1.5 rounded-lg ${!item.available ? 'bg-text-secondary' : 'bg-primary'}`}>
+                      <Text className={`text-xs font-semibold ${!item.available ? 'text-background' : 'text-text'}`}>
+                        {item.available ? 'Order' : 'Out of Stock'}
+                      </Text>
+                    </View>
+                  </View>
                 </View>
-              ))}
-            </ScrollView>
-          </View>
-        )}
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
 
         {/* Bottom Spacing */}
         <View className="h-[100px]" />

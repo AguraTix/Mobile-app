@@ -19,8 +19,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TicketsScreen() {
   const router = useRouter();
-  const { myTickets: userTickets } = useTicket()
-  const loading = false;
+  const { myTickets: userTickets, isLoading: loading } = useTicket()
 
   const activeTickets = userTickets.filter(ticket => ticket.status === TicketStatus.AVAILABLE);
   const expiredTickets = userTickets.filter(ticket => ticket.status === TicketStatus.CANCELLED);
