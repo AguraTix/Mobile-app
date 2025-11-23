@@ -18,7 +18,7 @@ interface EventCardProps {
   onFavorite?: () => void;
   onShare?: () => void;
   onBookmark?: () => void;
-  variant?: "default" | "featured" | "compact" | "detailed" | "grid";
+  variant?: "default" | "featured" | "compact" | "detailed" | "grid" | "list";
   loading?: boolean;
   isFavorite?: boolean;
   isBookmarked?: boolean;
@@ -181,6 +181,78 @@ export default function EventCard({
               </View>
             </View>
           </Animated.View>
+        </TouchableOpacity>
+      </Animated.View>
+    );
+  }
+
+  if (variant === "list") {
+    return (
+      <Animated.View style={{ opacity: opacityAnim }}>
+        <TouchableOpacity
+          className="bg-card rounded-2xl mb-4 flex-row overflow-hidden"
+          style={styles.compactShadow}
+          onPress={onPress}
+          activeOpacity={0.8}
+        >
+          {/* Image on the left */}
+          <View className="w-[120px] h-[140px]">
+            <Image
+              source={getImageSource()}
+              className="w-full h-full"
+              resizeMode="cover"
+              onLoad={() => setImageLoaded(true)}
+              onError={() => setImageError(true)}
+            />
+            {!imageLoaded && !imageError && (
+              <View className="absolute inset-0 bg-card justify-center items-center">
+                <ActivityIndicator color={Colors.primary} />
+              </View>
+            )}
+          </View>
+
+          {/* Content on the right */}
+          <View className="flex-1 p-4 justify-between">
+            <View>
+              <Text className="text-text text-base font-bold mb-2" numberOfLines={1}>
+                {event.title}
+              </Text>
+
+              <View className="gap-1.5 mb-3">
+                <View className="flex-row items-center gap-1.5">
+                  <Ionicons name="musical-notes" size={14} color={Colors.textSecondary} />
+                  <Text className="text-xs text-text-secondary font-medium">
+                    Playlist
+                  </Text>
+                </View>
+
+                <View className="flex-row items-center gap-1.5">
+                  <Ionicons name="calendar-outline" size={14} color={Colors.textSecondary} />
+                  <Text className="text-xs text-text-secondary font-medium">
+                    {formatDate(event.date || "")}
+                  </Text>
+                </View>
+
+                {event.Venue && (
+                  <View className="flex-row items-center gap-1.5">
+                    <Ionicons name="location-outline" size={14} color={Colors.textSecondary} />
+                    <Text className="text-xs text-text-secondary font-medium" numberOfLines={1}>
+                      {event.Venue.location}
+                    </Text>
+                  </View>
+                )}
+              </View>
+            </View>
+
+            {/* View Details Button */}
+            <TouchableOpacity
+              className="bg-card border border-text-secondary rounded-lg py-2 px-3 flex-row items-center justify-center self-start"
+              onPress={onPress}
+            >
+              <Ionicons name="arrow-forward" size={14} color={Colors.text} />
+              <Text className="text-text text-xs font-semibold ml-1.5">View Details</Text>
+            </TouchableOpacity>
+          </View>
         </TouchableOpacity>
       </Animated.View>
     );

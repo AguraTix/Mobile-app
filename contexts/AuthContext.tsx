@@ -50,7 +50,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await authService.register(data);
       Keyboard.dismiss();
-      router.replace('/auth/login')
+      router.replace('/auth/categories')
     } catch (err) {
       const message = err as unknown as ApiError
       setError(message.message);

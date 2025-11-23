@@ -205,7 +205,7 @@ export default function EventsUserScreen() {
   const renderEventItem = ({ item }: { item: Event }) => (
     <EventCard
       event={item}
-      variant={viewMode === "grid" ? "grid" : "default"}
+      variant={viewMode === "grid" ? "grid" : "list"}
       onPress={() => router.push(`/event/${item.event_id}`)}
     />
   );

@@ -18,32 +18,32 @@ export default function BottomNav() {
         {
             name: 'Home',
             path: '/home',
-            icon: <Ionicons name="home" size={26} color={pathname === '/home' ? Colors.primary : Colors.textSecondary} />,
+            icon: <></>,
         },
         {
             name: 'Menu',
             path: '/menu',
-            icon: <Ionicons name="restaurant" size={26} color={pathname === '/menu' ? Colors.primary : Colors.textSecondary} />,
+            icon: <></>,
         },
         {
             name: 'Tickets',
             path: '/tickets',
-            icon: <Ionicons name="ticket" size={26} color={pathname === '/tickets' ? Colors.primary : Colors.textSecondary} />,
+            icon: <></>,
         },
         {
             name: 'Events',
             path: '/events-user',
-            icon: <Ionicons name="time" size={26} color={pathname === '/events-user' ? Colors.primary : Colors.textSecondary} />,
+            icon: <></>,
         },
         {
             name: 'Profile',
             path: '/profile-main',
-            icon: <Ionicons name="person" size={26} color={pathname === '/profile-main' ? Colors.primary : Colors.textSecondary} />,
+            icon: <></>,
         },
     ];
 
     return (
-        <View className="flex-row justify-between items-center bg-card rounded-[40px] mx-4 mb-10 mt-2 px-0 py-2.5 shadow-lg" style={styles.shadow}>
+        <View className="flex-row justify-around items-center bg-card rounded-[40px] mx-4 mb-10 mt-2 px-4 py-3 shadow-lg" style={styles.shadow}>
             {navItems.map((item) => {
                 const isFocused = pathname === item.path;
                 return (
@@ -52,11 +52,21 @@ export default function BottomNav() {
                         accessibilityRole="button"
                         accessibilityState={isFocused ? { selected: true } : {}}
                         onPress={() => router.push(item.path as any)}
-                        className="items-center justify-center px-3"
-                        activeOpacity={0.8}
+                        className="items-center justify-center"
+                        activeOpacity={0.7}
                     >
-                        <View className={`p-2 rounded-3xl justify-center items-center ${isFocused ? 'bg-input-background border-2 border-primary' : 'bg-transparent'}`}>
-                            {item.icon}
+                        <View className={`w-14 h-14 rounded-full justify-center items-center ${isFocused ? 'bg-primary' : 'bg-transparent'}`}>
+                            <Ionicons
+                                name={
+                                    item.name === 'Home' ? (isFocused ? 'home' : 'home-outline') :
+                                        item.name === 'Menu' ? (isFocused ? 'restaurant' : 'restaurant-outline') :
+                                            item.name === 'Tickets' ? (isFocused ? 'ticket' : 'ticket-outline') :
+                                                item.name === 'Events' ? (isFocused ? 'time' : 'time-outline') :
+                                                    (isFocused ? 'person' : 'person-outline')
+                                }
+                                size={24}
+                                color={isFocused ? Colors.text : Colors.textSecondary}
+                            />
                         </View>
                     </TouchableOpacity>
                 );

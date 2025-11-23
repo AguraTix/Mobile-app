@@ -25,7 +25,63 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get("window");
 
+// Food Card Component
+const FoodCard = ({ item, onPress }: { item: any; onPress: () => void }) => {
+  const [isFavorite, setIsFavorite] = React.useState(false);
 
+  return (
+    <TouchableOpacity
+      className="bg-card rounded-2xl overflow-hidden w-[180px]"
+      onPress={onPress}
+      activeOpacity={0.8}
+      style={styles.shadow}
+    >
+      {/* Centered Image */}
+      <View className="items-center justify-center pt-4 pb-2 bg-card">
+        <Image
+          source={item.image}
+          className="w-[120px] h-[120px]"
+          resizeMode="contain"
+        />
+      </View>
+
+      {/* Content */}
+      <View className="px-4 pb-4">
+        {/* Title */}
+        <Text className="text-text text-base font-bold mb-1" numberOfLines={1}>
+          {item.name}
+        </Text>
+
+        {/* Description */}
+        <Text className="text-text-secondary text-xs mb-3" numberOfLines={2}>
+          This is a {item.name.toLowerCase()} for people
+        </Text>
+
+        {/* Rating and Favorite */}
+        <View className="flex-row justify-between items-center">
+          <View className="flex-row items-center">
+            <Text className="text-base mr-1">⭐</Text>
+            <Text className="text-text text-sm font-medium">4+</Text>
+          </View>
+
+          <TouchableOpacity
+            onPress={(e) => {
+              e.stopPropagation();
+              setIsFavorite(!isFavorite);
+            }}
+            className="p-1"
+          >
+            <Ionicons
+              name={isFavorite ? "heart" : "heart-outline"}
+              size={20}
+              color={isFavorite ? "#ff4444" : Colors.text}
+            />
+          </TouchableOpacity>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+};
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -325,16 +381,16 @@ export default function HomeScreen() {
           />
           {loading ? (
             <View className="gap-3">
-              <Skeleton height={92} radius={12} />
-              <Skeleton height={92} radius={12} />
-              <Skeleton height={92} radius={12} />
+              <Skeleton height={140} radius={16} />
+              <Skeleton height={140} radius={16} />
+              <Skeleton height={140} radius={16} />
             </View>
           ) : (
             upcomingEvents.map((event) => (
               <EventCard
                 key={event.event_id}
                 event={event}
-                variant="default"
+                variant="list"
                 onPress={() => handleEventPress(event.event_id)}
                 onFavorite={() => Alert.alert("Favorite", "Added to favorites")}
               />
@@ -346,7 +402,7 @@ export default function HomeScreen() {
         <View className="mb-10 px-5">
           <SectionHeader
             title="Food & Drinks"
-            subtitle="Events with great dining options"
+            subtitle="Delicious options for your events"
             showSeeAll={true}
             onSeeAllPress={() => router.push("/events-user")}
           />
@@ -356,31 +412,11 @@ export default function HomeScreen() {
             contentContainerStyle={{ gap: 16 }}
           >
             {mockMenuItems.map((item) => (
-              <TouchableOpacity
+              <FoodCard
                 key={item.id}
-                className="bg-card rounded-2xl overflow-hidden w-[200px] relative"
+                item={item}
                 onPress={() => handleAddToCart(item)}
-                activeOpacity={0.8}
-                style={styles.shadow}
-              >
-                <Image
-                  source={item.image}
-                  className="w-full h-[120px]"
-                />
-                <View className="p-4">
-                  <Text className="text-text text-base font-semibold mb-1">{item.name}</Text>
-                  <Text className="text-primary text-sm font-bold mb-3">
-                    {item.price.toLocaleString()} RWF
-                  </Text>
-                  <View className="flex-row justify-between items-center">
-                    <View className={`px-3 py-1.5 rounded-lg ${!item.available ? 'bg-text-secondary' : 'bg-primary'}`}>
-                      <Text className={`text-xs font-semibold ${!item.available ? 'text-background' : 'text-text'}`}>
-                        {item.available ? 'Order' : 'Out of Stock'}
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-              </TouchableOpacity>
+              />
             ))}
           </ScrollView>
         </View>
