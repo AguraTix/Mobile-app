@@ -85,6 +85,7 @@ export default function EventCard({
   };
 
   const getImageSource = () => {
+    console.log(event)
     if (event.image_url) {
       return { uri: event.image_url };
     }

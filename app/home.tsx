@@ -27,7 +27,7 @@ const { width } = Dimensions.get("window");
 export default function HomeScreen() {
   const router = useRouter();
   const { user } = useAuth()
-  const { events, featuredEvents, upcomingEvents, recentEvents, isLoading:loading } = useEvent();
+  const {featuredEvents, upcomingEvents, fetchEvents,fetchFeaturedEvents, isLoading:loading } = useEvent();
   const [searchQuery, setSearchQuery] = useState("");
   const [recentSearches, setRecentSearches] = useState<string[]>([
     "music festival",
@@ -111,8 +111,8 @@ export default function HomeScreen() {
 
   const onRefresh = async () => {
     setRefreshing(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await fetchEvents()
+    await fetchFeaturedEvents();
     setRefreshing(false);
   };
 
