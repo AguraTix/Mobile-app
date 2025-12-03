@@ -33,10 +33,12 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     setError(null);
     try {
       const response = await OrderService.getMyOrders();
+      console.log("respones orders",response.orders)
       const orders = response.orders || [];
       setMyOrders(orders);
       return orders;
     } catch (err) {
+      console.error(err)
       const message = err instanceof Error ? err.message : 'Failed to fetch my orders';
       setError(message);
       throw err;

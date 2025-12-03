@@ -1,14 +1,13 @@
 import Header from '@/components/Header';
-import Skeleton from '@/components/Skeleton';
 import Colors from '@/constants/Colors';
 import { useAuth, useCart, useOrder } from '@/contexts';
 import { useFood } from '@/contexts/FoodContext';
-import { FoodOrderCreateInput, FoodOrderStatus } from '@/types/order';
+import { FoodOrderCreateInput } from '@/types/order';
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
-import { Alert, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function FoodDetailScreen() {
@@ -62,12 +61,8 @@ export default function FoodDetailScreen() {
           <Text className="text-text text-lg font-semibold">Event Menu</Text>
         </View>
 
-        <View className="flex-1 px-5">
-          <Skeleton height={200} radius={24} />
-          <View className="h-6" />
-          <Skeleton height={60} radius={16} />
-          <View className="h-6" />
-          <Skeleton height={100} radius={16} />
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" color={Colors.primary} />
         </View>
       </SafeAreaView>
     );

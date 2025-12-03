@@ -1,11 +1,10 @@
-import Skeleton from '@/components/Skeleton';
 import Colors from '@/constants/Colors';
 import { useFood } from '@/contexts/FoodContext';
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
-import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function EventMenuScreen() {
@@ -96,10 +95,8 @@ export default function EventMenuScreen() {
           showsVerticalScrollIndicator={false}
         >
           {isLoading ? (
-            <View className="gap-4">
-              <Skeleton height={180} radius={16} />
-              <Skeleton height={180} radius={16} />
-              <Skeleton height={180} radius={16} />
+            <View className="py-24 items-center justify-center">
+              <ActivityIndicator size="large" color={Colors.primary} />
             </View>
           ) : currentMenuItems.length === 0 ? (
             <View className="py-16 items-center justify-center">

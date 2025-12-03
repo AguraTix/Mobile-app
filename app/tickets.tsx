@@ -1,7 +1,6 @@
 import BottomNav from "@/components/BottomNav";
 import Button from "@/components/Button";
 import Header from "@/components/Header";
-import Skeleton from "@/components/Skeleton";
 import Colors from "@/constants/Colors";
 import { useTicket } from "@/contexts";
 import { TicketStatus } from "@/types/ticket";
@@ -9,6 +8,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useEffect } from "react";
 import {
+  ActivityIndicator,
   Image,
   ScrollView,
   StyleSheet,
@@ -127,11 +127,9 @@ export default function TicketsScreen() {
 
         {/* Loading state */}
         {loading && (
-          <View className="px-5 mt-8">
-            <Text className="text-xl font-semibold text-text mb-5">Loading Tickets</Text>
-            <Skeleton height={120} radius={16} style={{ marginBottom: 12 }} />
-            <Skeleton height={120} radius={16} style={{ marginBottom: 12 }} />
-            <Skeleton height={120} radius={16} style={{ marginBottom: 12 }} />
+          <View className="px-5 mt-8 py-24 items-center justify-center">
+            <ActivityIndicator size="large" color={Colors.primary} />
+            <Text className="text-text-secondary text-sm mt-4">Loading tickets...</Text>
           </View>
         )}
 
