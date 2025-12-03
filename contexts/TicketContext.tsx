@@ -2,6 +2,8 @@ import { TicketService } from "@/services/ticket";
 import { TicketBookingRequest } from "@/types";
 import { Ticket, TicketGrouped } from "@/types/ticket";
 import { createContext, ReactNode, useCallback, useContext, useState } from "react";
+import { useStatus } from "./StatusContext";
+import { router } from "expo-router";
 
 interface TicketContextType {
   availableTickets: TicketGrouped[];
@@ -22,6 +24,7 @@ export function TicketProvider({ children }: { children: ReactNode }) {
   const [myTickets, setMyTickets] = useState<Ticket[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { showSuccess, showError } = useStatus()
 
   const fetchAvailableTickets = useCallback(async (eventId: string) => {
     setIsLoading(true);
@@ -42,7 +45,6 @@ export function TicketProvider({ children }: { children: ReactNode }) {
     setError(null);
     try {
       const response = await TicketService.getMyTickets();
-      console.log("My tickets ", response.tickets.length)
       setMyTickets(response.tickets);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to fetch my tickets';
@@ -56,14 +58,15 @@ export function TicketProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
     setError(null);
     try {
-      console.log(data)
+
       const response = await TicketService.book(data);
       setMyTickets((prev) => [...prev, response.ticket]);
+      showSuccess("Ticket booked successfully", () => router.push('/home'));
       return response.ticket;
     } catch (err) {
-      console.error(err)
       const message = err instanceof Error ? err.message : 'Failed to book ticket';
       setError(message);
+      showError("Failed to book ticket \n Try again")
       throw err;
     } finally {
       setIsLoading(false);

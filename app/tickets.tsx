@@ -27,7 +27,6 @@ export default function TicketsScreen() {
     fetchMyTickets();
   }, [fetchMyTickets]);
 
-  console.log(userTickets)
 
   // Active tickets are those that are sold but not yet used or cancelled
   const activeTickets = userTickets.filter(ticket =>
@@ -43,64 +42,61 @@ export default function TicketsScreen() {
     router.push(`/ticket/${ticketId}`);
   };
 
-  const renderTicketCard = (ticket: any) => (
-    <TouchableOpacity
-      key={ticket.ticket_id}
-      className="bg-[#1A1A1A] rounded-2xl mb-4 overflow-hidden relative"
-      style={styles.shadow}
-      onPress={() => handleTicketPress(ticket.ticket_id)}
-      activeOpacity={0.8}
-    >
-      {/* Active Ribbon */}
-      {(ticket.status === TicketStatus.SOLD || ticket.status === TicketStatus.RESERVED) && (
-        <View className="absolute top-3 right-3 bg-success px-3 py-1 rounded-full z-10">
-          <Text className="text-white text-[10px] font-bold uppercase">Active</Text>
+ const renderTicketCard = (ticket: any) => (
+  <TouchableOpacity
+    key={ticket.ticket_id}
+    className="bg-[#1A1A1A] rounded-[24px] p-4 flex-row items-center overflow-hidden relative mb-4"
+    style={styles.shadow}
+    onPress={() => handleTicketPress(ticket.ticket_id)}
+    activeOpacity={0.8}
+  >
+    {/* Active Ribbon - Diagonal style */}
+    {(ticket.status === TicketStatus.SOLD || ticket.status === TicketStatus.RESERVED) && (
+      <View className="absolute top-0 right-0 bg-success px-6 py-1 transform rotate-45 translate-x-4 translate-y-2 z-10">
+        <Text className="text-white text-[10px] font-bold uppercase">Active</Text>
+      </View>
+    )}
+
+    {/* Event Image */}
+    <View className="w-14 h-14 rounded-2xl bg-white overflow-hidden mr-4">
+      {ticket.Event?.image ? (
+        <Image
+          source={{ uri: ticket.Event.image }}
+          className="w-full h-full"
+          resizeMode="cover"
+        />
+      ) : (
+        <View className="w-full h-full items-center justify-center bg-primary/20">
+          <Ionicons name="musical-notes" size={24} color={Colors.primary} />
         </View>
       )}
+    </View>
 
-      <View className="flex-row p-4">
-        {/* Event Image */}
-        <View className="w-20 h-20 rounded-xl overflow-hidden mr-4 bg-card">
-          {ticket.Event?.image ? (
-            <Image
-              source={{ uri: ticket.Event.image }}
-              className="w-full h-full"
-              resizeMode="cover"
-            />
-          ) : (
-            <View className="w-full h-full items-center justify-center bg-primary/20">
-              <Ionicons name="musical-notes" size={32} color={Colors.primary} />
-            </View>
-          )}
-        </View>
+    {/* Event Info */}
+    <View className="flex-1 mr-4">
+      <Text className="text-white font-bold text-base mb-1" numberOfLines={1}>
+        {ticket.Event?.title || "Event"}
+      </Text>
+      <Text className="text-gray-400 text-xs" numberOfLines={1}>
+        {ticket.sectionName || "Standard"} Tickets
+      </Text>
+      <Text className="text-primary text-xs font-bold mt-1">
+        {ticket.price?.toLocaleString() || "0"} Rwf
+      </Text>
+    </View>
 
-        {/* Event Info */}
-        <View className="flex-1 justify-between">
-          <View>
-            <Text className="text-white text-base font-bold mb-1" numberOfLines={1}>
-              {ticket.Event?.title || "Event"}
-            </Text>
-            <Text className="text-text-secondary text-xs mb-2">
-              {ticket.sectionName || "Standard"} Tickets
-            </Text>
-            <Text className="text-primary text-sm font-bold">
-              {ticket.price?.toLocaleString() || "0"} Rwf
-            </Text>
-          </View>
-        </View>
-
-        {/* View Ticket Button */}
-        <View className="justify-center ml-2">
-          <TouchableOpacity
-            className="bg-transparent border border-primary px-4 py-2 rounded-lg"
-            onPress={() => handleTicketPress(ticket.ticket_id)}
-          >
-            <Text className="text-primary text-xs font-semibold">View Ticket</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+    {/* View Ticket Button - Kept as original but adjusted styling */}
+    <TouchableOpacity
+      className="bg-transparent border border-primary px-3 py-2 rounded-lg min-w-[80px]"
+      onPress={(e) => {
+        e.stopPropagation(); // Prevent parent onPress from firing
+        handleTicketPress(ticket.ticket_id);
+      }}
+    >
+      <Text className="text-primary text-xs font-semibold text-center">View Ticket</Text>
     </TouchableOpacity>
-  );
+  </TouchableOpacity>
+);
 
   return (
     <SafeAreaView className="flex-1  bg-background" edges={["top"]}>
@@ -111,19 +107,7 @@ export default function TicketsScreen() {
         contentContainerStyle={{ paddingBottom: 80 }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header Section */}
-        <View
-          className="items-center px-5 py-8 bg-primary mx-5 mt-5 rounded-[20px]"
-          style={styles.headerShadow}
-        >
-          <View className="w-16 h-16 rounded-[32px] bg-white/20 items-center justify-center mb-4">
-            <Ionicons name="ticket" size={32} color={Colors.primary} />
-          </View>
-          <Text className="text-2xl font-bold text-white mb-2 text-center">My Tickets</Text>
-          <Text className="text-base text-white/90 text-center font-medium">
-            {activeTickets.length} active tickets
-          </Text>
-        </View>
+
 
         {/* Loading state */}
         {loading && (
@@ -160,7 +144,7 @@ export default function TicketsScreen() {
               You haven&apos;t purchased any tickets yet. Start exploring events to get your first ticket!
             </Text>
             <Button
-              title="Browse Events"
+              title="Book a ticket"
               variant="primary"
               size="large"
               fullWidth={true}
@@ -170,18 +154,7 @@ export default function TicketsScreen() {
           </View>
         )}
 
-        {/* Call to Action */}
-        {!loading && userTickets.length > 0 && (
-          <View className="px-5 mt-10">
-            <Button
-              title="Browse More Events"
-              variant="outline"
-              size="large"
-              fullWidth={true}
-              onPress={() => router.push("/events-user")}
-            />
-          </View>
-        )}
+        
       </ScrollView>
       <BottomNav />
     </SafeAreaView>

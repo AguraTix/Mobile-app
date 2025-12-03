@@ -41,12 +41,11 @@ export default function TicketPreviewScreen() {
     };
 
     const handleDownload = () => {
-        Alert.alert("Download", "Downloading ticket...");
+       
         // TODO: Implement download functionality
     };
 
     const handlePlaceOrder = () => {
-        Alert.alert("Place Order", "Redirecting to food and drinks...");
         router.push("/menu");
     };
 
@@ -185,64 +184,7 @@ export default function TicketPreviewScreen() {
                     </View>
                 </View>
 
-                {/* Ticket Details */}
-                <View className="mx-5 mt-8 bg-card rounded-2xl p-5">
-                    <Text className="text-text text-base font-bold mb-4">Ticket Details</Text>
-
-                    <View className="space-y-3">
-                        <View className="flex-row justify-between items-center py-2 border-b border-border">
-                            <Text className="text-text-secondary text-sm">Ticket ID</Text>
-                            <Text className="text-text text-sm font-mono">{ticket.ticket_id.slice(0, 8)}...</Text>
-                        </View>
-
-                        <View className="flex-row justify-between items-center py-2 border-b border-border">
-                            <Text className="text-text-secondary text-sm">Section</Text>
-                            <Text className="text-text text-sm font-semibold capitalize">
-                                {ticket.sectionName || "Standard"}
-                            </Text>
-                        </View>
-
-                        {ticket.seatNumber && (
-                            <View className="flex-row justify-between items-center py-2 border-b border-border">
-                                <Text className="text-text-secondary text-sm">Seat Number</Text>
-                                <Text className="text-text text-sm font-semibold">{ticket.seatNumber}</Text>
-                            </View>
-                        )}
-
-                        <View className="flex-row justify-between items-center py-2 border-b border-border">
-                            <Text className="text-text-secondary text-sm">Status</Text>
-                            <View className="flex-row items-center gap-2">
-                                <View
-                                    className={`w-2 h-2 rounded-full ${ticket.status === TicketStatus.SOLD || ticket.status === TicketStatus.RESERVED
-                                            ? "bg-success"
-                                            : "bg-gray-500"
-                                        }`}
-                                />
-                                <Text
-                                    className={`text-sm font-semibold uppercase ${ticket.status === TicketStatus.SOLD || ticket.status === TicketStatus.RESERVED
-                                            ? "text-success"
-                                            : "text-gray-500"
-                                        }`}
-                                >
-                                    {ticket.status === TicketStatus.SOLD
-                                        ? "Active"
-                                        : ticket.status === TicketStatus.RESERVED
-                                            ? "Reserved"
-                                            : ticket.status === TicketStatus.USED
-                                                ? "Used"
-                                                : "Expired"}
-                                </Text>
-                            </View>
-                        </View>
-
-                        <View className="flex-row justify-between items-center py-2">
-                            <Text className="text-text-secondary text-sm">Purchase Date</Text>
-                            <Text className="text-text text-sm">
-                                {ticket.purchaseDate ? formatDate(ticket.purchaseDate) : "N/A"}
-                            </Text>
-                        </View>
-                    </View>
-                </View>
+             
             </ScrollView>
         </SafeAreaView>
     );
