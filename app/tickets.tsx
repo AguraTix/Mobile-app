@@ -60,8 +60,7 @@ export default function TicketsScreen() {
   const [expandedTicketId, setExpandedTicketId] = React.useState<string | null>(null);
 
   const handleTicketPress = (ticketId: string) => {
-    console.log("Viewing ticket:", ticketId);
-    setExpandedTicketId(expandedTicketId === ticketId ? null : ticketId);
+    router.push(`/ticket/${ticketId}`);
   };
 
   const handleDownloadTicket = (ticket: any) => {
