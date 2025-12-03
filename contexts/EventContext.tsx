@@ -37,6 +37,7 @@ export function EventProvider({ children }: { children: ReactNode }) {
     setError(null);
     try {
       const response = await EventService.getAll();
+      console.log(response.events?.map(x => x.tickets))
       setEvents(response.events!);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to fetch events';
@@ -204,7 +205,7 @@ export function EventProvider({ children }: { children: ReactNode }) {
     deleteEvent,
     clearError,
     featuredEvents,
-    upcomingEvents:recentEvents,
+    upcomingEvents: recentEvents,
     recentEvents,
   };
 

@@ -1,20 +1,14 @@
 import Header from '@/components/Header';
 import Colors from '@/constants/Colors';
 import { useAuth, useCart } from '@/contexts';
+import { useFood } from '@/contexts/FoodContext';
 import { FoodOrderStatus } from '@/types/order';
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-// Mock food items
-const mockFoodItems: any = {
-  '1': { id: '1', name: 'Burger', price: 5000, available: true, description: 'Delicious burger', currency: 'RWF' },
-  '2': { id: '2', name: 'Pizza', price: 8000, available: true, description: 'Fresh pizza', currency: 'RWF' },
-  '3': { id: '3', name: 'Coke', price: 2000, available: true, description: 'Cold drink', currency: 'RWF' },
-};
 
 export default function FoodDetailScreen() {
   const router = useRouter();
@@ -22,8 +16,15 @@ export default function FoodDetailScreen() {
   const [quantity, setQuantity] = useState(1);
   const { addItem } = useCart();
   const { user } = useAuth();
+  const { currentFood, fetchFoodById, isLoading } = useFood();
 
-  const foodItem = itemId ? mockFoodItems[itemId] : null;
+  useEffect(() => {
+    if (itemId) {
+      fetchFoodById(itemId.toString());
+    }
+  }, [itemId, fetchFoodById]);
+
+  const foodItem = currentFood;
 
   const handleAddToCart = () => {
     if (!foodItem || !foodItem.available) return;

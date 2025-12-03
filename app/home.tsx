@@ -5,6 +5,7 @@ import SectionHeader from "@/components/SectionHeader";
 import Skeleton from "@/components/Skeleton";
 import Colors from "@/constants/Colors";
 import { useAuth, useEvent, useOrder } from "@/contexts";
+import { useFood } from "@/contexts/FoodContext";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -26,6 +27,7 @@ export default function HomeScreen() {
   const router = useRouter();
   const { user } = useAuth()
   const { featuredEvents, upcomingEvents, fetchEvents, fetchFeaturedEvents, isLoading: loading } = useEvent();
+  const { foods, fetchAllFoods, isLoading: foodsLoading } = useFood()
   const { myOrders, fetchMyOrders, isLoading: ordersLoading } = useOrder();
   const [refreshing, setRefreshing] = useState(false);
   const [activeSlide, setActiveSlide] = React.useState(0);
@@ -47,6 +49,7 @@ export default function HomeScreen() {
       await Promise.all([
         fetchEvents(),
         fetchFeaturedEvents(),
+        fetchAllFoods(),
       ]);
     } catch (error) {
       console.error('Error refreshing:', error);
@@ -54,6 +57,10 @@ export default function HomeScreen() {
       setRefreshing(false);
     }
   };
+
+  useEffect(() => {
+    fetchAllFoods();
+  }, [fetchAllFoods]);
 
   const handleNotificationPress = () => {
     router.push('/notifications');
@@ -274,24 +281,32 @@ export default function HomeScreen() {
               onSeeAllPress={() => router.push("/menu")}
             />
           </View>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 20 }}
-          >
-            {[
-              { id: '1', name: 'Burger', category: 'food', price: 5000, image: require('@/assets/images/m1.png') },
-              { id: '2', name: 'Pizza', category: 'food', price: 8000, image: require('@/assets/images/m1.png') },
-              { id: '3', name: 'Coke', category: 'drinks', price: 2000, image: require('@/assets/images/m1.png') },
-            ].map((item) => (
-              <FoodCard
-                key={item.id}
-                item={item}
-                onPress={() => router.push(`/event/mock-event-id/food-detail?itemId=${item.id}`)}
-                onAdd={() => router.push(`/event/mock-event-id/food-detail?itemId=${item.id}`)}
-              />
-            ))}
-          </ScrollView>
+          {foodsLoading ? (
+            <View className="px-5">
+              <Skeleton height={180} radius={16} />
+            </View>
+          ) : (
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ paddingHorizontal: 20 }}
+            >
+              {foods.slice(0, 6).map((food) => (
+                <FoodCard
+                  key={food.food_id}
+                  item={{
+                    id: food.food_id,
+                    name: food.foodname,
+                    category: 'food',
+                    price: food.foodprice,
+                    image: food.foodimage ? { uri: food.foodimage } : require('@/assets/images/m1.png'),
+                  }}
+                  onPress={() => router.push(`/event/${food.event_id}/food-detail?itemId=${food.food_id}`)}
+                  onAdd={() => router.push(`/event/${food.event_id}/food-detail?itemId=${food.food_id}`)}
+                />
+              ))}
+            </ScrollView>
+          )}
         </View>
 
         {/* Bottom Spacing */}
