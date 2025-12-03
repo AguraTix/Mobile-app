@@ -14,6 +14,8 @@ export default function FoodDetailScreen() {
   const router = useRouter();
   const { id, itemId } = useLocalSearchParams<{ id?: string; itemId?: string }>();
   const [quantity, setQuantity] = useState(1);
+  const [modalStatus, setModalStatus] = useState<'loading' | 'success' | 'error' | 'idle'>('idle');
+  const [modalMessage, setModalMessage] = useState('');
   const { createOrder } = useOrder()
   const { addItem } = useCart();
   const { user } = useAuth();
@@ -30,12 +32,33 @@ export default function FoodDetailScreen() {
   const handleAddToCart = async () => {
     if (!foodItem || foodItem.quantity <= 0) return;
 
-    const data: FoodOrderCreateInput = {
-      food_id: foodItem.food_id,
-      quantity: quantity,
-      special_instructions: 'Just give me',
+    setModalStatus('loading');
+    setModalMessage('Creating your order...');
+
+    try {
+      const data: FoodOrderCreateInput = {
+        food_id: foodItem.food_id,
+        quantity: quantity,
+        special_instructions: 'Just give me',
+      }
+      await createOrder(data);
+
+      setModalStatus('success');
+      setModalMessage(`Successfully ordered ${quantity} ${foodItem.foodname}!`);
+    } catch (error) {
+      setModalStatus('error');
+      setModalMessage(error instanceof Error ? error.message : 'Failed to create order. Please try again.');
     }
-    await createOrder(data)
+  };
+
+  const handleModalClose = () => {
+    setModalStatus('idle');
+    setModalMessage('');
+  };
+
+  const handleOrderSuccess = () => {
+    setModalStatus('idle');
+    router.push(`/event/${id}/menu`);
   };
 
   const incrementQuantity = () => {
