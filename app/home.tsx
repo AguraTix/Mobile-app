@@ -274,13 +274,13 @@ export default function HomeScreen() {
                     {/* Content */}
                     <View className="flex-1 mr-8">
                       <Text className="text-white font-bold text-base mb-1" numberOfLines={1}>
-                        Soft Drinks
+                       {order.Food?.foodname}
                       </Text>
                       <Text className="text-gray-400 text-xs" numberOfLines={1}>
-                        Juice and Fries
+                        {order.Food?.fooddescription}
                       </Text>
                       <Text className="text-primary text-xs font-bold mt-1">
-                        20,000 RWF
+                        {order.Food?.foodprice} RWF
                       </Text>
                     </View>
 

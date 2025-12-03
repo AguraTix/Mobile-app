@@ -50,6 +50,11 @@ export default function FoodCard({ item, onPress, onAdd }: FoodCardProps) {
                         <Text className="text-text text-xs font-medium">4+</Text>
                     </View>
 
+                    <View className="flex-row items-center">
+                        <Text className="text-xs mr-1 text-white">RWF</Text>
+                        <Text className="text-text text-xs font-medium">{item.price}</Text>
+                    </View>
+
                     <TouchableOpacity
                         onPress={(e) => {
                             e.stopPropagation();

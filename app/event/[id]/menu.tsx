@@ -165,7 +165,10 @@ const MenuItemComponent: React.FC<{ item: any; onPress: () => void }> = ({ item,
             <Text className="text-base mr-1">⭐</Text>
             <Text className="text-text text-sm font-medium">4+</Text>
           </View>
-
+          <View className="flex-row items-center">
+            <Text className="text-xs mr-1 text-white">RWF</Text>
+            <Text className="text-text text-xs font-medium">{item.price}</Text>
+          </View>
           <TouchableOpacity
             onPress={(e) => {
               e.stopPropagation();

@@ -95,7 +95,7 @@ export const API_ENDPOINTS = {
   FOOD_ORDERS: {
     ALL: '/food-orders',
     CREATE: '/food-orders',
-    MY_ORDERS: '/food-orders/my-orders',
+    MY_ORDERS: '/food-orders/my',
     HISTORY: '/food-orders/history',
     BY_EVENT: (eventId: string) => `/food-orders/event/${eventId}`,
     BY_ID: (id: string) => `/food-orders/${id}`,

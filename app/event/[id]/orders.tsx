@@ -48,9 +48,11 @@ export default function EventOrdersScreen() {
         <Text className="text-text-secondary text-sm mb-1">
           {order.special_instructions || 'No special instructions'}
         </Text>
-        <Text className="text-text text-sm font-medium">
-          Qty: {order.quantity}
-        </Text>
+
+        <View className="flex-row items-center">
+            <Text className="text-xs mr-1 text-white">RWF</Text>
+            <Text className="text-text text-xs font-medium">{order.Food?.foodprice}</Text>
+          </View>
       </View>
       <View className="items-end">
         <Text className="text-text text-base font-bold mb-2">{order.quantity}</Text>

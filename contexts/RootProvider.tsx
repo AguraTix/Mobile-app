@@ -7,25 +7,28 @@ import { OrderProvider } from "./OrderContext";
 import { PaymentProvider } from "./PaymentContext";
 import { TicketProvider } from "./TicketContext";
 import { FoodProvider } from "./FoodContext";
+import { StatusProvider } from "./StatusContext";
 
 export function RootProvider({ children }: { children: ReactNode }) {
     return (
-        <AuthProvider>
-            <EventProvider>
-                <OrderProvider>
-                    <PaymentProvider>
-                        <TicketProvider>
-                            <CartProvider>
-                                <NotificationProvider>
-                                    <FoodProvider>
-                                        {children}
-                                    </FoodProvider>
-                                </NotificationProvider>
-                            </CartProvider>
-                        </TicketProvider>
-                    </PaymentProvider>
-                </OrderProvider>
-            </EventProvider>
-        </AuthProvider>
+        <StatusProvider>
+            <AuthProvider>
+                <EventProvider>
+                    <OrderProvider>
+                        <PaymentProvider>
+                            <TicketProvider>
+                                <CartProvider>
+                                    <NotificationProvider>
+                                        <FoodProvider>
+                                            {children}
+                                        </FoodProvider>
+                                    </NotificationProvider>
+                                </CartProvider>
+                            </TicketProvider>
+                        </PaymentProvider>
+                    </OrderProvider>
+                </EventProvider>
+            </AuthProvider>
+        </StatusProvider>
     )
 }
