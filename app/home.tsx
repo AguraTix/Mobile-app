@@ -2,7 +2,6 @@ import BottomNav from "@/components/BottomNav";
 import EventCard from "@/components/EventCard";
 import FoodCard from "@/components/FoodCard";
 import SectionHeader from "@/components/SectionHeader";
-import Skeleton from "@/components/Skeleton";
 import Colors from "@/constants/Colors";
 import { useAuth, useEvent, useOrder } from "@/contexts";
 import { useFood } from "@/contexts/FoodContext";
@@ -10,6 +9,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   Dimensions,
   Image,
@@ -50,6 +50,7 @@ export default function HomeScreen() {
         fetchEvents(),
         fetchFeaturedEvents(),
         fetchAllFoods(),
+        fetchMyOrders(),
       ]);
     } catch (error) {
       console.error('Error refreshing:', error);
@@ -57,6 +58,13 @@ export default function HomeScreen() {
       setRefreshing(false);
     }
   };
+
+  useEffect(() => {
+    fetchEvents();
+    fetchFeaturedEvents();
+    fetchAllFoods();
+    fetchMyOrders();
+  }, [fetchEvents, fetchFeaturedEvents, fetchAllFoods, fetchMyOrders]);
 
   useEffect(() => {
     fetchAllFoods();
@@ -117,8 +125,14 @@ export default function HomeScreen() {
         {/* Upcoming Events Carousel */}
         <View className="mb-6">
           {loading ? (
-            <View className="px-5">
-              <Skeleton height={400} radius={20} />
+            <View className="px-5 py-32 items-center justify-center">
+              <ActivityIndicator size="large" color={Colors.primary} />
+            </View>
+          ) : upcomingEvents.length === 0 ? (
+            <View className="px-5 py-16 items-center justify-center bg-card rounded-2xl mx-5">
+              <Text className="text-6xl mb-4">📅</Text>
+              <Text className="text-text text-lg font-semibold mb-2">No Upcoming Events</Text>
+              <Text className="text-text-secondary text-sm text-center">Check back later for exciting events!</Text>
             </View>
           ) : (
             <>
@@ -168,9 +182,14 @@ export default function HomeScreen() {
             onSeeAllPress={handleViewAllEvents}
           />
           {loading ? (
-            <View className="gap-3">
-              <Skeleton height={140} radius={16} />
-              <Skeleton height={140} radius={16} />
+            <View className="py-16 items-center justify-center">
+              <ActivityIndicator size="large" color={Colors.primary} />
+            </View>
+          ) : featuredEvents.length === 0 ? (
+            <View className="py-12 items-center justify-center bg-card rounded-2xl">
+              <Text className="text-5xl mb-3">🎉</Text>
+              <Text className="text-text text-base font-semibold mb-1">No Events Available</Text>
+              <Text className="text-text-secondary text-sm">New events coming soon!</Text>
             </View>
           ) : (
             featuredEvents.slice(0, 3).map((event) => (
@@ -193,9 +212,14 @@ export default function HomeScreen() {
             onSeeAllPress={() => router.push("/tickets")}
           />
           {loading ? (
-            <View className="gap-3">
-              <Skeleton height={140} radius={16} />
-              <Skeleton height={140} radius={16} />
+            <View className="py-16 items-center justify-center">
+              <ActivityIndicator size="large" color={Colors.primary} />
+            </View>
+          ) : upcomingEvents.length === 0 ? (
+            <View className="py-12 items-center justify-center bg-card rounded-2xl">
+              <Text className="text-5xl mb-3">🎫</Text>
+              <Text className="text-text text-base font-semibold mb-1">No Booked Events</Text>
+              <Text className="text-text-secondary text-sm">Book your first event today!</Text>
             </View>
           ) : (
             upcomingEvents.slice(0, 3).map((event) => (
@@ -221,8 +245,8 @@ export default function HomeScreen() {
               />
             </View>
             {ordersLoading ? (
-              <View className="px-5">
-                <Skeleton height={80} radius={16} />
+              <View className="px-5 py-12 items-center justify-center">
+                <ActivityIndicator size="large" color={Colors.primary} />
               </View>
             ) : (
               <View className="px-5 gap-4">
@@ -250,13 +274,13 @@ export default function HomeScreen() {
                     {/* Content */}
                     <View className="flex-1 mr-8">
                       <Text className="text-white font-bold text-base mb-1" numberOfLines={1}>
-                        Soft Drinks
+                       {order.Food?.foodname}
                       </Text>
                       <Text className="text-gray-400 text-xs" numberOfLines={1}>
-                        Juice and Fries
+                        {order.Food?.fooddescription}
                       </Text>
                       <Text className="text-primary text-xs font-bold mt-1">
-                        20,000 RWF
+                        {order.Food?.foodprice} RWF
                       </Text>
                     </View>
 
@@ -282,8 +306,14 @@ export default function HomeScreen() {
             />
           </View>
           {foodsLoading ? (
-            <View className="px-5">
-              <Skeleton height={180} radius={16} />
+            <View className="px-5 py-16 items-center justify-center">
+              <ActivityIndicator size="large" color={Colors.primary} />
+            </View>
+          ) : foods.length === 0 ? (
+            <View className="mx-5 py-12 items-center justify-center bg-card rounded-2xl">
+              <Text className="text-5xl mb-3">🍔</Text>
+              <Text className="text-text text-base font-semibold mb-1">No Food Available</Text>
+              <Text className="text-text-secondary text-sm">Menu items coming soon!</Text>
             </View>
           ) : (
             <ScrollView

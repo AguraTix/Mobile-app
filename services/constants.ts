@@ -1,6 +1,6 @@
 // API Configuration Constants
 
-const SERVER_URL = 'https://agura-ticketing-backend.onrender.com'
+const SERVER_URL = 'https://agurabackend.onrender.com'
 
 export const API_CONFIG = {
   BASE_URL: SERVER_URL,
@@ -69,7 +69,7 @@ export const API_ENDPOINTS = {
   // ============================================================================
   TICKETS: {
     AVAILABLE: (eventId: string) => `/tickets/event/${eventId}/available`,
-    BOOK: (ticketId: string) => `/tickets/${ticketId}/book`,
+    BOOK: (eventId: string) => `/tickets/event/${eventId}/purchase`,
     MY_TICKETS: '/tickets/my',
     CANCEL: (ticketId: string) => `/tickets/${ticketId}/cancel`,
     ADMIN_BOOKED: '/tickets/admin/booked',
@@ -95,7 +95,7 @@ export const API_ENDPOINTS = {
   FOOD_ORDERS: {
     ALL: '/food-orders',
     CREATE: '/food-orders',
-    MY_ORDERS: '/food-orders/my-orders',
+    MY_ORDERS: '/food-orders/my',
     HISTORY: '/food-orders/history',
     BY_EVENT: (eventId: string) => `/food-orders/event/${eventId}`,
     BY_ID: (id: string) => `/food-orders/${id}`,

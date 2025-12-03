@@ -1,6 +1,7 @@
 import { OrderService } from "@/services/order";
 import { FoodOrder, FoodOrderCreateInput } from "@/types/order";
 import { createContext, ReactNode, useCallback, useContext, useState } from "react";
+import { useStatus } from "./StatusContext";
 
 interface OrderContextType {
   orders: FoodOrder[];
@@ -27,6 +28,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
   const [currentOrder, setCurrentOrder] = useState<FoodOrder | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { showSuccess } = useStatus();
 
   const fetchMyOrders = useCallback(async (): Promise<FoodOrder[]> => {
     setIsLoading(true);
@@ -37,6 +39,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
       setMyOrders(orders);
       return orders;
     } catch (err) {
+      console.error(err)
       const message = err instanceof Error ? err.message : 'Failed to fetch my orders';
       setError(message);
       throw err;
@@ -71,6 +74,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
       const response = await OrderService.create(data);
       const order = response.order;
       setMyOrders(prev => [order, ...prev]);
+      showSuccess("Order created successfully")
       return order;
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to create order';

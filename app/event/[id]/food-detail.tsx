@@ -1,20 +1,22 @@
 import Header from '@/components/Header';
-import Skeleton from '@/components/Skeleton';
 import Colors from '@/constants/Colors';
-import { useAuth, useCart } from '@/contexts';
+import { useAuth, useCart, useOrder } from '@/contexts';
 import { useFood } from '@/contexts/FoodContext';
-import { FoodOrderStatus } from '@/types/order';
+import { FoodOrderCreateInput } from '@/types/order';
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
-import { Alert, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function FoodDetailScreen() {
   const router = useRouter();
   const { id, itemId } = useLocalSearchParams<{ id?: string; itemId?: string }>();
   const [quantity, setQuantity] = useState(1);
+  const [modalStatus, setModalStatus] = useState<'loading' | 'success' | 'error' | 'idle'>('idle');
+  const [modalMessage, setModalMessage] = useState('');
+  const { createOrder } = useOrder()
   const { addItem } = useCart();
   const { user } = useAuth();
   const { currentFood, fetchFoodById, isLoading } = useFood();
@@ -27,28 +29,36 @@ export default function FoodDetailScreen() {
 
   const foodItem = currentFood;
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!foodItem || foodItem.quantity <= 0) return;
 
-    // Add item to cart
-    addItem({
-      order_id: Math.random().toString(36).substr(2, 9),
-      user_id: user?.user_id || 'guest',
-      food_id: foodItem.food_id,
-      event_id: id || foodItem.event_id,
-      order_status: FoodOrderStatus.PENDING,
-      quantity: quantity,
-      Food: foodItem
-    });
+    setModalStatus('loading');
+    setModalMessage('Creating your order...');
 
-    Alert.alert(
-      "Added to Cart",
-      `${quantity} x ${foodItem.foodname} added to cart!`,
-      [
-        { text: "Continue Shopping", style: "cancel" },
-        { text: "View Cart", onPress: () => router.push(`/event/${id}/cart`) }
-      ]
-    );
+    try {
+      const data: FoodOrderCreateInput = {
+        food_id: foodItem.food_id,
+        quantity: quantity,
+        special_instructions: 'Just give me',
+      }
+      await createOrder(data);
+
+      setModalStatus('success');
+      setModalMessage(`Successfully ordered ${quantity} ${foodItem.foodname}!`);
+    } catch (error) {
+      setModalStatus('error');
+      setModalMessage(error instanceof Error ? error.message : 'Failed to create order. Please try again.');
+    }
+  };
+
+  const handleModalClose = () => {
+    setModalStatus('idle');
+    setModalMessage('');
+  };
+
+  const handleOrderSuccess = () => {
+    setModalStatus('idle');
+    router.push(`/event/${id}/menu`);
   };
 
   const incrementQuantity = () => {
@@ -74,12 +84,8 @@ export default function FoodDetailScreen() {
           <Text className="text-text text-lg font-semibold">Event Menu</Text>
         </View>
 
-        <View className="flex-1 px-5">
-          <Skeleton height={200} radius={24} />
-          <View className="h-6" />
-          <Skeleton height={60} radius={16} />
-          <View className="h-6" />
-          <Skeleton height={100} radius={16} />
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" color={Colors.primary} />
         </View>
       </SafeAreaView>
     );
@@ -208,7 +214,7 @@ export default function FoodDetailScreen() {
               onPress={handleAddToCart}
             >
               <Text className="text-white text-base font-bold">
-                Add to Cart
+                Order now
               </Text>
             </TouchableOpacity>
           </View>

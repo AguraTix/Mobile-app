@@ -48,7 +48,7 @@ export default function EventsUserScreen() {
 
   const [showSortModal, setShowSortModal] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
-  const [selectedSort, setSelectedSort] = useState("date_asc");
+  const [selectedSort, setSelectedSort] = useState("date_desc");
 
   // Missing States (ADDED)
   const [showFilters, setShowFilters] = useState(false);

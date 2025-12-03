@@ -1,14 +1,15 @@
 import BottomNav from "@/components/BottomNav";
 import Button from "@/components/Button";
 import Header from "@/components/Header";
-import Skeleton from "@/components/Skeleton";
 import Colors from "@/constants/Colors";
 import { useTicket } from "@/contexts";
 import { TicketStatus } from "@/types/ticket";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import {
+  ActivityIndicator,
+  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -19,154 +20,100 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TicketsScreen() {
   const router = useRouter();
-  const { myTickets: userTickets, isLoading: loading } = useTicket()
+  const { myTickets: userTickets, isLoading: loading, fetchMyTickets } = useTicket()
 
-  const activeTickets = userTickets.filter(ticket => ticket.status === TicketStatus.AVAILABLE);
-  const expiredTickets = userTickets.filter(ticket => ticket.status === TicketStatus.CANCELLED);
+  // Fetch tickets when component mounts
+  useEffect(() => {
+    fetchMyTickets();
+  }, [fetchMyTickets]);
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
 
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
+  // Active tickets are those that are sold but not yet used or cancelled
+  const activeTickets = userTickets.filter(ticket =>
+    ticket.status === TicketStatus.SOLD || ticket.status === TicketStatus.RESERVED
+  );
+
+  // Expired tickets are those that are used or cancelled
+  const expiredTickets = userTickets.filter(ticket =>
+    ticket.status === TicketStatus.USED || ticket.status === TicketStatus.CANCELLED
+  );
 
   const handleTicketPress = (ticketId: string) => {
-    console.log("Viewing ticket:", ticketId);
+    router.push(`/ticket/${ticketId}`);
   };
 
-  const handleDownloadTicket = (ticket: any) => {
-    console.log("Downloading ticket:", ticket.id);
-  };
+ const renderTicketCard = (ticket: any) => (
+  <TouchableOpacity
+    key={ticket.ticket_id}
+    className="bg-[#1A1A1A] rounded-[24px] p-4 flex-row items-center overflow-hidden relative mb-4"
+    style={styles.shadow}
+    onPress={() => handleTicketPress(ticket.ticket_id)}
+    activeOpacity={0.8}
+  >
+    {/* Active Ribbon - Diagonal style */}
+    {(ticket.status === TicketStatus.SOLD || ticket.status === TicketStatus.RESERVED) && (
+      <View className="absolute top-0 right-0 bg-success px-6 py-1 transform rotate-45 translate-x-4 translate-y-2 z-10">
+        <Text className="text-white text-[10px] font-bold uppercase">Active</Text>
+      </View>
+    )}
 
-  const handleShareTicket = (ticket: any) => {
-    console.log("Sharing ticket:", ticket.id);
-  };
+    {/* Event Image */}
+    <View className="w-14 h-14 rounded-2xl bg-white overflow-hidden mr-4">
+      {ticket.Event?.image ? (
+        <Image
+          source={{ uri: ticket.Event.image }}
+          className="w-full h-full"
+          resizeMode="cover"
+        />
+      ) : (
+        <View className="w-full h-full items-center justify-center bg-primary/20">
+          <Ionicons name="musical-notes" size={24} color={Colors.primary} />
+        </View>
+      )}
+    </View>
 
-  const renderTicketCard = (ticket: any) => (
+    {/* Event Info */}
+    <View className="flex-1 mr-4">
+      <Text className="text-white font-bold text-base mb-1" numberOfLines={1}>
+        {ticket.Event?.title || "Event"}
+      </Text>
+      <Text className="text-gray-400 text-xs" numberOfLines={1}>
+        {ticket.sectionName || "Standard"} Tickets
+      </Text>
+      <Text className="text-primary text-xs font-bold mt-1">
+        {ticket.price?.toLocaleString() || "0"} Rwf
+      </Text>
+    </View>
+
+    {/* View Ticket Button - Kept as original but adjusted styling */}
     <TouchableOpacity
-      key={ticket.ticket_id}
-      className={`bg-card rounded-2xl p-5 mb-4 ${ticket.status === TicketStatus.CANCELLED ? 'opacity-60 bg-gray-100' : ''}`}
-      style={styles.shadow}
-      onPress={() => handleTicketPress(ticket.ticket_id)}
-      activeOpacity={0.8}
+      className="bg-transparent border border-primary px-3 py-2 rounded-lg min-w-[80px]"
+      onPress={(e) => {
+        e.stopPropagation(); // Prevent parent onPress from firing
+        handleTicketPress(ticket.ticket_id);
+      }}
     >
-      <View className="flex-row justify-between items-center mb-4">
-        <View className="flex-row items-center gap-2">
-          <Ionicons name="ticket" size={20} color={Colors.primary} />
-          <Text className="text-sm font-semibold text-primary uppercase">{ticket.sectionName || "Standard"}</Text>
-        </View>
-        <View className="flex-row items-center gap-1.5">
-          <View className={`w-2 h-2 rounded-full ${ticket.status === TicketStatus.AVAILABLE ? 'bg-success' : 'bg-gray-500'}`} />
-          <Text className={`text-xs font-medium uppercase ${ticket.status === TicketStatus.AVAILABLE ? 'text-success' : 'text-gray-500'}`}>
-            {ticket.status === TicketStatus.AVAILABLE ? "Active" : "Expired"}
-          </Text>
-        </View>
-      </View>
-
-      <Text className="text-lg font-semibold text-text mb-4 leading-6">{ticket.Event?.title || "Event"}</Text>
-
-      <View className="mb-5">
-        <View className="flex-row items-center gap-3 mb-2">
-          <Ionicons name="calendar" size={16} color={Colors.textSecondary} />
-          <Text className="text-sm text-text-secondary flex-1">
-            {ticket.Event?.date ? formatDate(ticket.Event.date) : 'TBD'} at {ticket.Event?.date ? formatTime(ticket.Event.date) : 'TBD'}
-          </Text>
-        </View>
-
-        <View className="flex-row items-center gap-3 mb-2">
-          <Ionicons name="location" size={16} color={Colors.textSecondary} />
-          <Text className="text-sm text-text-secondary flex-1">{ticket.Event?.Venue?.name || ""}</Text>
-        </View>
-
-        <View className="flex-row items-center gap-3">
-          <Ionicons name="time" size={16} color={Colors.textSecondary} />
-          <Text className="text-sm text-text-secondary flex-1">
-            {ticket.status === TicketStatus.AVAILABLE ? "Event hasn't started" : "Event has ended"}
-          </Text>
-        </View>
-      </View>
-
-      <View className="flex-row justify-between items-center pt-4 border-t border-black/10">
-        <View className="flex-1">
-          <Text className="text-xs text-text-secondary mb-1">Ticket #</Text>
-          <Text className="text-sm font-semibold text-text font-mono">{ticket.ticket_id}</Text>
-        </View>
-
-        <View className="flex-row items-center gap-3">
-          {ticket.status === TicketStatus.AVAILABLE && (
-            <>
-              <TouchableOpacity
-                className="w-9 h-9 rounded-[18px] bg-primary/10 items-center justify-center"
-                onPress={() => handleDownloadTicket(ticket)}
-                hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-              >
-                <Ionicons name="download" size={18} color={Colors.primary} />
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                className="w-9 h-9 rounded-[18px] bg-primary/10 items-center justify-center"
-                onPress={() => handleShareTicket(ticket)}
-                hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-              >
-                <Ionicons name="share-social" size={18} color={Colors.primary} />
-              </TouchableOpacity>
-            </>
-          )}
-
-          <TouchableOpacity
-            className="w-9 h-9 rounded-[18px] bg-primary/10 items-center justify-center"
-            onPress={() => handleTicketPress(ticket.ticket_id)}
-            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-          >
-            <Ionicons name="arrow-forward" size={18} color={Colors.primary} />
-          </TouchableOpacity>
-        </View>
-      </View>
+      <Text className="text-primary text-xs font-semibold text-center">View Ticket</Text>
     </TouchableOpacity>
-  );
+  </TouchableOpacity>
+);
 
   return (
     <SafeAreaView className="flex-1  bg-background" edges={["top"]}>
       <Header title="My Tickets" showBack />
 
       <ScrollView
-        className="flex-1"
-        contentContainerStyle={{ paddingBottom: 40 }}
+        className="flex-1 pb-40"
+        contentContainerStyle={{ paddingBottom: 80 }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header Section */}
-        <View
-          className="items-center px-5 py-8 bg-primary mx-5 mt-5 rounded-[20px]"
-          style={styles.headerShadow}
-        >
-          <View className="w-16 h-16 rounded-[32px] bg-white/20 items-center justify-center mb-4">
-            <Ionicons name="ticket" size={32} color={Colors.primary} />
-          </View>
-          <Text className="text-2xl font-bold text-white mb-2 text-center">My Tickets</Text>
-          <Text className="text-base text-white/90 text-center font-medium">
-            {activeTickets.length} active tickets
-          </Text>
-        </View>
+
 
         {/* Loading state */}
         {loading && (
-          <View className="px-5 mt-8">
-            <Text className="text-xl font-semibold text-text mb-5">Loading Tickets</Text>
-            <Skeleton height={120} radius={16} style={{ marginBottom: 12 }} />
-            <Skeleton height={120} radius={16} style={{ marginBottom: 12 }} />
-            <Skeleton height={120} radius={16} style={{ marginBottom: 12 }} />
+          <View className="px-5 mt-8 py-24 items-center justify-center">
+            <ActivityIndicator size="large" color={Colors.primary} />
+            <Text className="text-text-secondary text-sm mt-4">Loading tickets...</Text>
           </View>
         )}
 
@@ -197,7 +144,7 @@ export default function TicketsScreen() {
               You haven&apos;t purchased any tickets yet. Start exploring events to get your first ticket!
             </Text>
             <Button
-              title="Browse Events"
+              title="Book a ticket"
               variant="primary"
               size="large"
               fullWidth={true}
@@ -207,18 +154,7 @@ export default function TicketsScreen() {
           </View>
         )}
 
-        {/* Call to Action */}
-        {!loading && userTickets.length > 0 && (
-          <View className="px-5 mt-10">
-            <Button
-              title="Browse More Events"
-              variant="outline"
-              size="large"
-              fullWidth={true}
-              onPress={() => router.push("/events-user")}
-            />
-          </View>
-        )}
+        
       </ScrollView>
       <BottomNav />
     </SafeAreaView>

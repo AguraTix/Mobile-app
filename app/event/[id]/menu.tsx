@@ -1,18 +1,17 @@
-import Skeleton from '@/components/Skeleton';
 import Colors from '@/constants/Colors';
 import { useFood } from '@/contexts/FoodContext';
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
-import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function EventMenuScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const [selectedTab, setSelectedTab] = useState<'menu' | 'orders'>('menu');
-  const { foodsByEvent, fetchFoodsByEvent, isLoading } = useFood();
+  const { fetchFoodsByEvent, isLoading, foods } = useFood();
 
   useEffect(() => {
     if (id) {
@@ -21,7 +20,7 @@ export default function EventMenuScreen() {
   }, [id, fetchFoodsByEvent]);
 
   // Map foods to menu items format
-  const currentMenuItems = foodsByEvent.map(food => ({
+  const currentMenuItems = foods.map(food => ({
     id: food.food_id,
     name: food.foodname,
     category: 'food', // You can add category to Food model later if needed
@@ -96,10 +95,8 @@ export default function EventMenuScreen() {
           showsVerticalScrollIndicator={false}
         >
           {isLoading ? (
-            <View className="gap-4">
-              <Skeleton height={180} radius={16} />
-              <Skeleton height={180} radius={16} />
-              <Skeleton height={180} radius={16} />
+            <View className="py-24 items-center justify-center">
+              <ActivityIndicator size="large" color={Colors.primary} />
             </View>
           ) : currentMenuItems.length === 0 ? (
             <View className="py-16 items-center justify-center">
@@ -168,7 +165,10 @@ const MenuItemComponent: React.FC<{ item: any; onPress: () => void }> = ({ item,
             <Text className="text-base mr-1">⭐</Text>
             <Text className="text-text text-sm font-medium">4+</Text>
           </View>
-
+          <View className="flex-row items-center">
+            <Text className="text-xs mr-1 text-white">RWF</Text>
+            <Text className="text-text text-xs font-medium">{item.price}</Text>
+          </View>
           <TouchableOpacity
             onPress={(e) => {
               e.stopPropagation();
