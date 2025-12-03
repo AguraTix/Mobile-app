@@ -1,9 +1,9 @@
 import Header from '@/components/Header';
 import Skeleton from '@/components/Skeleton';
 import Colors from '@/constants/Colors';
-import { useAuth, useCart } from '@/contexts';
+import { useAuth, useCart, useOrder } from '@/contexts';
 import { useFood } from '@/contexts/FoodContext';
-import { FoodOrderStatus } from '@/types/order';
+import { FoodOrderCreateInput, FoodOrderStatus } from '@/types/order';
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -15,6 +15,7 @@ export default function FoodDetailScreen() {
   const router = useRouter();
   const { id, itemId } = useLocalSearchParams<{ id?: string; itemId?: string }>();
   const [quantity, setQuantity] = useState(1);
+  const { createOrder } = useOrder()
   const { addItem } = useCart();
   const { user } = useAuth();
   const { currentFood, fetchFoodById, isLoading } = useFood();
@@ -27,20 +28,15 @@ export default function FoodDetailScreen() {
 
   const foodItem = currentFood;
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!foodItem || foodItem.quantity <= 0) return;
 
-    // Add item to cart
-    addItem({
-      order_id: Math.random().toString(36).substr(2, 9),
-      user_id: user?.user_id || 'guest',
+    const data: FoodOrderCreateInput = {
       food_id: foodItem.food_id,
-      event_id: id || foodItem.event_id,
-      order_status: FoodOrderStatus.PENDING,
       quantity: quantity,
-      Food: foodItem
-    });
-    router.push(`/event/${id}/cart`)
+      special_instructions: 'Just give me',
+    }
+    await createOrder(data)
   };
 
   const incrementQuantity = () => {
@@ -200,7 +196,7 @@ export default function FoodDetailScreen() {
               onPress={handleAddToCart}
             >
               <Text className="text-white text-base font-bold">
-                Add to Cart
+                Order now
               </Text>
             </TouchableOpacity>
           </View>
