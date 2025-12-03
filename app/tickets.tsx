@@ -39,159 +39,76 @@ export default function TicketsScreen() {
     ticket.status === TicketStatus.USED || ticket.status === TicketStatus.CANCELLED
   );
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
-  const [expandedTicketId, setExpandedTicketId] = React.useState<string | null>(null);
-
   const handleTicketPress = (ticketId: string) => {
     router.push(`/ticket/${ticketId}`);
   };
 
-  const handleDownloadTicket = (ticket: any) => {
-    console.log("Downloading ticket:", ticket.ticket_id);
-    // TODO: Implement QR code download functionality
-  };
-
-  const handleShareTicket = (ticket: any) => {
-    console.log("Sharing ticket:", ticket.ticket_id);
-    // TODO: Implement ticket sharing functionality
-  };
-
-  const renderTicketCard = (ticket: any) => {
-    const isExpanded = expandedTicketId === ticket.ticket_id;
-
-    return (
-      <TouchableOpacity
-        key={ticket.ticket_id}
-        className={`bg-card rounded-2xl p-5 mb-4 ${ticket.status === TicketStatus.CANCELLED ? 'opacity-60 bg-gray-100' : ''}`}
-        style={styles.shadow}
-        onPress={() => handleTicketPress(ticket.ticket_id)}
-        activeOpacity={0.8}
-      >
-        <View className="flex-row justify-between items-center mb-4">
-          <View className="flex-row items-center gap-2">
-            <Ionicons name="ticket" size={20} color={Colors.primary} />
-            <Text className="text-sm font-semibold text-primary uppercase">{ticket.sectionName || "Standard"}</Text>
-          </View>
-          <View className="flex-row items-center gap-1.5">
-            <View className={`w-2 h-2 rounded-full ${ticket.status === TicketStatus.SOLD || ticket.status === TicketStatus.RESERVED
-              ? 'bg-success'
-              : 'bg-gray-500'
-              }`} />
-            <Text className={`text-xs font-medium uppercase ${ticket.status === TicketStatus.SOLD || ticket.status === TicketStatus.RESERVED
-              ? 'text-success'
-              : 'text-gray-500'
-              }`}>
-              {ticket.status === TicketStatus.SOLD ? "Active" :
-                ticket.status === TicketStatus.RESERVED ? "Reserved" :
-                  ticket.status === TicketStatus.USED ? "Used" : "Expired"}
-            </Text>
-          </View>
+  const renderTicketCard = (ticket: any) => (
+    <TouchableOpacity
+      key={ticket.ticket_id}
+      className="bg-[#1A1A1A] rounded-2xl mb-4 overflow-hidden relative"
+      style={styles.shadow}
+      onPress={() => handleTicketPress(ticket.ticket_id)}
+      activeOpacity={0.8}
+    >
+      {/* Active Ribbon */}
+      {(ticket.status === TicketStatus.SOLD || ticket.status === TicketStatus.RESERVED) && (
+        <View className="absolute top-3 right-3 bg-success px-3 py-1 rounded-full z-10">
+          <Text className="text-white text-[10px] font-bold uppercase">Active</Text>
         </View>
+      )}
 
-        <Text className="text-lg font-semibold text-text mb-4 leading-6">{ticket.Event?.title || "Event"}</Text>
-
-        <View className="mb-5">
-          <View className="flex-row items-center gap-3 mb-2">
-            <Ionicons name="calendar" size={16} color={Colors.textSecondary} />
-            <Text className="text-sm text-text-secondary flex-1">
-              {ticket.Event?.date ? formatDate(ticket.Event.date) : 'TBD'} at {ticket.Event?.date ? formatTime(ticket.Event.date) : 'TBD'}
-            </Text>
-          </View>
-
-          <View className="flex-row items-center gap-3 mb-2">
-            <Ionicons name="location" size={16} color={Colors.textSecondary} />
-            <Text className="text-sm text-text-secondary flex-1">{ticket.Event?.Venue?.name || ""}</Text>
-          </View>
-
-          <View className="flex-row items-center gap-3">
-            <Ionicons name="time" size={16} color={Colors.textSecondary} />
-            <Text className="text-sm text-text-secondary flex-1">
-              {ticket.status === TicketStatus.AVAILABLE ? "Event hasn't started" : "Event has ended"}
-            </Text>
-          </View>
-        </View>
-
-        <View className="flex-row justify-between items-center pt-4 border-t border-black/10">
-          <View className="flex-1">
-            <Text className="text-xs text-text-secondary mb-1">Ticket #</Text>
-            <Text className="text-sm font-semibold text-text font-mono">{ticket.ticket_id}</Text>
-          </View>
-
-          <View className="flex-row items-center gap-3">
-            {(ticket.status === TicketStatus.SOLD || ticket.status === TicketStatus.RESERVED) && (
-              <>
-                <TouchableOpacity
-                  className="w-9 h-9 rounded-[18px] bg-primary/10 items-center justify-center"
-                  onPress={() => handleDownloadTicket(ticket)}
-                  hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-                >
-                  <Ionicons name="download" size={18} color={Colors.primary} />
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  className="w-9 h-9 rounded-[18px] bg-primary/10 items-center justify-center"
-                  onPress={() => handleShareTicket(ticket)}
-                  hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-                >
-                  <Ionicons name="share-social" size={18} color={Colors.primary} />
-                </TouchableOpacity>
-              </>
-            )}
-
-            <TouchableOpacity
-              className="w-9 h-9 rounded-[18px] bg-primary/10 items-center justify-center"
-              onPress={() => handleTicketPress(ticket.ticket_id)}
-              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-            >
-              <Ionicons name="arrow-forward" size={18} color={Colors.primary} />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* QR Code Section - Shows when expanded */}
-        {isExpanded && ticket.qrCode && (
-          <View className="mt-4 pt-4 border-t border-black/10 items-center">
-            <Text className="text-xs text-text-secondary mb-3 uppercase tracking-wide">Entry QR Code</Text>
-            <View className="bg-white p-4 rounded-2xl">
-              <Image
-                source={{ uri: ticket.qrCode }}
-                className="w-48 h-48"
-                resizeMode="contain"
-              />
+      <View className="flex-row p-4">
+        {/* Event Image */}
+        <View className="w-20 h-20 rounded-xl overflow-hidden mr-4 bg-card">
+          {ticket.Event?.image ? (
+            <Image
+              source={{ uri: ticket.Event.image }}
+              className="w-full h-full"
+              resizeMode="cover"
+            />
+          ) : (
+            <View className="w-full h-full items-center justify-center bg-primary/20">
+              <Ionicons name="musical-notes" size={32} color={Colors.primary} />
             </View>
-            <Text className="text-xs text-text-secondary mt-3 text-center">
-              Show this QR code at the venue entrance
+          )}
+        </View>
+
+        {/* Event Info */}
+        <View className="flex-1 justify-between">
+          <View>
+            <Text className="text-white text-base font-bold mb-1" numberOfLines={1}>
+              {ticket.Event?.title || "Event"}
+            </Text>
+            <Text className="text-text-secondary text-xs mb-2">
+              {ticket.sectionName || "Standard"} Tickets
+            </Text>
+            <Text className="text-primary text-sm font-bold">
+              {ticket.price?.toLocaleString() || "0"} Rwf
             </Text>
           </View>
-        )}
-      </TouchableOpacity>
-    );
-  };
+        </View>
+
+        {/* View Ticket Button */}
+        <View className="justify-center ml-2">
+          <TouchableOpacity
+            className="bg-transparent border border-primary px-4 py-2 rounded-lg"
+            onPress={() => handleTicketPress(ticket.ticket_id)}
+          >
+            <Text className="text-primary text-xs font-semibold">View Ticket</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
 
   return (
     <SafeAreaView className="flex-1  bg-background" edges={["top"]}>
       <Header title="My Tickets" showBack />
 
       <ScrollView
-        className="flex-1"
-        contentContainerStyle={{ paddingBottom: 40 }}
+        className="flex-1 pb-40"
+        contentContainerStyle={{ paddingBottom: 80 }}
         showsVerticalScrollIndicator={false}
       >
         {/* Header Section */}
