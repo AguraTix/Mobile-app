@@ -291,7 +291,6 @@ export default function EventCard({
   }
 
   if (variant === "detailed") {
-    console.log(event.date)
     return (
       <Animated.View style={[{ opacity: opacityAnim }, styles.detailedShadow]} className="bg-card rounded-[20px] mb-5 overflow-hidden">
         <TouchableOpacity

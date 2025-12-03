@@ -1,23 +1,35 @@
+import Skeleton from '@/components/Skeleton';
 import Colors from '@/constants/Colors';
+import { useFood } from '@/contexts/FoodContext';
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-// Mock menu items
-const mockMenuItems = [
-  { id: '1', name: 'Big cheese burger', category: 'food', price: 5000, available: true, description: 'This is a big burger cheese for people' },
-  { id: '2', name: 'Pizza', category: 'food', price: 8000, available: true, description: 'This is a fresh pizza for people' },
-  { id: '3', name: 'Coke', category: 'drinks', price: 2000, available: true, description: 'This is a cold drink for people' },
-];
 
 export default function EventMenuScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const [selectedTab, setSelectedTab] = useState<'menu' | 'orders'>('menu');
-  const currentMenuItems = mockMenuItems;
+  const { foodsByEvent, fetchFoodsByEvent, isLoading } = useFood();
+
+  useEffect(() => {
+    if (id) {
+      fetchFoodsByEvent(id.toString());
+    }
+  }, [id, fetchFoodsByEvent]);
+
+  // Map foods to menu items format
+  const currentMenuItems = foodsByEvent.map(food => ({
+    id: food.food_id,
+    name: food.foodname,
+    category: 'food', // You can add category to Food model later if needed
+    price: food.foodprice,
+    available: food.quantity > 0,
+    description: food.fooddescription || `Delicious ${food.foodname}`,
+    image: food.foodimage,
+  }));
 
   const handleOrderItem = (item: any) => {
     if (!item.available) return;
@@ -83,7 +95,13 @@ export default function EventMenuScreen() {
           contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
           showsVerticalScrollIndicator={false}
         >
-          {currentMenuItems.length === 0 ? (
+          {isLoading ? (
+            <View className="gap-4">
+              <Skeleton height={180} radius={16} />
+              <Skeleton height={180} radius={16} />
+              <Skeleton height={180} radius={16} />
+            </View>
+          ) : currentMenuItems.length === 0 ? (
             <View className="py-16 items-center justify-center">
               <Text className="text-text text-lg font-semibold mb-2">No menu items available</Text>
               <Text className="text-text-secondary text-sm">Check back later!</Text>

@@ -1,9 +1,15 @@
 import { User } from './auth';
-import { Event } from './events';
 
 // ============================================================================
 // FOOD INTERFACES
 // ============================================================================
+
+// Partial Event type for food responses (API returns only these fields)
+export interface FoodEvent {
+    event_id: string;
+    title: string;
+    date: string;
+}
 
 export interface FoodCreateInput {
     foodname: string;
@@ -32,7 +38,7 @@ export interface Food {
     fooddescription?: string;
     event_id: string;
     admin_id: string;
-    Event?: Event;
+    Event?: FoodEvent;
     User?: User;
     createdAt?: string;
     updatedAt?: string;

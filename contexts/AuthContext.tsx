@@ -37,6 +37,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       Keyboard.dismiss();
       await loadUserData();
     } catch (err) {
+      console.error(err)
       const message = err as unknown as ApiError
       setError(message.message);
     } finally {
@@ -52,6 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       Keyboard.dismiss();
       router.replace('/auth/categories')
     } catch (err) {
+      console.error(err)
       const message = err as unknown as ApiError
       setError(message.message);
     } finally {
