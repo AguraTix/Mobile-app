@@ -120,6 +120,12 @@ export default function HomeScreen() {
             <View className="px-5">
               <Skeleton height={400} radius={20} />
             </View>
+          ) : upcomingEvents.length === 0 ? (
+            <View className="px-5 py-16 items-center justify-center bg-card rounded-2xl mx-5">
+              <Text className="text-6xl mb-4">📅</Text>
+              <Text className="text-text text-lg font-semibold mb-2">No Upcoming Events</Text>
+              <Text className="text-text-secondary text-sm text-center">Check back later for exciting events!</Text>
+            </View>
           ) : (
             <>
               <ScrollView
@@ -172,6 +178,12 @@ export default function HomeScreen() {
               <Skeleton height={140} radius={16} />
               <Skeleton height={140} radius={16} />
             </View>
+          ) : featuredEvents.length === 0 ? (
+            <View className="py-12 items-center justify-center bg-card rounded-2xl">
+              <Text className="text-5xl mb-3">🎉</Text>
+              <Text className="text-text text-base font-semibold mb-1">No Events Available</Text>
+              <Text className="text-text-secondary text-sm">New events coming soon!</Text>
+            </View>
           ) : (
             featuredEvents.slice(0, 3).map((event) => (
               <EventCard
@@ -196,6 +208,12 @@ export default function HomeScreen() {
             <View className="gap-3">
               <Skeleton height={140} radius={16} />
               <Skeleton height={140} radius={16} />
+            </View>
+          ) : upcomingEvents.length === 0 ? (
+            <View className="py-12 items-center justify-center bg-card rounded-2xl">
+              <Text className="text-5xl mb-3">🎫</Text>
+              <Text className="text-text text-base font-semibold mb-1">No Booked Events</Text>
+              <Text className="text-text-secondary text-sm">Book your first event today!</Text>
             </View>
           ) : (
             upcomingEvents.slice(0, 3).map((event) => (
@@ -284,6 +302,12 @@ export default function HomeScreen() {
           {foodsLoading ? (
             <View className="px-5">
               <Skeleton height={180} radius={16} />
+            </View>
+          ) : foods.length === 0 ? (
+            <View className="mx-5 py-12 items-center justify-center bg-card rounded-2xl">
+              <Text className="text-5xl mb-3">🍔</Text>
+              <Text className="text-text text-base font-semibold mb-1">No Food Available</Text>
+              <Text className="text-text-secondary text-sm">Menu items coming soon!</Text>
             </View>
           ) : (
             <ScrollView

@@ -28,6 +28,7 @@ export interface TicketTypeConfig {
   type: TicketType | string; // Can be custom section names for venues with sections
   price: number;
   quantity: number;
+  available: number
 }
 
 export interface Ticket {

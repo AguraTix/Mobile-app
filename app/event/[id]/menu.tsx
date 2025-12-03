@@ -12,7 +12,7 @@ export default function EventMenuScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const [selectedTab, setSelectedTab] = useState<'menu' | 'orders'>('menu');
-  const { foodsByEvent, fetchFoodsByEvent, isLoading } = useFood();
+  const { fetchFoodsByEvent, isLoading, foods } = useFood();
 
   useEffect(() => {
     if (id) {
@@ -21,7 +21,7 @@ export default function EventMenuScreen() {
   }, [id, fetchFoodsByEvent]);
 
   // Map foods to menu items format
-  const currentMenuItems = foodsByEvent.map(food => ({
+  const currentMenuItems = foods.map(food => ({
     id: food.food_id,
     name: food.foodname,
     category: 'food', // You can add category to Food model later if needed

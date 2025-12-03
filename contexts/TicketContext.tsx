@@ -1,4 +1,5 @@
 import { TicketService } from "@/services/ticket";
+import { TicketBookingRequest } from "@/types";
 import { Ticket, TicketGrouped } from "@/types/ticket";
 import { createContext, ReactNode, useCallback, useContext, useState } from "react";
 
@@ -9,7 +10,7 @@ interface TicketContextType {
   error: string | null;
   fetchAvailableTickets: (eventId: string) => Promise<void>;
   fetchMyTickets: () => Promise<void>;
-  bookTicket: (ticketId: string) => Promise<Ticket>;
+  bookTicket: (data: TicketBookingRequest) => Promise<Ticket>;
   cancelTicket: (ticketId: string) => Promise<void>;
   clearError: () => void;
 }
@@ -41,6 +42,7 @@ export function TicketProvider({ children }: { children: ReactNode }) {
     setError(null);
     try {
       const response = await TicketService.getMyTickets();
+      console.log("My tickets ", response.tickets.length)
       setMyTickets(response.tickets);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to fetch my tickets';
@@ -50,14 +52,16 @@ export function TicketProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const bookTicket = useCallback(async (ticketId: string): Promise<Ticket> => {
+  const bookTicket = useCallback(async (data: TicketBookingRequest): Promise<Ticket> => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await TicketService.book(ticketId);
+      console.log(data)
+      const response = await TicketService.book(data);
       setMyTickets((prev) => [...prev, response.ticket]);
       return response.ticket;
     } catch (err) {
+      console.error(err)
       const message = err instanceof Error ? err.message : 'Failed to book ticket';
       setError(message);
       throw err;

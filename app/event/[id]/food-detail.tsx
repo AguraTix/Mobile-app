@@ -40,15 +40,7 @@ export default function FoodDetailScreen() {
       quantity: quantity,
       Food: foodItem
     });
-
-    Alert.alert(
-      "Added to Cart",
-      `${quantity} x ${foodItem.foodname} added to cart!`,
-      [
-        { text: "Continue Shopping", style: "cancel" },
-        { text: "View Cart", onPress: () => router.push(`/event/${id}/cart`) }
-      ]
-    );
+    router.push(`/event/${id}/cart`)
   };
 
   const incrementQuantity = () => {

@@ -30,6 +30,11 @@ export interface AdminTicketResponse {
   })[];
 }
 
+export interface TicketBookingRequest {
+  eventId: string
+  ticketType: string
+}
+
 export interface TicketBookingResponse {
   message: string;
   ticket: {

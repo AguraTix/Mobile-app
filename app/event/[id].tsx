@@ -1,5 +1,6 @@
 import Loading from "@/components/Loading";
-import { useEvent } from "@/contexts";
+import { useEvent, useTicket } from "@/contexts";
+import { TicketBookingRequest } from "@/types";
 import { TicketTypeConfig } from "@/types/ticket";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -20,39 +21,33 @@ export const options = {
   headerShown: false,
 };
 
-function formatPrice(price: number, currency: string = 'RWF'): string {
-  return `${price.toLocaleString()} ${currency}`;
-}
-
 
 export default function EventDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string; }>();
   const router = useRouter();
   const { fetchEventById, currentEvent } = useEvent()
-  // TODO: Venue model doesn't include coordinates yet, using default Kigali location
-  // Update this when venue coordinates are added to the backend
-  const [coords, setCoords] = useState<{ latitude: number; longitude: number }>({
-    latitude: -1.9441,
-    longitude: 30.0619,
-  });
+  const { bookTicket } = useTicket()
+
 
   useEffect(() => {
     fetchEventById(id.toString())
   }, [id]);
 
-  const handleBuyTicket = (ticket: TicketTypeConfig) => {
+  const handleBuyTicket = async (ticket: TicketTypeConfig) => {
     if (!ticket.quantity || ticket.quantity <= 0) {
       Alert.alert("Sold Out", "This ticket category is no longer available.");
       return;
     }
 
+    const data: TicketBookingRequest = {
+      eventId: id.toString(),
+      ticketType: ticket.type
+    }
+    await bookTicket(data)
     // Navigate to seat selection with ticket info
-    router.push(`/event/${id}/seat-selection?ticketType=${encodeURIComponent(ticket.type)}&price=${ticket.price}`);
+    // router.push(`/event/${id}/seat-selection?ticketType=${encodeURIComponent(ticket.type)}&price=${ticket.price}`);
   };
 
-  const handleViewMap = () => {
-    router.push(`/event/${id}/map`);
-  };
 
   // Show loading or empty state while event is being fetched
   if (!currentEvent) {
@@ -144,7 +139,7 @@ export default function EventDetailScreen() {
                   <Text className="text-text text-sm font-semibold mb-2">{ticket.type}</Text>
                   <View className="bg-[#4CAF50] px-2 py-1 rounded-xl self-start mb-2">
                     <Text className="text-white text-[10px] font-semibold">
-                      {ticket.quantity || 0} left
+                      {ticket.available || 0} left
                     </Text>
                   </View>
                   <Text className="text-primary text-base font-bold mb-3">
@@ -176,8 +171,5 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 6,
-  },
-  map: {
-    flex: 1,
   },
 });

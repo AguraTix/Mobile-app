@@ -7,8 +7,9 @@ import { useTicket } from "@/contexts";
 import { TicketStatus } from "@/types/ticket";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import {
+  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -19,10 +20,24 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TicketsScreen() {
   const router = useRouter();
-  const { myTickets: userTickets, isLoading: loading } = useTicket()
+  const { myTickets: userTickets, isLoading: loading, fetchMyTickets } = useTicket()
 
-  const activeTickets = userTickets.filter(ticket => ticket.status === TicketStatus.AVAILABLE);
-  const expiredTickets = userTickets.filter(ticket => ticket.status === TicketStatus.CANCELLED);
+  // Fetch tickets when component mounts
+  useEffect(() => {
+    fetchMyTickets();
+  }, [fetchMyTickets]);
+
+  console.log(userTickets)
+
+  // Active tickets are those that are sold but not yet used or cancelled
+  const activeTickets = userTickets.filter(ticket =>
+    ticket.status === TicketStatus.SOLD || ticket.status === TicketStatus.RESERVED
+  );
+
+  // Expired tickets are those that are used or cancelled
+  const expiredTickets = userTickets.filter(ticket =>
+    ticket.status === TicketStatus.USED || ticket.status === TicketStatus.CANCELLED
+  );
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -42,100 +57,134 @@ export default function TicketsScreen() {
     });
   };
 
+  const [expandedTicketId, setExpandedTicketId] = React.useState<string | null>(null);
+
   const handleTicketPress = (ticketId: string) => {
     console.log("Viewing ticket:", ticketId);
+    setExpandedTicketId(expandedTicketId === ticketId ? null : ticketId);
   };
 
   const handleDownloadTicket = (ticket: any) => {
-    console.log("Downloading ticket:", ticket.id);
+    console.log("Downloading ticket:", ticket.ticket_id);
+    // TODO: Implement QR code download functionality
   };
 
   const handleShareTicket = (ticket: any) => {
-    console.log("Sharing ticket:", ticket.id);
+    console.log("Sharing ticket:", ticket.ticket_id);
+    // TODO: Implement ticket sharing functionality
   };
 
-  const renderTicketCard = (ticket: any) => (
-    <TouchableOpacity
-      key={ticket.ticket_id}
-      className={`bg-card rounded-2xl p-5 mb-4 ${ticket.status === TicketStatus.CANCELLED ? 'opacity-60 bg-gray-100' : ''}`}
-      style={styles.shadow}
-      onPress={() => handleTicketPress(ticket.ticket_id)}
-      activeOpacity={0.8}
-    >
-      <View className="flex-row justify-between items-center mb-4">
-        <View className="flex-row items-center gap-2">
-          <Ionicons name="ticket" size={20} color={Colors.primary} />
-          <Text className="text-sm font-semibold text-primary uppercase">{ticket.sectionName || "Standard"}</Text>
-        </View>
-        <View className="flex-row items-center gap-1.5">
-          <View className={`w-2 h-2 rounded-full ${ticket.status === TicketStatus.AVAILABLE ? 'bg-success' : 'bg-gray-500'}`} />
-          <Text className={`text-xs font-medium uppercase ${ticket.status === TicketStatus.AVAILABLE ? 'text-success' : 'text-gray-500'}`}>
-            {ticket.status === TicketStatus.AVAILABLE ? "Active" : "Expired"}
-          </Text>
-        </View>
-      </View>
+  const renderTicketCard = (ticket: any) => {
+    const isExpanded = expandedTicketId === ticket.ticket_id;
 
-      <Text className="text-lg font-semibold text-text mb-4 leading-6">{ticket.Event?.title || "Event"}</Text>
-
-      <View className="mb-5">
-        <View className="flex-row items-center gap-3 mb-2">
-          <Ionicons name="calendar" size={16} color={Colors.textSecondary} />
-          <Text className="text-sm text-text-secondary flex-1">
-            {ticket.Event?.date ? formatDate(ticket.Event.date) : 'TBD'} at {ticket.Event?.date ? formatTime(ticket.Event.date) : 'TBD'}
-          </Text>
-        </View>
-
-        <View className="flex-row items-center gap-3 mb-2">
-          <Ionicons name="location" size={16} color={Colors.textSecondary} />
-          <Text className="text-sm text-text-secondary flex-1">{ticket.Event?.Venue?.name || ""}</Text>
+    return (
+      <TouchableOpacity
+        key={ticket.ticket_id}
+        className={`bg-card rounded-2xl p-5 mb-4 ${ticket.status === TicketStatus.CANCELLED ? 'opacity-60 bg-gray-100' : ''}`}
+        style={styles.shadow}
+        onPress={() => handleTicketPress(ticket.ticket_id)}
+        activeOpacity={0.8}
+      >
+        <View className="flex-row justify-between items-center mb-4">
+          <View className="flex-row items-center gap-2">
+            <Ionicons name="ticket" size={20} color={Colors.primary} />
+            <Text className="text-sm font-semibold text-primary uppercase">{ticket.sectionName || "Standard"}</Text>
+          </View>
+          <View className="flex-row items-center gap-1.5">
+            <View className={`w-2 h-2 rounded-full ${ticket.status === TicketStatus.SOLD || ticket.status === TicketStatus.RESERVED
+              ? 'bg-success'
+              : 'bg-gray-500'
+              }`} />
+            <Text className={`text-xs font-medium uppercase ${ticket.status === TicketStatus.SOLD || ticket.status === TicketStatus.RESERVED
+              ? 'text-success'
+              : 'text-gray-500'
+              }`}>
+              {ticket.status === TicketStatus.SOLD ? "Active" :
+                ticket.status === TicketStatus.RESERVED ? "Reserved" :
+                  ticket.status === TicketStatus.USED ? "Used" : "Expired"}
+            </Text>
+          </View>
         </View>
 
-        <View className="flex-row items-center gap-3">
-          <Ionicons name="time" size={16} color={Colors.textSecondary} />
-          <Text className="text-sm text-text-secondary flex-1">
-            {ticket.status === TicketStatus.AVAILABLE ? "Event hasn't started" : "Event has ended"}
-          </Text>
+        <Text className="text-lg font-semibold text-text mb-4 leading-6">{ticket.Event?.title || "Event"}</Text>
+
+        <View className="mb-5">
+          <View className="flex-row items-center gap-3 mb-2">
+            <Ionicons name="calendar" size={16} color={Colors.textSecondary} />
+            <Text className="text-sm text-text-secondary flex-1">
+              {ticket.Event?.date ? formatDate(ticket.Event.date) : 'TBD'} at {ticket.Event?.date ? formatTime(ticket.Event.date) : 'TBD'}
+            </Text>
+          </View>
+
+          <View className="flex-row items-center gap-3 mb-2">
+            <Ionicons name="location" size={16} color={Colors.textSecondary} />
+            <Text className="text-sm text-text-secondary flex-1">{ticket.Event?.Venue?.name || ""}</Text>
+          </View>
+
+          <View className="flex-row items-center gap-3">
+            <Ionicons name="time" size={16} color={Colors.textSecondary} />
+            <Text className="text-sm text-text-secondary flex-1">
+              {ticket.status === TicketStatus.AVAILABLE ? "Event hasn't started" : "Event has ended"}
+            </Text>
+          </View>
         </View>
-      </View>
 
-      <View className="flex-row justify-between items-center pt-4 border-t border-black/10">
-        <View className="flex-1">
-          <Text className="text-xs text-text-secondary mb-1">Ticket #</Text>
-          <Text className="text-sm font-semibold text-text font-mono">{ticket.ticket_id}</Text>
+        <View className="flex-row justify-between items-center pt-4 border-t border-black/10">
+          <View className="flex-1">
+            <Text className="text-xs text-text-secondary mb-1">Ticket #</Text>
+            <Text className="text-sm font-semibold text-text font-mono">{ticket.ticket_id}</Text>
+          </View>
+
+          <View className="flex-row items-center gap-3">
+            {(ticket.status === TicketStatus.SOLD || ticket.status === TicketStatus.RESERVED) && (
+              <>
+                <TouchableOpacity
+                  className="w-9 h-9 rounded-[18px] bg-primary/10 items-center justify-center"
+                  onPress={() => handleDownloadTicket(ticket)}
+                  hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                >
+                  <Ionicons name="download" size={18} color={Colors.primary} />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  className="w-9 h-9 rounded-[18px] bg-primary/10 items-center justify-center"
+                  onPress={() => handleShareTicket(ticket)}
+                  hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                >
+                  <Ionicons name="share-social" size={18} color={Colors.primary} />
+                </TouchableOpacity>
+              </>
+            )}
+
+            <TouchableOpacity
+              className="w-9 h-9 rounded-[18px] bg-primary/10 items-center justify-center"
+              onPress={() => handleTicketPress(ticket.ticket_id)}
+              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+            >
+              <Ionicons name="arrow-forward" size={18} color={Colors.primary} />
+            </TouchableOpacity>
+          </View>
         </View>
 
-        <View className="flex-row items-center gap-3">
-          {ticket.status === TicketStatus.AVAILABLE && (
-            <>
-              <TouchableOpacity
-                className="w-9 h-9 rounded-[18px] bg-primary/10 items-center justify-center"
-                onPress={() => handleDownloadTicket(ticket)}
-                hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-              >
-                <Ionicons name="download" size={18} color={Colors.primary} />
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                className="w-9 h-9 rounded-[18px] bg-primary/10 items-center justify-center"
-                onPress={() => handleShareTicket(ticket)}
-                hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-              >
-                <Ionicons name="share-social" size={18} color={Colors.primary} />
-              </TouchableOpacity>
-            </>
-          )}
-
-          <TouchableOpacity
-            className="w-9 h-9 rounded-[18px] bg-primary/10 items-center justify-center"
-            onPress={() => handleTicketPress(ticket.ticket_id)}
-            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-          >
-            <Ionicons name="arrow-forward" size={18} color={Colors.primary} />
-          </TouchableOpacity>
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
+        {/* QR Code Section - Shows when expanded */}
+        {isExpanded && ticket.qrCode && (
+          <View className="mt-4 pt-4 border-t border-black/10 items-center">
+            <Text className="text-xs text-text-secondary mb-3 uppercase tracking-wide">Entry QR Code</Text>
+            <View className="bg-white p-4 rounded-2xl">
+              <Image
+                source={{ uri: ticket.qrCode }}
+                className="w-48 h-48"
+                resizeMode="contain"
+              />
+            </View>
+            <Text className="text-xs text-text-secondary mt-3 text-center">
+              Show this QR code at the venue entrance
+            </Text>
+          </View>
+        )}
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <SafeAreaView className="flex-1  bg-background" edges={["top"]}>
