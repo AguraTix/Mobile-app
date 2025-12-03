@@ -1,4 +1,5 @@
 import Header from '@/components/Header';
+import Skeleton from '@/components/Skeleton';
 import Colors from '@/constants/Colors';
 import { useAuth, useCart } from '@/contexts';
 import { useFood } from '@/contexts/FoodContext';
@@ -27,33 +28,22 @@ export default function FoodDetailScreen() {
   const foodItem = currentFood;
 
   const handleAddToCart = () => {
-    if (!foodItem || !foodItem.available) return;
+    if (!foodItem || foodItem.quantity <= 0) return;
 
     // Add item to cart
     addItem({
       order_id: Math.random().toString(36).substr(2, 9),
       user_id: user?.user_id || 'guest',
-      food_id: foodItem.id,
-      event_id: id || 'mock-event-id',
+      food_id: foodItem.food_id,
+      event_id: id || foodItem.event_id,
       order_status: FoodOrderStatus.PENDING,
       quantity: quantity,
-      Food: {
-        food_id: foodItem.id,
-        event_id: id || 'mock-event-id',
-        foodname: foodItem.name,
-        fooddescription: foodItem.description,
-        foodprice: foodItem.price,
-        quantity: 100, // Mock available quantity
-        admin_id: 'mock-admin',
-        foodimage: '', // Mock image string
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      }
+      Food: foodItem
     });
 
     Alert.alert(
       "Added to Cart",
-      `${quantity} x ${foodItem.name} added to cart!`,
+      `${quantity} x ${foodItem.foodname} added to cart!`,
       [
         { text: "Continue Shopping", style: "cancel" },
         { text: "View Cart", onPress: () => router.push(`/event/${id}/cart`) }
@@ -70,6 +60,30 @@ export default function FoodDetailScreen() {
       setQuantity(prev => prev - 1);
     }
   };
+
+  if (isLoading) {
+    return (
+      <SafeAreaView className="flex-1 bg-background" edges={['top']}>
+        <StatusBar style="light" />
+
+        {/* Header */}
+        <View className="flex-row items-center px-5 py-4">
+          <TouchableOpacity onPress={() => router.back()} className="mr-3 p-1">
+            <Ionicons name="chevron-back" size={24} color={Colors.text} />
+          </TouchableOpacity>
+          <Text className="text-text text-lg font-semibold">Event Menu</Text>
+        </View>
+
+        <View className="flex-1 px-5">
+          <Skeleton height={200} radius={24} />
+          <View className="h-6" />
+          <Skeleton height={60} radius={16} />
+          <View className="h-6" />
+          <Skeleton height={100} radius={16} />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   if (!foodItem) {
     return (
@@ -109,8 +123,8 @@ export default function FoodDetailScreen() {
           <View className="items-center justify-center py-8 bg-card mx-5 rounded-3xl mb-6">
             <Image
               source={
-                foodItem.image_url
-                  ? { uri: foodItem.image_url }
+                foodItem.foodimage
+                  ? { uri: foodItem.foodimage }
                   : require('@/assets/images/m1.png')
               }
               className="w-[200px] h-[200px]"
@@ -119,7 +133,7 @@ export default function FoodDetailScreen() {
           </View>
 
           {/* Quantity Selector */}
-          {foodItem.available && (
+          {foodItem.quantity > 0 && (
             <View className="items-center mb-6">
               <View className="flex-row items-center bg-primary rounded-full px-2 py-2">
                 <TouchableOpacity
@@ -148,34 +162,34 @@ export default function FoodDetailScreen() {
           <View className="px-5">
             {/* Title */}
             <Text className="text-text text-2xl font-bold mb-4 text-center">
-              {foodItem.name}
+              {foodItem.foodname}
             </Text>
 
             {/* Info Badges */}
             <View className="flex-row justify-center items-center mb-6 flex-wrap">
               <View className="flex-row items-center mr-4 mb-2">
                 <Text className="text-base mr-1">⭐</Text>
-                <Text className="text-text text-sm">{foodItem.rating || '4+'}</Text>
+                <Text className="text-text text-sm">4+</Text>
               </View>
 
               <View className="flex-row items-center mr-4 mb-2">
                 <Text className="text-base mr-1">🔥</Text>
-                <Text className="text-text text-sm">{foodItem.calories || '300cal'}</Text>
+                <Text className="text-text text-sm">300cal</Text>
               </View>
 
               <View className="flex-row items-center mb-2">
                 <Text className="text-base mr-1">⏱️</Text>
-                <Text className="text-text text-sm">{foodItem.prepTime || '5-10min'}</Text>
+                <Text className="text-text text-sm">5-10min</Text>
               </View>
             </View>
 
             {/* Description */}
             <Text className="text-text-secondary text-sm leading-6 text-center mb-6">
-              {foodItem.description || "Our simple, classic cheeseburger begins with a 100% pure beef burger seasoned with just a pinch of salt and pepper. The McDonald's Cheeseburger is topped"}
+              {foodItem.fooddescription || "Delicious food item prepared with care and quality ingredients."}
             </Text>
 
             {/* Availability Status */}
-            {!foodItem.available && (
+            {foodItem.quantity <= 0 && (
               <View className="flex-row items-center justify-center mb-6">
                 <View className="w-2 h-2 rounded-full mr-2 bg-[#ff4444]" />
                 <Text className="text-[#ff4444] text-sm font-semibold">
@@ -187,7 +201,7 @@ export default function FoodDetailScreen() {
         </ScrollView>
 
         {/* Add to Cart Button */}
-        {foodItem.available && (
+        {foodItem.quantity > 0 && (
           <View className="absolute bottom-0 left-0 right-0 p-5 bg-background">
             <TouchableOpacity
               className="bg-primary rounded-full py-4 items-center"
