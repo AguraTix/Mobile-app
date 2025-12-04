@@ -3,18 +3,26 @@ export interface Notification {
   user_id: string;
   title: string;
   message: string;
-  type: 'event' | 'ticket' | 'payment' | 'system';
+  type: string;
   is_read: boolean;
-  created_at: string;
-  metadata?: {
+  createdAt: string;
+  updatedAt: string;
+  data?: {
     event_id?: string;
     ticket_id?: string;
     payment_id?: string;
+    [key: string]: any;
   };
 }
 
 export interface NotificationResponse {
-  message: string;
+  message?: string;
   notifications: Notification[];
-  unread_count: number;
+  unread_count?: number;
+  pagination?: {
+    hasMore: boolean;
+    limit: number;
+    offset: number;
+    total: number;
+  };
 }

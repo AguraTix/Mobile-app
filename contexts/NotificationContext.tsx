@@ -88,7 +88,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       const response = await NotificationService.getMyNotifications();
       console.log(response)
       setPersistentNotifications(response.notifications);
-      setUnreadCount(response.unread_count);
+      setUnreadCount(response.unread_count ?? 0);
     } catch (error) {
       console.error('Failed to fetch notifications:', error);
     } finally {

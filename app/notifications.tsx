@@ -25,16 +25,19 @@ const NotificationItem = ({ notification, onPress }: { notification: Notificatio
     let bgColor = 'rgba(230, 0, 126, 0.1)'; // Primary with opacity
 
     switch (notification.type) {
+      case 'PAYMENT_SUCCESS':
       case 'payment':
         iconName = 'card-outline';
         color = '#4CAF50';
         bgColor = 'rgba(76, 175, 80, 0.1)';
         break;
+      case 'TICKET_BOOKED':
       case 'ticket':
         iconName = 'ticket-outline';
         color = '#FF9800';
         bgColor = 'rgba(255, 152, 0, 0.1)';
         break;
+      case 'EVENT_UPDATE':
       case 'event':
         iconName = 'calendar-outline';
         color = '#2196F3';
@@ -64,7 +67,7 @@ const NotificationItem = ({ notification, onPress }: { notification: Notificatio
           <Text className={`text-text text-base flex-1 ${!notification.is_read ? 'font-bold' : 'font-semibold'}`}>
             {notification.title}
           </Text>
-          <Text className="text-text-secondary text-xs ml-2">{formatTime(notification.created_at)}</Text>
+          <Text className="text-text-secondary text-xs ml-2">{formatTime(notification.createdAt)}</Text>
         </View>
 
         <Text className="text-text-secondary text-sm leading-5 mb-2" numberOfLines={2}>
@@ -109,18 +112,7 @@ export default function NotificationsScreen() {
   };
 
   const handleNotificationPress = async (notification: Notification) => {
-    if (!notification.is_read) {
-      await markAsRead(notification.notification_id);
-    }
-
-    // Navigate based on metadata if available
-    if (notification.metadata?.event_id) {
-      router.push(`/event/${notification.metadata.event_id}`);
-    } else if (notification.metadata?.ticket_id) {
-      router.push(`/ticket/${notification.metadata.ticket_id}`);
-    } else if (notification.metadata?.payment_id) {
-      // router.push(`/payment/${notification.metadata.payment_id}`);
-    }
+    
   };
 
   const groupNotificationsByDate = (notifications: Notification[]) => {
@@ -137,9 +129,9 @@ export default function NotificationsScreen() {
       return date.toDateString() === yesterday.toDateString();
     };
 
-    const todayNotifications = notifications.filter(n => isToday(n.created_at));
-    const yesterdayNotifications = notifications.filter(n => isYesterday(n.created_at));
-    const olderNotifications = notifications.filter(n => !isToday(n.created_at) && !isYesterday(n.created_at));
+    const todayNotifications = notifications.filter(n => isToday(n.createdAt));
+    const yesterdayNotifications = notifications.filter(n => isYesterday(n.createdAt));
+    const olderNotifications = notifications.filter(n => !isToday(n.createdAt) && !isYesterday(n.createdAt));
 
     return {
       today: todayNotifications,
@@ -183,7 +175,7 @@ export default function NotificationsScreen() {
           </View>
 
           {hasNotifications && (
-            <TouchableOpacity onPress={() => markAllAsRead()}>
+            <TouchableOpacity onPress={() => {}}>
               <Text className="text-primary text-sm font-semibold">Mark all read</Text>
             </TouchableOpacity>
           )}
