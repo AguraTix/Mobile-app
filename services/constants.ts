@@ -128,7 +128,7 @@ export const API_ENDPOINTS = {
   // ============================================================================
   NOTIFICATIONS: {
     ALL: '/notifications',
-    MY: '/notifications/my',
+    MY: '/notifications',
     BY_ID: (id: string) => `/notifications/${id}`,
     MARK_READ: (id: string) => `/notifications/${id}/read`,
     MARK_ALL_READ: '/notifications/read-all',

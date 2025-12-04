@@ -216,7 +216,7 @@ export default function NotificationsScreen() {
               </View>
               <Text className="text-text text-lg font-semibold mb-2">No notifications yet</Text>
               <Text className="text-text-secondary text-sm text-center leading-5 px-10">
-                You'll see your notifications here when you have some activity
+                You&apos;ll see your notifications here when you have some activity
               </Text>
             </View>
           ) : (

@@ -86,6 +86,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
     try {
       const response = await NotificationService.getMyNotifications();
+      console.log(response)
       setPersistentNotifications(response.notifications);
       setUnreadCount(response.unread_count);
     } catch (error) {
