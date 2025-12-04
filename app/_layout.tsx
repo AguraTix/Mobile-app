@@ -7,7 +7,7 @@ import * as NavigationBar from 'expo-navigation-bar';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { Keyboard, Platform } from 'react-native';
+import { Keyboard, Platform,AppState } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import '../global.css';
 
@@ -43,6 +43,19 @@ export default function RootLayout() {
         keyboardDidHideListener.remove();
       };
     }
+  }, []);
+
+  React.useEffect(() => {
+    // Dismiss keyboard when app comes to foreground
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (nextAppState === 'active') {
+        Keyboard.dismiss();
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
   }, []);
 
   React.useEffect(() => {
