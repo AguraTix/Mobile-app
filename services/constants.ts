@@ -55,8 +55,8 @@ export const API_ENDPOINTS = {
     ALL: '/events',
     CREATE: '/events',
     RECENT: '/events/recent',
-    UPCOMING:'/events/upcoming',
-    FEATURED:'/events/upcoming',
+    UPCOMING: '/events/upcoming',
+    FEATURED: '/events/upcoming',
     BY_ID: (id: string) => `/events/${id}`,
     UPDATE: (id: string) => `/events/${id}`,
     DELETE: (id: string) => `/events/${id}`,
@@ -81,7 +81,7 @@ export const API_ENDPOINTS = {
   // ============================================================================
   FOODS: {
     ALL: '/foods',
-    GENERAL:'/foods/general',
+    GENERAL: '/foods/general',
     CREATE: '/foods',
     BY_ID: (id: string) => `/foods/${id}`,
     UPDATE: (id: string) => `/foods/${id}`,
@@ -121,6 +121,18 @@ export const API_ENDPOINTS = {
     BASE: '/upload/image',
     EVENT_IMAGE: '/upload/event-image',
     FOOD_IMAGE: '/upload/food-image',
+  },
+
+  // ============================================================================
+  // NOTIFICATION ENDPOINTS
+  // ============================================================================
+  NOTIFICATIONS: {
+    ALL: '/notifications',
+    MY: '/notifications',
+    BY_ID: (id: string) => `/notifications/${id}`,
+    MARK_READ: (id: string) => `/notifications/${id}/read`,
+    MARK_ALL_READ: '/notifications/read-all',
+    UNREAD_COUNT: '/notifications/unread-count',
   },
 }
 

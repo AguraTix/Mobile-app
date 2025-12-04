@@ -1,3 +1,4 @@
+import LoadingOverlay from "@/components/LoadingOverlay";
 import Colors from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -38,6 +39,7 @@ export default function PaymentScreen() {
   const [cvv, setCvv] = useState('');
   const [cardHolderName, setCardHolderName] = useState('');
   const [saveCard, setSaveCard] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const ticketCount = Math.max(1, parseInt(count || "1", 10));
   const ticketPrice = parseFloat(price || "0");
@@ -46,12 +48,17 @@ export default function PaymentScreen() {
   const finalTotal = totalAmount + tax;
 
   const handlePayment = async () => {
+    setIsProcessing(true);
     try {
+      // Simulate payment processing delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
       // Mock payment - just navigate to success
       Alert.alert("Success", "Payment processed successfully!");
       router.push(`/event/${id}/payment-success`);
     } catch (error: any) {
       Alert.alert("Payment Error", "Payment failed. Please try again.");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -281,15 +288,19 @@ export default function PaymentScreen() {
         {/* Payment Button */}
         <View className="absolute bottom-0 left-0 right-0 bg-background px-5 py-4 border-t border-border">
           <TouchableOpacity
-            className="bg-primary rounded-full py-4 items-center"
+            className={`bg-primary rounded-full py-4 items-center ${isProcessing ? 'opacity-60' : ''}`}
             onPress={handlePayment}
+            disabled={isProcessing}
           >
             <Text className="text-white text-base font-bold">
-              Pay {finalTotal.toLocaleString()} RWF
+              {isProcessing ? 'Processing...' : `Pay ${finalTotal.toLocaleString()} RWF`}
             </Text>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
+
+      {/* Loading Overlay */}
+      <LoadingOverlay visible={isProcessing} message="Processing payment..." />
     </SafeAreaView>
   );
 }

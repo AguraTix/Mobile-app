@@ -1,10 +1,11 @@
 import Header from '@/components/Header';
+import LoadingOverlay from '@/components/LoadingOverlay';
 import Colors from '@/constants/Colors';
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function PaymentInfoScreen() {
@@ -153,16 +154,22 @@ export default function PaymentInfoScreen() {
         {/* Payment Footer */}
         <View className="absolute bottom-0 left-0 right-0 bg-card rounded-t-3xl p-5 pb-8" style={styles.shadow}>
           <TouchableOpacity
-            className={`bg-primary rounded-full py-4 items-center ${(!selectedPayment || selectedPayment === 'add' || isLoading) ? 'bg-[#666] opacity-60' : ''}`}
+            className={`bg-primary rounded-full py-4 items-center flex-row justify-center ${(!selectedPayment || selectedPayment === 'add' || isLoading) ? 'bg-[#666] opacity-60' : ''}`}
             onPress={handleProceedToPayment}
             disabled={!selectedPayment || selectedPayment === 'add' || isLoading}
           >
+            {isLoading && (
+              <ActivityIndicator size="small" color="#fff" style={{ marginRight: 8 }} />
+            )}
             <Text className="text-text text-base font-semibold">
               {isLoading ? 'Processing...' : 'Proceed to Payment'}
             </Text>
           </TouchableOpacity>
         </View>
       </View>
+
+      {/* Loading Overlay */}
+      <LoadingOverlay visible={isLoading} message="Processing order..." />
     </SafeAreaView>
   );
 }
