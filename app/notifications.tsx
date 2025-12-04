@@ -1,29 +1,17 @@
+import Skeleton from '@/components/Skeleton';
 import Colors from '@/constants/Colors';
+import { useNotification } from '@/contexts/NotificationContext';
+import { Notification } from '@/types/notification';
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-interface Notification {
-  id: string;
-  type: 'order_success' | 'event_reminder' | 'promotion';
-  title: string;
-  message: string;
-  timestamp: Date;
-  isRead: boolean;
-  actionText?: string;
-  actionUrl?: string;
-}
-
-interface NotificationItemProps {
-  notification: Notification;
-  onPress: () => void;
-}
-
-const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onPress }) => {
-  const formatTime = (date: Date) => {
+const NotificationItem = ({ notification, onPress }: { notification: Notification; onPress: () => void }) => {
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
     return date.toLocaleTimeString('en-US', {
       hour: 'numeric',
       minute: '2-digit',
@@ -32,16 +20,40 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onPre
   };
 
   const getNotificationIcon = () => {
+    let iconName: any = 'notifications';
+    let color = Colors.primary;
+    let bgColor = 'rgba(230, 0, 126, 0.1)'; // Primary with opacity
+
+    switch (notification.type) {
+      case 'payment':
+        iconName = 'card-outline';
+        color = '#4CAF50';
+        bgColor = 'rgba(76, 175, 80, 0.1)';
+        break;
+      case 'ticket':
+        iconName = 'ticket-outline';
+        color = '#FF9800';
+        bgColor = 'rgba(255, 152, 0, 0.1)';
+        break;
+      case 'event':
+        iconName = 'calendar-outline';
+        color = '#2196F3';
+        bgColor = 'rgba(33, 150, 243, 0.1)';
+        break;
+      default:
+        iconName = 'notifications-outline';
+    }
+
     return (
-      <View className="w-12 h-12 rounded-2xl bg-[#4CAF50] items-center justify-center">
-        <Ionicons name="checkmark-circle" size={28} color="#FFFFFF" />
+      <View className="w-12 h-12 rounded-2xl items-center justify-center" style={{ backgroundColor: bgColor }}>
+        <Ionicons name={iconName} size={24} color={color} />
       </View>
     );
   };
 
   return (
     <TouchableOpacity
-      className="flex-row items-start py-4"
+      className={`flex-row items-start py-4 border-b border-[#333] ${!notification.is_read ? 'bg-[#1C1C1E]/50 -mx-5 px-5' : ''}`}
       onPress={onPress}
       activeOpacity={0.8}
     >
@@ -49,127 +61,65 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onPre
 
       <View className="flex-1 ml-3">
         <View className="flex-row items-start justify-between mb-1">
-          <Text className="text-text text-base font-semibold flex-1">{notification.title}</Text>
-          <Text className="text-text-secondary text-xs ml-2">{formatTime(notification.timestamp)}</Text>
+          <Text className={`text-text text-base flex-1 ${!notification.is_read ? 'font-bold' : 'font-semibold'}`}>
+            {notification.title}
+          </Text>
+          <Text className="text-text-secondary text-xs ml-2">{formatTime(notification.created_at)}</Text>
         </View>
 
         <Text className="text-text-secondary text-sm leading-5 mb-2" numberOfLines={2}>
           {notification.message}
         </Text>
-
-        {notification.actionText && (
-          <TouchableOpacity className="self-start">
-            <Text className="text-primary text-sm font-semibold">{notification.actionText}</Text>
-          </TouchableOpacity>
-        )}
       </View>
 
-      {!notification.isRead && (
+      {!notification.is_read && (
         <View className="w-2 h-2 rounded-full bg-primary ml-2 mt-2" />
       )}
     </TouchableOpacity>
   );
 };
 
+const NotificationSkeleton = () => (
+  <View className="flex-row items-start py-4 border-b border-[#333]">
+    <Skeleton width={48} height={48} radius={16} style={{ marginRight: 12 }} />
+    <View className="flex-1">
+      <View className="flex-row justify-between mb-2">
+        <Skeleton width="60%" height={20} radius={4} />
+        <Skeleton width={60} height={16} radius={4} />
+      </View>
+      <Skeleton width="90%" height={16} radius={4} style={{ marginBottom: 6 }} />
+      <Skeleton width="40%" height={16} radius={4} />
+    </View>
+  </View>
+);
+
 export default function NotificationsScreen() {
   const router = useRouter();
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const { persistentNotifications, isLoading, fetchNotifications, markAsRead, markAllAsRead } = useNotification();
   const [refreshing, setRefreshing] = useState(false);
 
-  // Mock notifications data (would come from backend)
-  const mockNotifications: Notification[] = useMemo(() => [
-    {
-      id: '1',
-      type: 'order_success',
-      title: 'Successfully Order',
-      message: 'Your order has been successfully made',
-      timestamp: new Date(), // Today
-      isRead: false,
-      actionText: 'View Now',
-      actionUrl: '/orders/1'
-    },
-    {
-      id: '2',
-      type: 'order_success',
-      title: 'Successfully order',
-      message: 'Your order has been placed success...',
-      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000), // Yesterday
-      isRead: true,
-    },
-    {
-      id: '3',
-      type: 'order_success',
-      title: 'Successfully order',
-      message: 'Your order has been placed success...',
-      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000 - 60 * 60 * 1000), // Yesterday
-      isRead: true,
-    },
-    {
-      id: '4',
-      type: 'order_success',
-      title: 'Successfully order',
-      message: 'Your order has been placed success...',
-      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000 - 2 * 60 * 60 * 1000), // Yesterday
-      isRead: true,
-    },
-    {
-      id: '5',
-      type: 'order_success',
-      title: 'Successfully order',
-      message: 'Your order has been placed success...',
-      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000 - 3 * 60 * 60 * 1000), // Yesterday
-      isRead: true,
-    },
-    {
-      id: '6',
-      type: 'order_success',
-      title: 'Successfully order',
-      message: 'Your order has been placed success...',
-      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000 - 4 * 60 * 60 * 1000), // Yesterday
-      isRead: true,
-    },
-    {
-      id: '7',
-      type: 'order_success',
-      title: 'Successfully order',
-      message: 'Your order has been placed success...',
-      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000 - 5 * 60 * 60 * 1000), // Yesterday
-      isRead: true,
-    },
-    {
-      id: '8',
-      type: 'order_success',
-      title: 'Successfully order',
-      message: 'Your order has been placed success...',
-      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000 - 6 * 60 * 60 * 1000), // Yesterday
-      isRead: true,
-    },
-  ], []);
-
-  const loadNotifications = useCallback(async () => {
-    try {
-      // In real app, fetch from API
-      // const data = await NotificationsAPI.getNotifications();
-      setNotifications(mockNotifications);
-    } catch (error) {
-      setNotifications(mockNotifications);
-    }
-  }, [mockNotifications]);
-
   useEffect(() => {
-    loadNotifications();
-  }, [loadNotifications]);
+    fetchNotifications();
+  }, [fetchNotifications]);
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await loadNotifications();
+    await fetchNotifications();
     setRefreshing(false);
   };
 
-  const handleNotificationPress = (notification: Notification) => {
-    // Mark as read and navigate if needed
-    if (notification.actionUrl) {
-      router.push(notification.actionUrl as any);
+  const handleNotificationPress = async (notification: Notification) => {
+    if (!notification.is_read) {
+      await markAsRead(notification.notification_id);
+    }
+
+    // Navigate based on metadata if available
+    if (notification.metadata?.event_id) {
+      router.push(`/event/${notification.metadata.event_id}`);
+    } else if (notification.metadata?.ticket_id) {
+      router.push(`/ticket/${notification.metadata.ticket_id}`);
+    } else if (notification.metadata?.payment_id) {
+      // router.push(`/payment/${notification.metadata.payment_id}`);
     }
   };
 
@@ -177,17 +127,19 @@ export default function NotificationsScreen() {
     const today = new Date();
     const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
 
-    const isToday = (date: Date) => {
+    const isToday = (dateString: string) => {
+      const date = new Date(dateString);
       return date.toDateString() === today.toDateString();
     };
 
-    const isYesterday = (date: Date) => {
+    const isYesterday = (dateString: string) => {
+      const date = new Date(dateString);
       return date.toDateString() === yesterday.toDateString();
     };
 
-    const todayNotifications = notifications.filter(n => isToday(n.timestamp));
-    const yesterdayNotifications = notifications.filter(n => isYesterday(n.timestamp));
-    const olderNotifications = notifications.filter(n => !isToday(n.timestamp) && !isYesterday(n.timestamp));
+    const todayNotifications = notifications.filter(n => isToday(n.created_at));
+    const yesterdayNotifications = notifications.filter(n => isYesterday(n.created_at));
+    const olderNotifications = notifications.filter(n => !isToday(n.created_at) && !isYesterday(n.created_at));
 
     return {
       today: todayNotifications,
@@ -196,7 +148,8 @@ export default function NotificationsScreen() {
     };
   };
 
-  const groupedNotifications = groupNotificationsByDate(notifications);
+  const groupedNotifications = groupNotificationsByDate(persistentNotifications);
+  const hasNotifications = persistentNotifications.length > 0;
 
   const renderNotificationGroup = (title: string, notifications: Notification[]) => {
     if (notifications.length === 0) return null;
@@ -206,7 +159,7 @@ export default function NotificationsScreen() {
         <Text className="text-text-secondary text-sm font-semibold mb-3 uppercase tracking-wide">{title}</Text>
         {notifications.map((notification) => (
           <NotificationItem
-            key={notification.id}
+            key={notification.notification_id}
             notification={notification}
             onPress={() => handleNotificationPress(notification)}
           />
@@ -221,11 +174,19 @@ export default function NotificationsScreen() {
 
       <View className="flex-1">
         {/* Header */}
-        <View className="flex-row items-center px-5 py-4 mb-4">
-          <TouchableOpacity onPress={() => router.back()} className="mr-3 p-1">
-            <Ionicons name="chevron-back" size={24} color={Colors.text} />
-          </TouchableOpacity>
-          <Text className="text-text text-lg font-semibold">Notifications</Text>
+        <View className="flex-row items-center justify-between px-5 py-4 mb-2">
+          <View className="flex-row items-center">
+            <TouchableOpacity onPress={() => router.back()} className="mr-3 p-1">
+              <Ionicons name="chevron-back" size={24} color={Colors.text} />
+            </TouchableOpacity>
+            <Text className="text-text text-lg font-semibold">Notifications</Text>
+          </View>
+
+          {hasNotifications && (
+            <TouchableOpacity onPress={() => markAllAsRead()}>
+              <Text className="text-primary text-sm font-semibold">Mark all read</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         {/* Notifications List */}
@@ -241,17 +202,29 @@ export default function NotificationsScreen() {
             />
           }
         >
-          {renderNotificationGroup('Today', groupedNotifications.today)}
-          {renderNotificationGroup('Yesterday', groupedNotifications.yesterday)}
-          {renderNotificationGroup('Older', groupedNotifications.older)}
-
-          {notifications.length === 0 && (
-            <View className="items-center justify-center py-16">
+          {isLoading && !refreshing && persistentNotifications.length === 0 ? (
+            <>
+              <NotificationSkeleton />
+              <NotificationSkeleton />
+              <NotificationSkeleton />
+              <NotificationSkeleton />
+            </>
+          ) : !hasNotifications ? (
+            <View className="items-center justify-center py-20">
+              <View className="w-20 h-20 rounded-full bg-[#2C2C2E] items-center justify-center mb-4">
+                <Ionicons name="notifications-off-outline" size={40} color={Colors.textSecondary} />
+              </View>
               <Text className="text-text text-lg font-semibold mb-2">No notifications yet</Text>
-              <Text className="text-text-secondary text-sm text-center leading-5">
-                You'll see your notifications here when you have some
+              <Text className="text-text-secondary text-sm text-center leading-5 px-10">
+                You'll see your notifications here when you have some activity
               </Text>
             </View>
+          ) : (
+            <>
+              {renderNotificationGroup('Today', groupedNotifications.today)}
+              {renderNotificationGroup('Yesterday', groupedNotifications.yesterday)}
+              {renderNotificationGroup('Older', groupedNotifications.older)}
+            </>
           )}
         </ScrollView>
       </View>

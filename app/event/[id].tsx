@@ -1,11 +1,12 @@
 import Loading from "@/components/Loading";
+import LoadingOverlay from "@/components/LoadingOverlay";
 import { useEvent, useTicket } from "@/contexts";
 import { TicketBookingRequest } from "@/types";
 import { TicketTypeConfig } from "@/types/ticket";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
   Alert,
   Image as RNImage,
@@ -26,7 +27,7 @@ export default function EventDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string; }>();
   const router = useRouter();
   const { fetchEventById, currentEvent } = useEvent()
-  const { bookTicket } = useTicket()
+  const { bookTicket, isLoading: isBooking } = useTicket()
 
 
   useEffect(() => {
@@ -146,9 +147,9 @@ export default function EventDetailScreen() {
                     {ticket.price.toLocaleString()} RWF
                   </Text>
                   <TouchableOpacity
-                    className={`bg-primary rounded-lg py-2 items-center ${(!ticket.quantity || ticket.quantity <= 0) ? 'bg-text-secondary opacity-50' : ''}`}
+                    className={`bg-primary rounded-lg py-2 items-center ${(!ticket.quantity || ticket.quantity <= 0 || isBooking) ? 'bg-text-secondary opacity-50' : ''}`}
                     onPress={() => handleBuyTicket(ticket)}
-                    disabled={!ticket.quantity || ticket.quantity <= 0}
+                    disabled={!ticket.quantity || ticket.quantity <= 0 || isBooking}
                   >
                     <Text className="text-text text-sm font-semibold">Buy</Text>
                   </TouchableOpacity>
@@ -160,6 +161,8 @@ export default function EventDetailScreen() {
 
 
       </ScrollView>
+
+      <LoadingOverlay visible={isBooking} message="Booking ticket..." />
     </SafeAreaView>
   );
 }

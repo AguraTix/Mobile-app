@@ -102,19 +102,7 @@ export default function RootLayout() {
                 animation: 'slide_from_bottom',
                 gestureEnabled: true
               }}
-            />
-
-            {/* Protected screens - require authentication */}
-            <Stack.Screen name="home" options={{ animation: 'none' }} />
-            <Stack.Screen name="menu" options={{ animation: 'none' }} />
-            <Stack.Screen name="tickets" options={{ animation: 'none' }} />
-            <Stack.Screen name="events-user" options={{ animation: 'none' }} />
-            <Stack.Screen name="profile-main" options={{ animation: 'none' }} />
-            <Stack.Screen name="events" />
-            <Stack.Screen name="profile" />
-            <Stack.Screen name="event" />
-            <Stack.Screen name="notifications" />
-          </Stack>
+            />      </Stack>
         </ToastProvider>
       </RootProvider>
     </>

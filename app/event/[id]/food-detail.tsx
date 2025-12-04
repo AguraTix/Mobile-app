@@ -1,4 +1,5 @@
 import Header from '@/components/Header';
+import LoadingOverlay from '@/components/LoadingOverlay';
 import Colors from '@/constants/Colors';
 import { useAuth, useCart, useOrder } from '@/contexts';
 import { useFood } from '@/contexts/FoodContext';
@@ -7,7 +8,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function FoodDetailScreen() {
@@ -210,16 +211,61 @@ export default function FoodDetailScreen() {
         {foodItem.quantity > 0 && (
           <View className="absolute bottom-0 left-0 right-0 p-5 bg-background">
             <TouchableOpacity
-              className="bg-primary rounded-full py-4 items-center"
+              className={`bg-primary rounded-full py-4 items-center ${modalStatus === 'loading' ? 'opacity-60' : ''}`}
               onPress={handleAddToCart}
+              disabled={modalStatus === 'loading'}
             >
-              <Text className="text-white text-base font-bold">
-                Order now
-              </Text>
+              {modalStatus === 'loading' ? (
+                <ActivityIndicator size="small" color="#fff" />
+              ) : (
+                <Text className="text-white text-base font-bold">
+                  Order now
+                </Text>
+              )}
             </TouchableOpacity>
           </View>
         )}
       </View>
+
+      {/* Loading Overlay */}
+      <LoadingOverlay visible={modalStatus === 'loading'} message={modalMessage} />
+
+      {/* Status Modal */}
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalStatus === 'success' || modalStatus === 'error'}
+        onRequestClose={handleModalClose}
+      >
+        <View className="flex-1 justify-center items-center bg-black/50 px-5">
+          <View className="bg-card w-full rounded-2xl p-6 items-center">
+            <View className={`w-16 h-16 rounded-full items-center justify-center mb-4 ${modalStatus === 'success' ? 'bg-[#4CAF50]/20' : 'bg-[#ff4444]/20'}`}>
+              <Ionicons
+                name={modalStatus === 'success' ? "checkmark" : "alert"}
+                size={32}
+                color={modalStatus === 'success' ? "#4CAF50" : "#ff4444"}
+              />
+            </View>
+
+            <Text className="text-text text-xl font-bold mb-2 text-center">
+              {modalStatus === 'success' ? 'Order Placed!' : 'Order Failed'}
+            </Text>
+
+            <Text className="text-text-secondary text-base text-center mb-6">
+              {modalMessage}
+            </Text>
+
+            <TouchableOpacity
+              className="bg-primary w-full py-4 rounded-xl items-center"
+              onPress={modalStatus === 'success' ? handleOrderSuccess : handleModalClose}
+            >
+              <Text className="text-white text-base font-bold">
+                {modalStatus === 'success' ? 'Continue Shopping' : 'Try Again'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }

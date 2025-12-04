@@ -1,7 +1,6 @@
 import Colors from "@/constants/Colors";
 import { useAuth } from "@/contexts";
 import { Ionicons } from "@expo/vector-icons";
-import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -12,7 +11,8 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
+  Image
 } from "react-native";
 
 
@@ -81,11 +81,11 @@ export default function MyAccountScreen() {
             activeOpacity={0.8}
           >
             <View className="w-24 h-24 rounded-full items-center justify-center overflow-hidden border-2 border-[#fce7cf]">
-                <Image 
-                source={require('@/assets/images/profile.jpg')} 
-                className="w-full h-full z-5" 
-                contentFit="cover"
-                />
+              <Image
+                source={require('@/assets/images/profile.jpg')}
+                className="w-full h-full z-5"
+                resizeMode="cover"
+              />
             </View>
             <View className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-primary items-center justify-center border-2 border-background shadow-lg">
               <Ionicons name="camera" size={16} color={Colors.text} />
