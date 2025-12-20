@@ -39,7 +39,7 @@ export default function EventOrdersScreen() {
     <View className="flex-row items-center bg-[#1C1C1E] rounded-2xl p-4 mb-3 relative">
       <View className="w-12 h-12 rounded-xl overflow-hidden mr-4">
         <Image
-          source={require('@/assets/images/m1.png')}
+          source={{ uri: order.Food?.foodimage }}
           className="w-full h-full"
         />
       </View>
