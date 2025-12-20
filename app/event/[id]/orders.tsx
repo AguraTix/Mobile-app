@@ -13,21 +13,9 @@ export default function EventOrdersScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const [selectedTab, setSelectedTab] = useState<'menu' | 'orders'>('orders');
-  const { myOrders, fetchOrdersByEvent, isLoading } = useOrder();
-  const [orders, setOrders] = useState<FoodOrder[]>([]);
+  const { myOrders: orders, fetchOrdersByEvent, isLoading } = useOrder();
 
-  useEffect(() => {
-    if (id) {
-      fetchOrdersByEvent(id)
-        .then(setOrders)
-        .catch((error) => {
-          // Fallback to myOrders if event-specific fetch fails
-          setOrders(myOrders);
-        });
-    } else {
-      setOrders(myOrders);
-    }
-  }, [id, myOrders]);
+ 
 
   const handleOrderAgain = (order: FoodOrder) => {
     // Navigate back to menu or reorder
