@@ -43,11 +43,6 @@ class ApiClient {
             async (error) => {
                 try {
                     if (error.response) {
-                        if (error.status === 401) {
-                            this.logout()
-                            return
-                        }
-
                         const apiError: ApiError = {
                             status: error.status,
                             message: error?.response.data.error || 'An error occurred',
