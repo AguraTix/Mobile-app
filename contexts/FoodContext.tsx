@@ -41,19 +41,9 @@ export function FoodProvider({ children }: { children: ReactNode }) {
     }, []);
 
     const fetchFoodById = useCallback(async (foodId: string) => {
-        setIsLoading(true);
-        setError(null);
-        setCurrentFood(null);
-        try {
-            const response = await FoodService.getById(foodId);
-            setCurrentFood(response.food);
-        } catch (err) {
-            const message = err instanceof Error ? err.message : 'Failed to fetch food';
-            setError(message);
-        } finally {
-            setIsLoading(false);
-        }
-    }, []);
+        if (!foods || !foodId) return;
+        setCurrentFood(foods.find((food) => food.food_id === foodId)!);
+    }, [foods]);
 
     const fetchFoodsByEvent = useCallback(async (eventId: string) => {
         setIsLoading(true);

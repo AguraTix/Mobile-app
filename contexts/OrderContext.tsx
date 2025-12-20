@@ -49,21 +49,10 @@ export function OrderProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const fetchOrder = useCallback(async (orderId: string): Promise<FoodOrder> => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const response = await OrderService.getById(orderId);
-      const order = response.order;
-      setCurrentOrder(order);
-      return order;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to fetch order';
-      setError(message);
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+    if (!orders || !orderId) return Promise.reject(new Error('No orders or orderId provided'));
+    setCurrentOrder(orders.find((order) => order.order_id === orderId)!);
+    return orders.find((order) => order.order_id === orderId)!;
+  }, [orders]);
 
   const getOrder = fetchOrder; // Alias for backward compatibility
 
