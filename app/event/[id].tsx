@@ -32,7 +32,7 @@ export default function EventDetailScreen() {
 
   useEffect(() => {
     fetchEventById(id.toString())
-  }, [id]);
+  }, [id, fetchEventById]);
 
   const handleBuyTicket = async (ticket: TicketTypeConfig) => {
     if (!ticket.quantity || ticket.quantity <= 0) {
@@ -117,14 +117,50 @@ export default function EventDetailScreen() {
             </Text>
           </View>
 
-          <View className="flex-row items-center justify-between">
+          <View className="flex-row items-center justify-between mb-4">
             <View className="flex-row items-center">
               <Ionicons name="location" size={16} color="#FFFFFF" />
               <Text className="text-text-secondary text-xs ml-2">Venue:</Text>
             </View>
             <Text className="text-text text-base font-medium">{currentEvent?.Venue?.location || currentEvent?.Venue?.name || "TBD"}</Text>
           </View>
+
+          {currentEvent?.Venue?.capacity && (
+            <View className="flex-row items-center justify-between">
+              <View className="flex-row items-center">
+                <Ionicons name="people" size={16} color="#FFFFFF" />
+                <Text className="text-text-secondary text-xs ml-2">Capacity:</Text>
+              </View>
+              <Text className="text-text text-base font-medium">{currentEvent.Venue.capacity.toLocaleString()}</Text>
+            </View>
+          )}
         </View>
+
+        {/* Description Section */}
+        {currentEvent?.description && (
+          <View className="px-5 mb-6">
+            <Text className="text-text text-xl font-bold mb-3">About Event</Text>
+            <View className="bg-card rounded-2xl p-4 border border-border">
+              <Text className="text-text-secondary text-sm leading-6">
+                {currentEvent.description}
+              </Text>
+            </View>
+          </View>
+        )}
+
+        {/* Artist Lineup Section */}
+        {currentEvent?.artist_lineup && currentEvent.artist_lineup.length > 0 && (
+          <View className="px-5 mb-6">
+            <Text className="text-text text-xl font-bold mb-3">Lineup</Text>
+            <View className="flex-row flex-wrap gap-2">
+              {currentEvent.artist_lineup.map((artist, idx) => (
+                <View key={idx} className="bg-primary px-4 py-2 rounded-full">
+                  <Text className="text-text text-xs font-semibold">{artist}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
 
         {/* Tickets Section */}
         <View className="px-5 mb-6">

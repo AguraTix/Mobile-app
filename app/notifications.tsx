@@ -101,10 +101,6 @@ export default function NotificationsScreen() {
   const { persistentNotifications, isLoading, fetchNotifications, markAsRead, markAllAsRead } = useNotification();
   const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    fetchNotifications();
-  }, [fetchNotifications]);
-
   const onRefresh = async () => {
     setRefreshing(true);
     await fetchNotifications();

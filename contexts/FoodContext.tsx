@@ -1,6 +1,6 @@
 import { FoodService } from "@/services/food";
 import { Food, FoodCreateInput, FoodUpdateInput } from "@/types/food";
-import React, { createContext, ReactNode, useCallback, useContext, useState } from 'react';
+import React, { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
 
 interface FoodContextType {
     foods: Food[];
@@ -41,19 +41,9 @@ export function FoodProvider({ children }: { children: ReactNode }) {
     }, []);
 
     const fetchFoodById = useCallback(async (foodId: string) => {
-        setIsLoading(true);
-        setError(null);
-        setCurrentFood(null);
-        try {
-            const response = await FoodService.getById(foodId);
-            setCurrentFood(response.food);
-        } catch (err) {
-            const message = err instanceof Error ? err.message : 'Failed to fetch food';
-            setError(message);
-        } finally {
-            setIsLoading(false);
-        }
-    }, []);
+        if (!foods || !foodId) return;
+        setCurrentFood(foods.find((food) => food.food_id === foodId)!);
+    }, [foods]);
 
     const fetchFoodsByEvent = useCallback(async (eventId: string) => {
         setIsLoading(true);
@@ -132,6 +122,10 @@ export function FoodProvider({ children }: { children: ReactNode }) {
 
     const clearError = useCallback(() => {
         setError(null);
+    }, []);
+
+    useEffect(() => {
+        fetchAllFoods();
     }, []);
 
     const value: FoodContextType = {

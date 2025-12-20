@@ -1,7 +1,7 @@
 import { TicketService } from "@/services/ticket";
 import { TicketBookingRequest } from "@/types";
 import { Ticket, TicketGrouped } from "@/types/ticket";
-import { createContext, ReactNode, useCallback, useContext, useState } from "react";
+import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
 import { useStatus } from "./StatusContext";
 import { router } from "expo-router";
 
@@ -91,6 +91,10 @@ export function TicketProvider({ children }: { children: ReactNode }) {
 
   const clearError = useCallback(() => {
     setError(null);
+  }, []);
+
+  useEffect(() => {
+    fetchMyTickets();
   }, []);
 
   const value: TicketContextType = {

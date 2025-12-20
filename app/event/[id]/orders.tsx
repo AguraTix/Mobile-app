@@ -1,7 +1,7 @@
 import Loading from '@/components/Loading';
 import Colors from '@/constants/Colors';
 import { useOrder } from '@/contexts';
-import { FoodOrder } from '@/types/order';
+import { FoodOrder, FoodOrderStatus } from '@/types/order';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -13,21 +13,9 @@ export default function EventOrdersScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const [selectedTab, setSelectedTab] = useState<'menu' | 'orders'>('orders');
-  const { myOrders, fetchOrdersByEvent, isLoading } = useOrder();
-  const [orders, setOrders] = useState<FoodOrder[]>([]);
+  const { myOrders: orders, fetchOrdersByEvent, isLoading } = useOrder();
 
-  useEffect(() => {
-    if (id) {
-      fetchOrdersByEvent(id)
-        .then(setOrders)
-        .catch((error) => {
-          // Fallback to myOrders if event-specific fetch fails
-          setOrders(myOrders);
-        });
-    } else {
-      setOrders(myOrders);
-    }
-  }, [id, myOrders]);
+ 
 
   const handleOrderAgain = (order: FoodOrder) => {
     // Navigate back to menu or reorder
@@ -39,20 +27,20 @@ export default function EventOrdersScreen() {
     <View className="flex-row items-center bg-[#1C1C1E] rounded-2xl p-4 mb-3 relative">
       <View className="w-12 h-12 rounded-xl overflow-hidden mr-4">
         <Image
-          source={require('@/assets/images/m1.png')}
+          source={{ uri: order.Food?.foodimage }}
           className="w-full h-full"
         />
       </View>
       <View className="flex-1">
-        <Text className="text-text text-base font-semibold mb-1">Food Order</Text>
+        <Text className="text-text text-base font-semibold mb-1">{order.Food?.foodname}</Text>
         <Text className="text-text-secondary text-sm mb-1">
           {order.special_instructions || 'No special instructions'}
         </Text>
 
         <View className="flex-row items-center">
-            <Text className="text-xs mr-1 text-white">RWF</Text>
-            <Text className="text-text text-xs font-medium">{order.Food?.foodprice}</Text>
-          </View>
+          <Text className="text-xs mr-1 text-white">RWF</Text>
+          <Text className="text-text text-xs font-medium">{order.Food?.foodprice}</Text>
+        </View>
       </View>
       <View className="items-end">
         <Text className="text-text text-base font-bold mb-2">{order.quantity}</Text>
@@ -63,8 +51,15 @@ export default function EventOrdersScreen() {
           <Text className="text-text text-xs font-semibold">Order again</Text>
         </TouchableOpacity>
       </View>
-      <View className="absolute top-2 right-2 w-6 h-6 rounded-full bg-[#4CAF50] items-center justify-center">
-        <Text className="text-white text-xs font-bold">✓</Text>
+      <View
+        className={`absolute top-2 right-2 w-6 h-6 rounded-full items-center justify-center ${order.order_status === FoodOrderStatus.CONFIRMED ? 'bg-[#4CAF50]' :
+            order.order_status === FoodOrderStatus.CANCELLED ? 'bg-[#F44336]' : 'bg-[#000000]'
+          }`}
+      >
+        <Text className="text-white text-xs font-bold">
+          {order.order_status === FoodOrderStatus.CONFIRMED ? '✓' :
+            order.order_status === FoodOrderStatus.CANCELLED ? '✗' : '⌛'}
+        </Text>
       </View>
     </View>
   );

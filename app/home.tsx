@@ -5,6 +5,7 @@ import SectionHeader from "@/components/SectionHeader";
 import Colors from "@/constants/Colors";
 import { useAuth, useEvent, useOrder } from "@/contexts";
 import { useFood } from "@/contexts/FoodContext";
+import { FoodOrderStatus } from "@/types/order";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -59,16 +60,7 @@ export default function HomeScreen() {
     }
   };
 
-  useEffect(() => {
-    fetchEvents();
-    fetchFeaturedEvents();
-    fetchAllFoods();
-    fetchMyOrders();
-  }, [fetchEvents, fetchFeaturedEvents, fetchAllFoods, fetchMyOrders]);
-
-  useEffect(() => {
-    fetchAllFoods();
-  }, [fetchAllFoods]);
+  
 
   const handleNotificationPress = () => {
     router.push('/notifications');
@@ -258,14 +250,16 @@ export default function HomeScreen() {
                     onPress={() => router.push(`/event/${order.event_id}/orders`)}
                   >
                     {/* Ribbon */}
-                    <View className="absolute top-0 right-0 bg-[#2E7D32] px-6 py-1 transform rotate-45 translate-x-4 translate-y-2 z-10">
-                      <Text className="text-white text-[10px] font-bold uppercase">Complete</Text>
+                    <View className={`absolute top-0 right-0 px-6 py-1 transform rotate-45 translate-x-4 translate-y-2 z-10 ${order.order_status === FoodOrderStatus.CONFIRMED ? 'bg-[#2E7D32]' :
+                        order.order_status === FoodOrderStatus.CANCELLED ? 'bg-[#C62828]' : 'bg-[#000000]'
+                      }`}>
+                      <Text className="text-white text-[10px] font-bold uppercase">{order.order_status}</Text>
                     </View>
 
                     {/* Image */}
                     <View className="w-14 h-14 rounded-2xl bg-white overflow-hidden mr-4">
                       <Image
-                        source={require('@/assets/images/m1.png')}
+                        source={{ uri: order.Food?.foodimage }}
                         className="w-full h-full"
                         resizeMode="cover"
                       />
@@ -274,7 +268,7 @@ export default function HomeScreen() {
                     {/* Content */}
                     <View className="flex-1 mr-8">
                       <Text className="text-white font-bold text-base mb-1" numberOfLines={1}>
-                       {order.Food?.foodname}
+                        {order.Food?.foodname}
                       </Text>
                       <Text className="text-gray-400 text-xs" numberOfLines={1}>
                         {order.Food?.fooddescription}

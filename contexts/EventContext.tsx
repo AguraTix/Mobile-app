@@ -89,19 +89,9 @@ export function EventProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const fetchEventById = useCallback(async (eventId: string) => {
-    setIsLoading(true);
-    setError(null);
-    setCurrentEvent(null)
-    try {
-      const response = await EventService.getById(eventId);
-      setCurrentEvent(response.event!);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to fetch event';
-      setError(message);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+    if (!events || !eventId) return;
+    setCurrentEvent(events.find((event) => event.event_id === eventId)!);
+  }, [events]);
 
   const fetchEventsByVenue = useCallback(async (venueId: string) => {
     setIsLoading(true);
@@ -204,7 +194,7 @@ export function EventProvider({ children }: { children: ReactNode }) {
     deleteEvent,
     clearError,
     featuredEvents,
-    upcomingEvents: recentEvents,
+    upcomingEvents,
     recentEvents,
   };
 

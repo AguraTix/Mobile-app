@@ -16,11 +16,6 @@ export default function UpcomingEventsScreen() {
   const { events, isLoading, error, fetchRecentEvents, clearError } = useEvent();
   const { addNotification } = useNotification();
 
-  // Fetch events on mount
-  useEffect(() => {
-    fetchRecentEvents(10, 0);
-  }, []);
-
   // Handle errors
   useEffect(() => {
     if (error) {

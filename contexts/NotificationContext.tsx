@@ -1,6 +1,6 @@
 import { NotificationService } from "@/services/notification";
 import { Notification as PersistentNotification } from "@/types/notification";
-import { createContext, ReactNode, useCallback, useContext, useState } from "react";
+import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
 
 // ============================================================================
 // TOAST NOTIFICATION TYPES (for in-app toasts that auto-dismiss)
@@ -116,6 +116,10 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       );
       setUnreadCount(0);
     }
+  }, []);
+
+  useEffect(() => {
+    fetchNotifications();
   }, []);
 
   // ============================================================================

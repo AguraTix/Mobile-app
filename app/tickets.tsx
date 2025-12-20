@@ -22,10 +22,6 @@ export default function TicketsScreen() {
   const router = useRouter();
   const { myTickets: userTickets, isLoading: loading, fetchMyTickets } = useTicket()
 
-  // Fetch tickets when component mounts
-  useEffect(() => {
-    fetchMyTickets();
-  }, [fetchMyTickets]);
 
 
   // Active tickets are those that are sold but not yet used or cancelled
