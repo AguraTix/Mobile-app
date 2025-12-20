@@ -60,16 +60,7 @@ export default function HomeScreen() {
     }
   };
 
-  useEffect(() => {
-    fetchEvents();
-    fetchFeaturedEvents();
-    fetchAllFoods();
-    fetchMyOrders();
-  }, [fetchEvents, fetchFeaturedEvents, fetchAllFoods, fetchMyOrders]);
-
-  useEffect(() => {
-    fetchAllFoods();
-  }, [fetchAllFoods]);
+  
 
   const handleNotificationPress = () => {
     router.push('/notifications');

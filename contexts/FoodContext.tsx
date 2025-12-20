@@ -1,6 +1,6 @@
 import { FoodService } from "@/services/food";
 import { Food, FoodCreateInput, FoodUpdateInput } from "@/types/food";
-import React, { createContext, ReactNode, useCallback, useContext, useState } from 'react';
+import React, { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
 
 interface FoodContextType {
     foods: Food[];
@@ -132,6 +132,10 @@ export function FoodProvider({ children }: { children: ReactNode }) {
 
     const clearError = useCallback(() => {
         setError(null);
+    }, []);
+
+    useEffect(() => {
+        fetchAllFoods();
     }, []);
 
     const value: FoodContextType = {

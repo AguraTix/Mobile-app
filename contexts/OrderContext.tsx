@@ -1,6 +1,6 @@
 import { OrderService } from "@/services/order";
 import { FoodOrder, FoodOrderCreateInput } from "@/types/order";
-import { createContext, ReactNode, useCallback, useContext, useState } from "react";
+import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
 import { useStatus } from "./StatusContext";
 
 interface OrderContextType {
@@ -159,6 +159,9 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  useEffect(() => {
+    fetchMyOrders();
+  }, []);
   const value = {
     orders,
     myOrders,
