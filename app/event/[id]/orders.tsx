@@ -1,7 +1,7 @@
 import Loading from '@/components/Loading';
 import Colors from '@/constants/Colors';
 import { useOrder } from '@/contexts';
-import { FoodOrder } from '@/types/order';
+import { FoodOrder, FoodOrderStatus } from '@/types/order';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -44,15 +44,15 @@ export default function EventOrdersScreen() {
         />
       </View>
       <View className="flex-1">
-        <Text className="text-text text-base font-semibold mb-1">Food Order</Text>
+        <Text className="text-text text-base font-semibold mb-1">{order.Food?.foodname}</Text>
         <Text className="text-text-secondary text-sm mb-1">
           {order.special_instructions || 'No special instructions'}
         </Text>
 
         <View className="flex-row items-center">
-            <Text className="text-xs mr-1 text-white">RWF</Text>
-            <Text className="text-text text-xs font-medium">{order.Food?.foodprice}</Text>
-          </View>
+          <Text className="text-xs mr-1 text-white">RWF</Text>
+          <Text className="text-text text-xs font-medium">{order.Food?.foodprice}</Text>
+        </View>
       </View>
       <View className="items-end">
         <Text className="text-text text-base font-bold mb-2">{order.quantity}</Text>
@@ -63,8 +63,15 @@ export default function EventOrdersScreen() {
           <Text className="text-text text-xs font-semibold">Order again</Text>
         </TouchableOpacity>
       </View>
-      <View className="absolute top-2 right-2 w-6 h-6 rounded-full bg-[#4CAF50] items-center justify-center">
-        <Text className="text-white text-xs font-bold">✓</Text>
+      <View
+        className={`absolute top-2 right-2 w-6 h-6 rounded-full items-center justify-center ${order.order_status === FoodOrderStatus.CONFIRMED ? 'bg-[#4CAF50]' :
+            order.order_status === FoodOrderStatus.CANCELLED ? 'bg-[#F44336]' : 'bg-[#000000]'
+          }`}
+      >
+        <Text className="text-white text-xs font-bold">
+          {order.order_status === FoodOrderStatus.CONFIRMED ? '✓' :
+            order.order_status === FoodOrderStatus.CANCELLED ? '✗' : '⌛'}
+        </Text>
       </View>
     </View>
   );
