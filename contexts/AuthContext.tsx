@@ -11,6 +11,7 @@ interface AuthContextType {
   user: User | null
   token: string | null
   isLoading: boolean
+  authenticated: boolean
   error: string | null
   login: (credentials: UserLoginInput) => Promise<void>
   loginWithToken: (token: string, user: User) => Promise<void>
@@ -26,6 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [authenticated, setAuthenticated] = useState(false)
 
   const login = useCallback(async (credentials: UserLoginInput) => {
     setIsLoading(true)
@@ -107,12 +109,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (storedToken && storedUser) {
         setToken(storedToken)
         setUser(JSON.parse(storedUser))
+        setAuthenticated(true)
         router.replace('/home')
       } else router.replace('/welcome')
     } catch (err) {
       console.error('Failed to load user data:', err)
     }
   }
+
   useEffect(() => {
     loadUserData()
     client.onLogout(() => {
@@ -130,6 +134,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     user,
     token,
     isLoading,
+    authenticated,
     error,
     login,
     loginWithToken,

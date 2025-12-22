@@ -4,6 +4,7 @@ import { Ticket, TicketGrouped } from "@/types/ticket";
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
 import { useStatus } from "./StatusContext";
 import { router } from "expo-router";
+import { useAuth } from "./AuthContext";
 
 interface TicketContextType {
   availableTickets: TicketGrouped[];
@@ -20,6 +21,7 @@ interface TicketContextType {
 const TicketContext = createContext<TicketContextType | null>(null);
 
 export function TicketProvider({ children }: { children: ReactNode }) {
+  const { authenticated } = useAuth();
   const [availableTickets, setAvailableTickets] = useState<TicketGrouped[]>([]);
   const [myTickets, setMyTickets] = useState<Ticket[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -94,6 +96,7 @@ export function TicketProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    if (!authenticated) return;
     fetchMyTickets();
   }, []);
 

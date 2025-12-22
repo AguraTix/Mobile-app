@@ -1,6 +1,7 @@
 import { NotificationService } from "@/services/notification";
 import { Notification as PersistentNotification } from "@/types/notification";
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
+import { useAuth } from "./AuthContext";
 
 // ============================================================================
 // TOAST NOTIFICATION TYPES (for in-app toasts that auto-dismiss)
@@ -42,6 +43,7 @@ interface NotificationContextType {
 const NotificationContext = createContext<NotificationContextType | null>(null);
 
 export function NotificationProvider({ children }: { children: ReactNode }) {
+    const { authenticated } = useAuth();
   // Toast state
   const [toasts, setToasts] = useState<ToastNotification[]>([]);
 
@@ -119,6 +121,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+       if (!authenticated) return;
     fetchNotifications();
   }, []);
 
