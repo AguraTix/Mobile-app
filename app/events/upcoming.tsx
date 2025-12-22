@@ -4,7 +4,7 @@ import Header from "@/components/Header";
 import Loading from "@/components/Loading";
 import Colors from "@/constants/Colors";
 import { useEvent } from "@/contexts/EventContext";
-import { useNotification } from "@/contexts/NotificationContext";
+import { useToast } from "@/contexts/ToastContext";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useEffect } from "react";
@@ -14,15 +14,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function UpcomingEventsScreen() {
   const router = useRouter();
   const { events, isLoading, error, fetchRecentEvents, clearError } = useEvent();
-  const { addNotification } = useNotification();
+  const { addToast } = useToast();
 
   // Handle errors
   useEffect(() => {
     if (error) {
-      addNotification(error, 'error', 5000);
+      addToast(error, 'error', 5000);
       clearError();
     }
-  }, [error]);
+  }, [error, addToast, clearError]);
 
   const handleEventPress = (eventId: string) => {
     router.push(`/event/${eventId}`);

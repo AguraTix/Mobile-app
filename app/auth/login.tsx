@@ -3,7 +3,7 @@ import Header from "@/components/Header";
 import Input from "@/components/Input";
 import NetworkError from "@/components/NetworkError";
 import { useAuth } from "@/contexts/AuthContext";
-import { useNotification } from "@/contexts/NotificationContext";
+import { useToast } from "@/contexts/ToastContext";
 import { commonValidations, useFormValidation } from "@/hooks/useFormValidation";
 import * as Linking from "expo-linking";
 import { useRouter } from "expo-router";
@@ -26,7 +26,7 @@ const loginValidationSchema = {
 export default function LoginScreen() {
   const router = useRouter();
   const { login, isLoading: authLoading, error: authError } = useAuth();
-  const { addNotification } = useNotification();
+  const { addToast } = useToast();
   const [networkError, setNetworkError] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
 
@@ -34,9 +34,9 @@ export default function LoginScreen() {
   useEffect(() => {
     if (authError) {
       setLocalError(authError);
-      addNotification(authError, 'error', 5000);
+      addToast(authError, 'error', 5000);
     }
-  }, [authError]);
+  }, [authError, addToast]);
 
   const {
     formik,
@@ -80,15 +80,13 @@ export default function LoginScreen() {
       );
 
       if (result.type === "success" && result.url) {
-        const parsed = Linking.parse(result.url);
-        const query = parsed.queryParams || {};
-        addNotification("Google login successful!", 'success', 3000);
+        addToast("Google login successful!", 'success', 3000);
         router.replace("/home");
         return;
       }
     } catch (error: any) {
       console.error('Google login error:', error);
-      addNotification('Google login failed', 'error', 5000);
+      addToast('Google login failed', 'error', 5000);
     }
   };
 

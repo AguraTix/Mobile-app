@@ -2,6 +2,7 @@ import { OrderService } from "@/services/order";
 import { FoodOrder, FoodOrderCreateInput } from "@/types/order";
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
 import { useStatus } from "./StatusContext";
+import { useAuth } from "./AuthContext";
 
 interface OrderContextType {
   orders: FoodOrder[];
@@ -23,6 +24,7 @@ interface OrderContextType {
 const OrderContext = createContext<OrderContextType | null>(null);
 
 export function OrderProvider({ children }: { children: ReactNode }) {
+  const { authenticated } = useAuth();
   const [orders, setOrders] = useState<FoodOrder[]>([]);
   const [myOrders, setMyOrders] = useState<FoodOrder[]>([]);
   const [currentOrder, setCurrentOrder] = useState<FoodOrder | null>(null);
@@ -149,6 +151,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    if (!authenticated) return;
     fetchMyOrders();
   }, []);
   const value = {

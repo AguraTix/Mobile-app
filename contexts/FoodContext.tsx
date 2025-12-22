@@ -1,6 +1,7 @@
 import { FoodService } from "@/services/food";
 import { Food, FoodCreateInput, FoodUpdateInput } from "@/types/food";
 import React, { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
+import { useAuth } from "./AuthContext";
 
 interface FoodContextType {
     foods: Food[];
@@ -20,6 +21,7 @@ interface FoodContextType {
 const FoodContext = createContext<FoodContextType | null>(null);
 
 export function FoodProvider({ children }: { children: ReactNode }) {
+    const { authenticated } = useAuth();
     const [foods, setFoods] = useState<Food[]>([]);
     const [currentFood, setCurrentFood] = useState<Food | null>(null);
     const [foodsByEvent, setFoodsByEvent] = useState<Food[]>([]);
@@ -125,8 +127,9 @@ export function FoodProvider({ children }: { children: ReactNode }) {
     }, []);
 
     useEffect(() => {
+        if (!authenticated) return;
         fetchAllFoods();
-    }, []);
+    }, [authenticated]);
 
     const value: FoodContextType = {
         foods,

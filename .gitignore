@@ -40,3 +40,4 @@ app-example
 android/
 ios/
 .vscode
+config.bat

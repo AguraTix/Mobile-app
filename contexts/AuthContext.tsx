@@ -11,8 +11,10 @@ interface AuthContextType {
   user: User | null
   token: string | null
   isLoading: boolean
+  authenticated: boolean
   error: string | null
   login: (credentials: UserLoginInput) => Promise<void>
+  loginWithToken: (token: string, user: User) => Promise<void>
   register: (data: UserRegisterInput) => Promise<void>
   logout: () => Promise<void>
   clearError: () => void
@@ -25,6 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [authenticated, setAuthenticated] = useState(false)
 
   const login = useCallback(async (credentials: UserLoginInput) => {
     setIsLoading(true)
@@ -41,6 +44,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error(err)
       const message = err as unknown as ApiError
       setError(message.message)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
+
+  const loginWithToken = useCallback(async (token: string, user: User) => {
+    setIsLoading(true)
+    setError(null)
+    try {
+      setUser(user)
+      setToken(token)
+      await SecureStore.setItemAsync('auth_token', token)
+      await SecureStore.setItemAsync('user', JSON.stringify(user))
+      await loadUserData()
+    } catch (err) {
+      console.error(err)
+      setError("Failed to login with token")
     } finally {
       setIsLoading(false)
     }
@@ -89,15 +109,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (storedToken && storedUser) {
         setToken(storedToken)
         setUser(JSON.parse(storedUser))
+        setAuthenticated(true)
         router.replace('/home')
       } else router.replace('/welcome')
     } catch (err) {
       console.error('Failed to load user data:', err)
     }
   }
+
   useEffect(() => {
     loadUserData()
-      client.onLogout(() => {
+    client.onLogout(() => {
       setUser(null)
       loadUserData()
     })
@@ -112,8 +134,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     user,
     token,
     isLoading,
+    authenticated,
     error,
     login,
+    loginWithToken,
     register,
     logout,
     clearError,
