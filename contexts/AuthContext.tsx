@@ -13,6 +13,7 @@ interface AuthContextType {
   isLoading: boolean
   error: string | null
   login: (credentials: UserLoginInput) => Promise<void>
+  loginWithToken: (token: string, user: User) => Promise<void>
   register: (data: UserRegisterInput) => Promise<void>
   logout: () => Promise<void>
   clearError: () => void
@@ -41,6 +42,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error(err)
       const message = err as unknown as ApiError
       setError(message.message)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
+
+  const loginWithToken = useCallback(async (token: string, user: User) => {
+    setIsLoading(true)
+    setError(null)
+    try {
+      setUser(user)
+      setToken(token)
+      await SecureStore.setItemAsync('auth_token', token)
+      await SecureStore.setItemAsync('user', JSON.stringify(user))
+      await loadUserData()
+    } catch (err) {
+      console.error(err)
+      setError("Failed to login with token")
     } finally {
       setIsLoading(false)
     }
@@ -97,7 +115,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
   useEffect(() => {
     loadUserData()
-      client.onLogout(() => {
+    client.onLogout(() => {
       setUser(null)
       loadUserData()
     })
@@ -114,6 +132,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isLoading,
     error,
     login,
+    loginWithToken,
     register,
     logout,
     clearError,

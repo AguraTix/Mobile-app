@@ -1,24 +1,49 @@
 import { useRouter } from "expo-router";
 import React from "react";
 import {
+  Image,
   ScrollView,
   Text,
   TouchableOpacity,
-  View,
-  Image
+  View
 } from "react-native";
 
 import Header from "@/components/Header";
 import SocialLoginButton from "@/components/SocialLoginButton";
+import { useAuth } from "@/contexts/AuthContext";
+import * as Linking from 'expo-linking';
+import * as WebBrowser from 'expo-web-browser';
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function RegisterScreen() {
   const router = useRouter();
+  const { loginWithToken } = useAuth();
   const goEmail = () => router.push("/auth/register-email");
   const goPhone = () => router.push("/auth/register-phone");
   const goLogin = () => router.push("/auth/login");
 
-  const handleRegisterWithGoogle = () => goEmail();
+  const handleRegisterWithGoogle = async () => {
+    const authUrl = "https://agurabackend.onrender.com/api/auth/google";
+    const redirectUri = Linking.createURL("auth-callback");
+
+    try {
+      const result = await WebBrowser.openAuthSessionAsync(
+        `${authUrl}?redirect_uri=${encodeURIComponent(redirectUri)}`,
+        redirectUri
+      );
+
+      if (result.type === 'success' && result.url) {
+        const { queryParams } = Linking.parse(result.url);
+        const { token, user } = queryParams as { token?: string, user?: string };
+
+        if (token && user) {
+          await loginWithToken(token, JSON.parse(user));
+        }
+      }
+    } catch (error) {
+      console.error("Google Login Error:", error);
+    }
+  };
 
   return (
     <>
